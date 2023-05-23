@@ -1,7 +1,0 @@
-{
-    "cSpell.words": [
-    ],
-    "files.exclude": {
-    },
-    "typescript.tsdk": "node_modules/typescript/lib"
-}
