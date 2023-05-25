@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { FC } from 'react';
 
-export default function ForgotPassword() {
+type ComponentProps = {};
+
+const ForgotPassword: FC<ComponentProps> = () => {
   return <div>ForgotPassword</div>;
-}
+};
+
+export default ForgotPassword;

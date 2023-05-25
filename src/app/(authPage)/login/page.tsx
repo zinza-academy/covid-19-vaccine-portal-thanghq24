@@ -7,7 +7,7 @@ import {
   Switch,
   Typography
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -29,7 +29,9 @@ const schema = yup
   })
   .required();
 
-export default function Login() {
+type ComponentProps = {};
+
+const Login: FC<ComponentProps> = () => {
   const router = useRouter();
   const {
     control,
@@ -132,4 +134,6 @@ export default function Login() {
       </FormGroup>
     </Stack>
   );
-}
+};
+
+export default Login;

@@ -4,11 +4,11 @@ import Image from 'next/image';
 import React from 'react';
 import authImage from '@public/images/auth-page-img.png';
 
-export default function AuthPageLayout({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+type ComponentProps = {
+  children?: React.ReactNode;
+};
+
+const AuthPageLayout: React.FC<ComponentProps> = ({ children }) => {
   return (
     <Stack direction="row" height="100vh">
       {/* left */}
@@ -36,4 +36,6 @@ export default function AuthPageLayout({
       </Box>
     </Stack>
   );
-}
+};
+
+export default AuthPageLayout;

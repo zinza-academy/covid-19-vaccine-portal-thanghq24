@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { FC } from 'react';
 
-export default function Register() {
+type ComponentProps = {};
+
+const Register: FC<ComponentProps> = () => {
   return <div>Register</div>;
-}
+};
+
+export default Register;
