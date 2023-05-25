@@ -5,11 +5,10 @@ import {
   FormGroup,
   Stack,
   Switch,
-  Typography,
-  useTheme
+  Typography
 } from '@mui/material';
-import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Link from 'next/link';
@@ -20,69 +19,59 @@ import { useRouter } from 'next/navigation';
 interface LoginFormData {
   email: string;
   password: string;
-  loading: boolean;
-  success: boolean;
 }
 
 const schema = yup
   .object()
   .shape({
     email: yup.string().email().required(),
-    password: yup.string().trim().min(8).required(),
-    loading: yup.boolean().required(),
-    success: yup.boolean().required()
+    password: yup.string().trim().min(8).required()
   })
   .required();
 
 export default function Login() {
-  const theme = useTheme();
   const router = useRouter();
   const {
     control,
-    watch,
     handleSubmit,
-    getValues,
-    setValue,
-    formState: { errors, isSubmitting, isDirty, isValid }
+    formState: { isDirty, isValid }
   } = useForm<LoginFormData>({
     mode: 'onChange',
     defaultValues: {
       email: '',
-      password: '',
-      loading: false,
-      success: true
+      password: ''
     },
     resolver: yupResolver(schema)
   });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(true);
 
   const onSubmit = (data: LoginFormData) => {
-    setValue('loading', true);
+    setLoading(true);
     setTimeout(() => {
       alert(
-        getValues('success')
+        success
           ? 'trying to log in with this data: ' +
               JSON.stringify({ email: data.email, password: data.password })
           : 'Có lỗi xảy ra'
       );
-      setValue('loading', false);
+      setLoading(false);
     }, 2000);
   };
 
-  watch('loading');
-
-  const canSubmit = !isValid || !isDirty || !!getValues('loading');
+  const canSubmit = !isValid || !isDirty || loading;
 
   const goToRegister = () => {
     router.push('/register');
   };
 
-  const goToForgotPassword = () => {
-    router.push('/forgot-password');
+  const toggleSuccess = () => {
+    setSuccess((prev) => !prev);
   };
 
   return (
     <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="h4" fontWeight="700" onClick={() => canSubmit()}>
+      <Typography variant="h4" fontWeight="700">
         Đăng nhập với tài khoản
       </Typography>
       <TextInput
@@ -133,19 +122,14 @@ export default function Login() {
         onClick={goToRegister}>
         Đăng ký
       </Button>
-      <Controller
-        name="success"
-        control={control}
-        render={({ field }) => (
-          <FormGroup>
-            <FormControlLabel
-              control={<Switch defaultChecked />}
-              {...field}
-              label="Fake API Call Success?"
-            />
-          </FormGroup>
-        )}
-      />
+      <FormGroup>
+        <FormControlLabel
+          control={
+            <Switch defaultChecked value={success} onChange={toggleSuccess} />
+          }
+          label="Fake API Call Success?"
+        />
+      </FormGroup>
     </Stack>
   );
 }
