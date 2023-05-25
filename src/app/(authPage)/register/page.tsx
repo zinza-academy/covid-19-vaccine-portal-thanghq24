@@ -1,8 +1,6 @@
 import React, { FC } from 'react';
 
-type ComponentProps = {};
-
-const Register: FC<ComponentProps> = () => {
+const Register: FC = () => {
   return <div>Register</div>;
 };
 

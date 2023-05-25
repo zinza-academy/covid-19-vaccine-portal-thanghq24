@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, PropsWithChildren } from 'react';
 import './globals.css';
 import { Inter } from 'next/font/google';
 import MUIThemeProvider from '@utils/MUIThemeProvider';
@@ -11,11 +11,7 @@ export const metadata: Metadata = {
   title: 'Vaccine Portal'
 };
 
-interface ComponentProps {
-  children: React.ReactNode;
-}
-
-const RootLayout: FC<ComponentProps> = ({ children }) => {
+const RootLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
       <body className={inter.className}>

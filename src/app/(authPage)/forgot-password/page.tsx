@@ -1,8 +1,6 @@
 import React, { FC } from 'react';
 
-type ComponentProps = {};
-
-const ForgotPassword: FC<ComponentProps> = () => {
+const ForgotPassword: FC = () => {
   return <div>ForgotPassword</div>;
 };
 

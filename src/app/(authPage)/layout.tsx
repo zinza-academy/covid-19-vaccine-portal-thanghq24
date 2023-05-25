@@ -1,14 +1,10 @@
 'use client';
 import { Box, Stack } from '@mui/material';
 import Image from 'next/image';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import authImage from '@public/images/auth-page-img.png';
 
-type ComponentProps = {
-  children?: React.ReactNode;
-};
-
-const AuthPageLayout: React.FC<ComponentProps> = ({ children }) => {
+const AuthPageLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <Stack direction="row" height="100vh">
       {/* left */}

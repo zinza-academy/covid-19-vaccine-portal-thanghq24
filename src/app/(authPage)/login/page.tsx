@@ -29,9 +29,7 @@ const schema = yup
   })
   .required();
 
-type ComponentProps = {};
-
-const Login: FC<ComponentProps> = () => {
+const Login: FC = () => {
   const router = useRouter();
   const {
     control,

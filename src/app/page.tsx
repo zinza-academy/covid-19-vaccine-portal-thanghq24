@@ -4,9 +4,7 @@ import styles from './page.module.css';
 import { Button } from '@mui/material';
 import { FC } from 'react';
 
-type ComponentProps = {};
-
-const Home: FC<ComponentProps> = () => {
+const Home: FC = () => {
   return (
     <main className={styles.main}>
       <div className={styles.description}>
