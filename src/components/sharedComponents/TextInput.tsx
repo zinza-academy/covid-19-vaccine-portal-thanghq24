@@ -8,7 +8,7 @@ interface TextInput {
   name: string;
   errorMessage: string;
   placeholder: string;
-  label: string;
+  label: string | undefined;
   type: React.HTMLInputTypeAttribute | undefined;
 }
 
@@ -23,7 +23,7 @@ export default function TextInput({
 }: TextInput) {
   return (
     <>
-      <Typography>{label}</Typography>
+      {label ? <Typography>{label}</Typography> : null}
       <Controller
         name={name}
         control={control}
