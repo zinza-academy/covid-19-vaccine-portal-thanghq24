@@ -2,7 +2,7 @@
 import { Box, Stack } from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
-import authImage from '../../../public/auth-page-img.png';
+import authImage from '@public/images/auth-page-img.png';
 
 export default function AuthPageLayout({
   children

@@ -14,7 +14,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Link from 'next/link';
 import { indigo } from '@mui/material/colors';
-import TextInput from '@/components/sharedComponents/TextInput';
+import TextInput from '@components/sharedComponents/TextInput';
 import { useRouter } from 'next/navigation';
 
 interface LoginFormData {
