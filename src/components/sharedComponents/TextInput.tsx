@@ -1,6 +1,7 @@
 import { Stack, TextField, TextFieldVariants, Typography } from '@mui/material';
-import React from 'react';
+import React, { FC } from 'react';
 import { Control, Controller } from 'react-hook-form';
+import RequiredTag from './RequiredTag';
 
 interface TextInput {
   variant: TextFieldVariants;
@@ -10,20 +11,26 @@ interface TextInput {
   placeholder: string;
   label: string | undefined;
   type: React.HTMLInputTypeAttribute | undefined;
+  required: boolean | undefined;
 }
 
-export default function TextInput({
+const TextInput: FC<TextInput> = ({
   control,
   name,
   errorMessage,
   placeholder,
   label,
   variant = 'outlined',
-  type
-}: TextInput) {
+  type,
+  required = false
+}) => {
   return (
     <Stack spacing={1}>
-      {label ? <Typography>{label}</Typography> : null}
+      {label ? (
+        <Typography>
+          {label} {required ? <RequiredTag /> : null}
+        </Typography>
+      ) : null}
       <Controller
         name={name}
         control={control}
@@ -41,4 +48,6 @@ export default function TextInput({
       />
     </Stack>
   );
-}
+};
+
+export default TextInput;

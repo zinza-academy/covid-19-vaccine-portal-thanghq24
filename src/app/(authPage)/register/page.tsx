@@ -7,13 +7,14 @@ import {
   Switch,
   Typography
 } from '@mui/material';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import TextInput from '@components/sharedComponents/TextInput';
 import { useRouter } from 'next/navigation';
 import DateInput from '@src/components/sharedComponents/DateInput';
+import SelectInput from '@src/components/sharedComponents/SelectInput';
 
 interface FormData {
   citizenIdentification: string;
@@ -55,18 +56,18 @@ const defaultValues = {
   password: '',
   fullName: '',
   dob: null,
-  gender: null,
+  gender: 'none',
   province: '',
   district: '',
   ward: ''
 };
 
-const Login: FC = () => {
+const Register: FC = () => {
   const router = useRouter();
   const {
     control,
     handleSubmit,
-    formState: { isDirty, isValid }
+    formState: { errors, isDirty, isValid }
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: defaultValues,
@@ -100,8 +101,12 @@ const Login: FC = () => {
   };
 
   return (
-    <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="h4" fontWeight="700">
+    <Stack
+      spacing={3}
+      component="form"
+      width={400}
+      onSubmit={handleSubmit(onSubmit)}>
+      <Typography variant="h4" fontWeight="700" align="center">
         Đăng ký tài khoản
       </Typography>
       <TextInput
@@ -109,7 +114,8 @@ const Login: FC = () => {
         name="citizenIdentification"
         label="Số CMND/CCCD"
         placeholder="Số CMND/CCCD"
-        errorMessage="Số CMND/CCCD không được bỏ trống"
+        errorMessage="Số CMND/CCCD không được bỏ trống, phải là số, độ dài chuẩn (9 hoặc 12)"
+        required
       />
       <TextInput
         control={control}
@@ -117,6 +123,7 @@ const Login: FC = () => {
         label="Email"
         placeholder="Email"
         errorMessage="Email không được bỏ trống và phải đúng định dạng"
+        required
       />
       <TextInput
         control={control}
@@ -125,6 +132,7 @@ const Login: FC = () => {
         placeholder="Mật khẩu"
         errorMessage="Mật khẩu không được bỏ trống"
         type="password"
+        required
       />
       <TextInput
         control={control}
@@ -132,20 +140,39 @@ const Login: FC = () => {
         label="Họ và tên"
         placeholder="Họ và tên"
         errorMessage="Họ và tên không được bỏ trống"
+        required
       />
       <DateInput
         control={control}
         name="dob"
-        errorMessage="Ngày sinh không được bỏ trống"
+        errorMessage="Ngày sinh không được bỏ trống và hợp lý"
         disableFuture={true}
         label="Ngày sinh"
+        placeholder="Ngày/Tháng/Năm"
+        required
       />
-      {/* gender select */}
+      <SelectInput
+        control={control}
+        errorMessage="Giới tính không được bỏ trống"
+        label="Giới tính"
+        name="gender"
+        selections={[
+          { value: 'M', label: 'Nam' },
+          { value: 'F', label: 'Nữ' }
+        ]}
+        defaultValue="M"
+        placeholder="Giới tính"
+        required
+      />
       {/* province select */}
       {/* district select */}
       {/* ward select */}
       <Stack direction="row" justifyContent="end">
-        <Button variant="text" type="submit" disabled={canSubmit}>
+        <Button
+          variant="text"
+          type="submit"
+          // disabled={canSubmit}
+        >
           Tiếp tục
         </Button>
       </Stack>
@@ -161,4 +188,4 @@ const Login: FC = () => {
   );
 };
 
-export default Login;
+export default Register;
