@@ -1,4 +1,4 @@
-import { TextField, TextFieldVariants, Typography } from '@mui/material';
+import { Stack, TextField, TextFieldVariants, Typography } from '@mui/material';
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
 
@@ -22,7 +22,7 @@ export default function TextInput({
   type
 }: TextInput) {
   return (
-    <>
+    <Stack spacing={1}>
       {label ? <Typography>{label}</Typography> : null}
       <Controller
         name={name}
@@ -39,6 +39,6 @@ export default function TextInput({
           />
         )}
       />
-    </>
+    </Stack>
   );
 }
