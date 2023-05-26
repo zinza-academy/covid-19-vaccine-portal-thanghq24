@@ -43,6 +43,7 @@ const Login: FC = () => {
     },
     resolver: yupResolver(schema)
   });
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(true);
 
@@ -99,8 +100,7 @@ const Login: FC = () => {
         color="success"
         size="large"
         sx={{
-          fontWeight: '700',
-          fontSize: '15px',
+          borderBottomLeftRadius: '8px',
           textTransform: 'none'
         }}
         type="submit"
@@ -115,8 +115,7 @@ const Login: FC = () => {
         color="success"
         size="large"
         sx={{
-          fontWeight: '700',
-          fontSize: '15px',
+          borderBottomLeftRadius: '8px',
           textTransform: 'none'
         }}
         onClick={goToRegister}>
