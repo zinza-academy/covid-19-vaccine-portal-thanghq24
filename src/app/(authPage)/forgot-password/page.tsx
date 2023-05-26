@@ -14,9 +14,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useRouter } from 'next/navigation';
+
 interface FormData {
   email: string;
 }
+
 const schema = yup
   .object()
   .shape({
@@ -44,7 +46,7 @@ const ForgotPassword: FC = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(true);
 
-  const obSubmit = (data: FormData) => {
+  const onSubmit = (data: FormData) => {
     setLoading(true);
     setTimeout(() => {
       alert(
@@ -69,7 +71,7 @@ const ForgotPassword: FC = () => {
   };
 
   return (
-    <Stack spacing={3} component="form" onSubmit={handleSubmit(obSubmit)}>
+    <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>
       <Typography px={5} align="center">
         Để khôi phục mật khẩu, vui lòng nhập đúng email bạn đã dùng để đăng ký{' '}
         <Typography component="span" display="inline" color={red[600]}>
