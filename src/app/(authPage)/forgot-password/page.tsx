@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useRouter } from 'next/navigation';
+import RequiredTag from '@src/components/sharedComponents/RequiredTag';
 interface FormData {
   email: string;
 }
@@ -72,9 +73,7 @@ const ForgotPassword: FC = () => {
     <Stack spacing={3} component="form" onSubmit={handleSubmit(obSubmit)}>
       <Typography px={5} align="center">
         Để khôi phục mật khẩu, vui lòng nhập đúng email bạn đã dùng để đăng ký{' '}
-        <Typography component="span" display="inline" color={red[600]}>
-          (*)
-        </Typography>
+        <RequiredTag />
       </Typography>
       <TextInput
         control={control}

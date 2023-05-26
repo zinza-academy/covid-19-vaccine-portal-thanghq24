@@ -2,8 +2,9 @@ import * as React from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, TextField, Typography } from '@mui/material';
+import { Stack, TextField, Typography } from '@mui/material';
 import { Control, Controller } from 'react-hook-form';
+import RequiredTag from './RequiredTag';
 
 interface DateInput {
   control: Control;
@@ -12,6 +13,7 @@ interface DateInput {
   label: string | undefined;
   placeholder: string;
   disableFuture: boolean | undefined;
+  required: boolean | undefined;
 }
 
 const DateInput: React.FC<DateInput> = ({
@@ -19,12 +21,17 @@ const DateInput: React.FC<DateInput> = ({
   name,
   errorMessage,
   label,
-  placeholder,
-  disableFuture
+  placeholder = 'Ngày/Tháng/Năm',
+  disableFuture,
+  required
 }) => {
   return (
-    <Box>
-      {label ? <Typography>{label}</Typography> : null}
+    <Stack spacing={1}>
+      {label ? (
+        <Typography>
+          {label} {required ? <RequiredTag /> : null}
+        </Typography>
+      ) : null}
       <Controller
         name={name}
         control={control}
@@ -34,23 +41,18 @@ const DateInput: React.FC<DateInput> = ({
               disableFuture={disableFuture}
               slotProps={{
                 textField: {
-                  helperText: errorMessage
+                  error: !!fieldState?.error,
+                  helperText: !!fieldState.error?.message && errorMessage,
+                  placeholder: placeholder
                 }
               }}
-              slots={
-                <TextField
-                  fullWidth
-                  helperText={!!fieldState.error?.message && errorMessage}
-                  placeholder={placeholder}
-                  error={!!fieldState.error}
-                  {...field}
-                />
-              }
+              sx={{ width: '100%' }}
+              {...field}
             />
           </LocalizationProvider>
         )}
       />
-    </Box>
+    </Stack>
   );
 };
 
