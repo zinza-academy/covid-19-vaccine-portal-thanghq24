@@ -53,8 +53,7 @@ const SelectInput: FC<SelectInput> = ({
                   }
                 : {}
             }}
-            {...field}
-            onClick={() => console.log(field.value)}>
+            {...field}>
             {/* placeholder solution 2 */}
             {/* {field.value === 'none' ? (
               <MenuItem value="none" disabled>
