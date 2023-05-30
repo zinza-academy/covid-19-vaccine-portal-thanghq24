@@ -4,7 +4,7 @@ import { Control, Controller } from 'react-hook-form';
 import RequiredTag from './RequiredTag';
 
 interface SelectionObject {
-  value: string | number | boolean;
+  value: string | number | string[] | undefined;
   label: string | number;
 }
 

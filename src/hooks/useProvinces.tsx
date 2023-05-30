@@ -1,15 +1,57 @@
 import { useQuery } from '@tanstack/react-query';
 
 interface SelectionObject {
-  value: string | number | boolean;
+  value: string | number | string[] | undefined;
   label: string | number;
+}
+
+interface Province {
+  name: string;
+  code: number;
+  division_type: string;
+  codename: string;
+  phone_code: number;
+}
+
+interface District {
+  name: string;
+  code: number;
+  division_type: string;
+  codename: string;
+  district_code: number;
+}
+
+interface Ward {
+  name: string;
+  code: number;
+  division_type: string;
+  codename: string;
+  district_code: number;
+}
+
+interface ProvinceResult extends Province {
+  name: string;
+  code: number;
+  division_type: string;
+  codename: string;
+  phone_code: number;
+  districts: District[];
+}
+
+interface DistrictResult extends Province {
+  districts: District[];
+  wards: Ward[];
+}
+
+interface WardResult extends Province {
+  wards: Ward[];
 }
 
 const useProvinces = (province: string, district: string) => {
   //provinces.open-api.vn/api/p get provinces
   //provinces.open-api.vn/api/p/1?depth=2 get district array inside one province object
   //provinces.open-api.vn/api/d/7?depth=2 get ward array inside one district object
-  const provinces = useQuery({
+  const provinces = useQuery<ProvinceResult[]>({
     queryKey: ['province'],
     queryFn: async () => {
       const response = await fetch('https://provinces.open-api.vn/api/p/');
@@ -20,7 +62,7 @@ const useProvinces = (province: string, district: string) => {
     }
   });
 
-  const districts = useQuery({
+  const districts = useQuery<DistrictResult>({
     queryKey: ['district', province],
     queryFn: async () => {
       const response = await fetch(
@@ -34,7 +76,7 @@ const useProvinces = (province: string, district: string) => {
     enabled: !!province
   });
 
-  const wards = useQuery({
+  const wards = useQuery<WardResult>({
     queryKey: ['district', district],
     queryFn: async () => {
       const response = await fetch(
@@ -49,28 +91,25 @@ const useProvinces = (province: string, district: string) => {
   });
 
   const provinceSelections = (): SelectionObject[] => {
-    return provinces?.data
-      ? // @ts-ignore
-        provinces.data.map((province, index) => {
+    return provinces.data
+      ? provinces.data.map((province) => {
           return { value: province.code, label: province.name };
         })
       : [];
   };
 
   const districtSelections = (): SelectionObject[] => {
-    return districts.data?.districts
-      ? // @ts-ignore
-        districts.data.districts.map((province, index) => {
-          return { value: province.code, label: province.name };
+    return districts.data
+      ? districts.data.districts.map((district) => {
+          return { value: district.code, label: district.name };
         })
       : [];
   };
 
   const wardSelections = (): SelectionObject[] => {
-    return wards.data?.wards
-      ? // @ts-ignore
-        wards.data.wards.map((province, index) => {
-          return { value: province.code, label: province.name };
+    return wards.data
+      ? wards.data.wards.map((ward) => {
+          return { value: ward.code, label: ward.name };
         })
       : [];
   };
