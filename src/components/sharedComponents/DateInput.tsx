@@ -36,7 +36,9 @@ const DateInput: React.FC<DateInput> = ({
         name={name}
         control={control}
         render={({ field, fieldState }) => (
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <LocalizationProvider
+            dateAdapter={AdapterDayjs}
+            adapterLocale="en-gb">
             <DatePicker
               disableFuture={disableFuture}
               slotProps={{

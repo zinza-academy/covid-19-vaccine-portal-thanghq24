@@ -2,13 +2,9 @@
 
 import { ThemeProvider } from '@mui/material';
 import theme from './muiTheme';
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 
-type ComponentProps = {
-  children?: React.ReactNode;
-};
-
-const MUIThemeProvider: FC<ComponentProps> = ({ children }) => {
+const MUIThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 };
 

@@ -7,7 +7,7 @@ import {
   Switch,
   Typography
 } from '@mui/material';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -15,6 +15,7 @@ import TextInput from '@components/sharedComponents/TextInput';
 import { useRouter } from 'next/navigation';
 import DateInput from '@src/components/sharedComponents/DateInput';
 import SelectInput from '@src/components/sharedComponents/SelectInput';
+import useProvinces from '@src/hooks/useProvinces';
 
 interface FormData {
   citizenIdentification: string;
@@ -56,7 +57,7 @@ const defaultValues = {
   password: '',
   fullName: '',
   dob: null,
-  gender: 'none',
+  gender: '',
   province: '',
   district: '',
   ward: ''
@@ -64,25 +65,47 @@ const defaultValues = {
 
 const Register: FC = () => {
   const router = useRouter();
+
   const {
     control,
     handleSubmit,
-    formState: { errors, isDirty, isValid }
+    getValues,
+    watch,
+    formState: { isDirty, isValid }
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: defaultValues,
     resolver: yupResolver(schema)
   });
+  const {
+    provinces,
+    districts,
+    wards,
+    provinceSelections,
+    districtSelections,
+    wardSelections
+  } = useProvinces(getValues('province'), getValues('district'));
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(true);
 
+  //watch updates of province and district to trigger api call to provinceAPI
+  watch('province');
+  watch('district');
+
   const onSubmit = (data: FormData) => {
     setLoading(true);
+    let formData = data;
     setTimeout(() => {
       alert(
         success
           ? 'trying to log in with this data: ' +
-              JSON.stringify({ email: data.email, password: data.password })
+              JSON.stringify({
+                // ...formData,
+                dob:
+                  formData.dob !== null
+                    ? new Date(formData.dob).toLocaleDateString('en-GB')
+                    : null
+              })
           : 'Có lỗi xảy ra'
       );
       setLoading(false);
@@ -106,7 +129,11 @@ const Register: FC = () => {
       component="form"
       width={400}
       onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="h4" fontWeight="700" align="center">
+      <Typography
+        variant="h4"
+        fontWeight="700"
+        align="center"
+        onClick={() => console.log(getValues())}>
         Đăng ký tài khoản
       </Typography>
       <TextInput
@@ -160,13 +187,40 @@ const Register: FC = () => {
           { value: 'M', label: 'Nam' },
           { value: 'F', label: 'Nữ' }
         ]}
-        defaultValue="M"
+        defaultValue=""
         placeholder="Giới tính"
         required
       />
-      {/* province select */}
-      {/* district select */}
-      {/* ward select */}
+      <SelectInput
+        control={control}
+        errorMessage="Tỉnh/Thành phố không được bỏ trống"
+        label="Tỉnh/Thành phố"
+        name="province"
+        selections={provinceSelections()}
+        defaultValue=""
+        placeholder="Tỉnh/Thành phố"
+        required
+      />
+      <SelectInput
+        control={control}
+        errorMessage="Quận/Huyện không được bỏ trống"
+        label="Quận/Huyện"
+        name="district"
+        selections={districtSelections()}
+        defaultValue=""
+        placeholder="Quận/Huyện"
+        required
+      />
+      <SelectInput
+        control={control}
+        errorMessage="Xã/Phường không được bỏ trống"
+        label="Xã/Phường"
+        name="ward"
+        selections={wardSelections()}
+        defaultValue=""
+        placeholder="Xã/Phường"
+        required
+      />
       <Stack direction="row" justifyContent="end">
         <Button
           variant="text"
