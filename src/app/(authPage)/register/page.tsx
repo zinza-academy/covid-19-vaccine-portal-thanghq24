@@ -77,14 +77,8 @@ const Register: FC = () => {
     defaultValues: defaultValues,
     resolver: yupResolver(schema)
   });
-  const {
-    provinces,
-    districts,
-    wards,
-    provinceSelections,
-    districtSelections,
-    wardSelections
-  } = useProvinces(getValues('province'), getValues('district'));
+  const { provinceSelections, districtSelections, wardSelections } =
+    useProvinces(getValues('province'), getValues('district'));
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(true);
 
@@ -100,7 +94,7 @@ const Register: FC = () => {
         success
           ? 'trying to log in with this data: ' +
               JSON.stringify({
-                // ...formData,
+                ...formData,
                 dob:
                   formData.dob !== null
                     ? new Date(formData.dob).toLocaleDateString('en-GB')
@@ -129,11 +123,7 @@ const Register: FC = () => {
       component="form"
       width={400}
       onSubmit={handleSubmit(onSubmit)}>
-      <Typography
-        variant="h4"
-        fontWeight="700"
-        align="center"
-        onClick={() => console.log(getValues())}>
+      <Typography variant="h4" fontWeight="700" align="center">
         Đăng ký tài khoản
       </Typography>
       <TextInput
@@ -222,11 +212,7 @@ const Register: FC = () => {
         required
       />
       <Stack direction="row" justifyContent="end">
-        <Button
-          variant="text"
-          type="submit"
-          // disabled={canSubmit}
-        >
+        <Button variant="text" type="submit" disabled={canSubmit}>
           Tiếp tục
         </Button>
       </Stack>
