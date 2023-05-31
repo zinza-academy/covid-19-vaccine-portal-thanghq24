@@ -17,6 +17,7 @@ interface SelectInput {
   defaultValue: string | number | boolean;
   selections: SelectionObject[];
   required: boolean | undefined;
+  size: 'medium' | 'small';
 }
 
 const SelectInput: FC<SelectInput> = ({
@@ -26,7 +27,8 @@ const SelectInput: FC<SelectInput> = ({
   label,
   placeholder,
   selections,
-  required
+  required,
+  size
 }) => {
   return (
     <Stack spacing={1}>
@@ -41,6 +43,7 @@ const SelectInput: FC<SelectInput> = ({
         render={({ field, fieldState }) => (
           <TextField
             fullWidth
+            size={size}
             select
             helperText={!!fieldState.error?.message && errorMessage}
             error={!!fieldState.error}
