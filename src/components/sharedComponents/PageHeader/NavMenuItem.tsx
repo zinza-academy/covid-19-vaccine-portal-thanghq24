@@ -52,6 +52,7 @@ const NavMenuItem: FC<NavMenuItemProps> = ({ label, url, subMenuItems }) => {
       {subMenuItems ? (
         <HoverPopover
           {...bindPopover(popupState)}
+          disableScrollLock={true}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'center'
