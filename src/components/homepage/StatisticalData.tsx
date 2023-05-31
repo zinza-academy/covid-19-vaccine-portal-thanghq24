@@ -1,4 +1,4 @@
-import { Divider, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import React, { FC } from 'react';
 import RegisterPeople from '@public/images/ic_register_people 1.png';
 import Injection from '@public/images/ic_injection.png';
@@ -62,8 +62,8 @@ const StatisticalData: FC = () => {
   return (
     <Stack
       direction="row"
-      divider={<Divider orientation="vertical" flexItem />}
       sx={{
+        mt: '120px',
         backgroundColor: '#F7FBFE',
         padding: '16px 36px'
       }}>
