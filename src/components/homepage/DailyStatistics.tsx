@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -34,6 +34,7 @@ export const options = {
   }
 };
 
+console.log(new Date());
 const labels = faker.date
   .betweens({
     count: 30,
@@ -54,7 +55,7 @@ export const data = {
   ]
 };
 
-const DailyStatistics: FC = () => {
+const DailyStatistics = () => {
   return (
     <Paper elevation={6} sx={{ padding: '24px 16px' }}>
       <Typography variant="h6">Dữ liệu tiêm theo ngày</Typography>
