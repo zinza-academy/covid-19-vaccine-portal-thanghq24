@@ -2,6 +2,7 @@ import React, { FC, PropsWithChildren } from 'react';
 import './globals.css';
 import { Inter } from 'next/font/google';
 import MUIThemeProvider from '@utils/MUIThemeProvider';
+import TanStackQueryProvider from '@utils/TanStackQueryProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,7 +16,9 @@ const RootLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <MUIThemeProvider>{children}</MUIThemeProvider>
+        <TanStackQueryProvider>
+          <MUIThemeProvider>{children}</MUIThemeProvider>
+        </TanStackQueryProvider>
       </body>
     </html>
   );
