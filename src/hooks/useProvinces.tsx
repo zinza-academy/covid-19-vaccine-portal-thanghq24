@@ -7,7 +7,7 @@ interface SelectionObject {
 
 interface Province {
   name: string;
-  code: number;
+  code: string | number;
   division_type: string;
   codename: string;
   phone_code: number;
@@ -15,7 +15,7 @@ interface Province {
 
 interface District {
   name: string;
-  code: number;
+  code: string | number;
   division_type: string;
   codename: string;
   district_code: number;
@@ -23,18 +23,13 @@ interface District {
 
 interface Ward {
   name: string;
-  code: number;
+  code: string | number;
   division_type: string;
   codename: string;
   district_code: number;
 }
 
 interface ProvinceResult extends Province {
-  name: string;
-  code: number;
-  division_type: string;
-  codename: string;
-  phone_code: number;
   districts: District[];
 }
 
@@ -91,27 +86,33 @@ const useProvinces = (province: string, district: string) => {
   });
 
   const provinceSelections = (): SelectionObject[] => {
-    return provinces.data
+    let selections = provinces.data
       ? provinces.data.map((province) => {
           return { value: province.code, label: province.name };
         })
       : [];
+    selections.splice(0, 0, { value: '', label: 'Không có lựa chọn' });
+    return selections;
   };
 
   const districtSelections = (): SelectionObject[] => {
-    return districts.data
+    let selections = districts.data
       ? districts.data.districts.map((district) => {
           return { value: district.code, label: district.name };
         })
       : [];
+    selections.splice(0, 0, { value: '', label: 'Không có lựa chọn' });
+    return selections;
   };
 
   const wardSelections = (): SelectionObject[] => {
-    return wards.data
+    let selections = wards.data
       ? wards.data.wards.map((ward) => {
           return { value: ward.code, label: ward.name };
         })
       : [];
+    selections.splice(0, 0, { value: '', label: 'Không có lựa chọn' });
+    return selections;
   };
 
   return {
