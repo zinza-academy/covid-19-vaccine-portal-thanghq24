@@ -8,7 +8,9 @@ const ClientSideLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <>
       <Header />
-      <Container maxWidth="xl">{children}</Container>
+      <Container maxWidth="xl" sx={{ mt: 10 }}>
+        {children}
+      </Container>
       <Footer />
     </>
   );

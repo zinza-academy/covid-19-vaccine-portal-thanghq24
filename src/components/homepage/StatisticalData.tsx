@@ -64,7 +64,6 @@ const StatisticalData: FC = () => {
       direction="row"
       divider={<Divider orientation="vertical" flexItem />}
       sx={{
-        mt: '120px',
         backgroundColor: '#F7FBFE',
         padding: '16px 36px'
       }}>
