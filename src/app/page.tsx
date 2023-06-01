@@ -7,7 +7,7 @@ import { FC } from 'react';
 
 const Home: FC = () => {
   return (
-    <Stack spacing={4}>
+    <Stack spacing={4} py={4}>
       <StatisticalData />
       <DailyStatistics />
       <VaccinationPoint />
