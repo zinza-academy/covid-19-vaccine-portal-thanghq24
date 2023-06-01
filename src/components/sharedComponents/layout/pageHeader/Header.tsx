@@ -42,7 +42,7 @@ const Header: FC = () => {
             <NavMenuItem label="Trang chủ" url="/" />
             <NavMenuItem
               label="Đăng ký tiêm"
-              url="/register-for-vaccinations"
+              url="/portal/vaccine-registration"
             />
             <NavMenuItem
               label="Tra cứu"
