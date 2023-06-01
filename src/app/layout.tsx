@@ -8,6 +8,7 @@ import ClientSideLayout from '@components/sharedComponents/layout/ClientSideLayo
 const inter = Inter({ subsets: ['latin'] });
 
 import { Metadata } from 'next';
+import ReduxStoreProvider from '@src/utils/ReduxStoreProvider';
 
 export const metadata: Metadata = {
   title: 'Vaccine Portal'
@@ -18,11 +19,13 @@ const RootLayout: FC<PropsWithChildren> = ({ children }) => {
     <html lang="en">
       <body className={inter.className}>
         <main>
-          <TanStackQueryProvider>
-            <MUIThemeProvider>
-              <ClientSideLayout>{children}</ClientSideLayout>
-            </MUIThemeProvider>
-          </TanStackQueryProvider>
+          <ReduxStoreProvider>
+            <TanStackQueryProvider>
+              <MUIThemeProvider>
+                <ClientSideLayout>{children}</ClientSideLayout>
+              </MUIThemeProvider>
+            </TanStackQueryProvider>
+          </ReduxStoreProvider>
         </main>
       </body>
     </html>
