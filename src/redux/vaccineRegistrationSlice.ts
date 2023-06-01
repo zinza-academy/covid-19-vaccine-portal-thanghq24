@@ -1,14 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
-import dayjs from 'dayjs';
 
-export interface FormData {
-  priorityType: number | '';
-  healthInsuranceNumber: string;
+interface FormData {
+  priorityType: string;
+  healthInsuranceNumber: number | '';
   job: string;
   workplace: string;
   address: string;
-  appointmentDate: string | number | Date | dayjs.Dayjs | null | undefined;
+  appointmentDate: Date | '';
   dayPhase: string;
 }
 
@@ -18,7 +17,7 @@ const formState: FormData = {
   job: '',
   workplace: '',
   address: '',
-  appointmentDate: null,
+  appointmentDate: '',
   dayPhase: ''
 };
 
@@ -28,18 +27,14 @@ export const vaccineRegistrationFormSlice = createSlice({
   name: 'vaccineRegistrationForm',
   initialState,
   reducers: {
-    submitFormData: (state, action: PayloadAction<FormData>) => {
+    test: (state, action) => {
       return { ...state, ...action.payload };
-    },
-    resetForm: () => {
-      return { ...formState };
     }
   }
 });
 
 // To able to use reducers we need to export them.
-export const { submitFormData, resetForm } =
-  vaccineRegistrationFormSlice.actions;
+export const { test } = vaccineRegistrationFormSlice.actions;
 
 //Selector to access bookList state.
 export const selectVaccineRegistrationFormData = (state: RootState) =>

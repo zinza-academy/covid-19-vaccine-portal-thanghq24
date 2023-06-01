@@ -19,11 +19,13 @@ const RootLayout: FC<PropsWithChildren> = ({ children }) => {
     <html lang="en">
       <body className={inter.className}>
         <main>
-          <TanStackQueryProvider>
-            <MUIThemeProvider>
-              <ClientSideLayout>{children}</ClientSideLayout>
-            </MUIThemeProvider>
-          </TanStackQueryProvider>
+          <ReduxStoreProvider>
+            <TanStackQueryProvider>
+              <MUIThemeProvider>
+                <ClientSideLayout>{children}</ClientSideLayout>
+              </MUIThemeProvider>
+            </TanStackQueryProvider>
+          </ReduxStoreProvider>
         </main>
       </body>
     </html>
