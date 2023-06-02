@@ -76,7 +76,7 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
     resolver: yupResolver(schema)
   });
 
-  const canSubmit = isDirty && !isValid;
+  const canSubmit = !isDirty && !isValid;
 
   const onSubmit = (data: FormData) => {
     dispatch(submitFormData(data));
