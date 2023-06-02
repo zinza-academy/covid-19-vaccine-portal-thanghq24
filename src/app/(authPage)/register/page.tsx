@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import DateInput from '@src/components/sharedComponents/DateInput';
 import SelectInput from '@src/components/sharedComponents/SelectInput';
 import useProvinces from '@src/hooks/useProvinces';
+import dayjs from 'dayjs';
 
 interface FormData {
   citizenIdentification: string;
@@ -43,7 +44,7 @@ const schema = yup
     email: yup.string().email().required(),
     password: yup.string().trim().min(8).required(),
     fullName: yup.string().required(),
-    dob: yup.date().required(),
+    dob: yup.date().max(dayjs().subtract(5, 'year').toDate()).required(),
     gender: yup.string().max(1).required(),
     province: yup.string().required(),
     district: yup.string().required(),
