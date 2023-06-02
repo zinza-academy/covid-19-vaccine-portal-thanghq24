@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Stack, Step, StepLabel, Stepper } from '@mui/material';
+import ConfirmStep from '@src/components/portal/vaccine-registration/ConfirmStep';
 import PageTitle from '@src/components/portal/vaccine-registration/PageTitle';
 import PersonalInfoStep from '@src/components/portal/vaccine-registration/PersonalInfoStep';
 import { useRouter } from 'next/navigation';
@@ -59,7 +60,7 @@ const VaccineRegistration: FC = () => {
         return <PersonalInfoStep setStep={setStep} step={step} />;
       }
       case 1: {
-        break;
+        return <ConfirmStep setStep={setStep} step={step} />;
       }
       case 2: {
         break;
