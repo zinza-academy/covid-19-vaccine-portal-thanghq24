@@ -13,6 +13,7 @@ interface DateInput {
   label: string | undefined;
   placeholder: string;
   disableFuture: boolean | undefined;
+  disablePast: boolean | undefined;
   required: boolean | undefined;
 }
 
@@ -23,6 +24,7 @@ const DateInput: React.FC<DateInput> = ({
   label,
   placeholder = 'Ngày/Tháng/Năm',
   disableFuture,
+  disablePast,
   required
 }) => {
   return (
@@ -41,6 +43,7 @@ const DateInput: React.FC<DateInput> = ({
             adapterLocale="en-gb">
             <DatePicker
               disableFuture={disableFuture}
+              disablePast={disablePast}
               slotProps={{
                 textField: {
                   error: !!fieldState?.error,
