@@ -29,14 +29,17 @@ export const vaccineRegistrationFormSlice = createSlice({
   initialState,
   reducers: {
     submitFormData: (state, action: PayloadAction<FormData>) => {
-      console.log(action.payload);
       return { ...state, ...action.payload };
+    },
+    resetForm: () => {
+      return { ...formState };
     }
   }
 });
 
 // To able to use reducers we need to export them.
-export const { submitFormData } = vaccineRegistrationFormSlice.actions;
+export const { submitFormData, resetForm } =
+  vaccineRegistrationFormSlice.actions;
 
 //Selector to access bookList state.
 export const selectVaccineRegistrationFormData = (state: RootState) =>

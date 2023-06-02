@@ -4,6 +4,7 @@ import { Button, Stack, Step, StepLabel, Stepper } from '@mui/material';
 import ConfirmStep from '@src/components/portal/vaccine-registration/ConfirmStep';
 import PageTitle from '@src/components/portal/vaccine-registration/PageTitle';
 import PersonalInfoStep from '@src/components/portal/vaccine-registration/PersonalInfoStep';
+import ResultStep from '@src/components/portal/vaccine-registration/ResultStep';
 import { useRouter } from 'next/navigation';
 import React, { Dispatch, FC, SetStateAction, useState } from 'react';
 
@@ -31,7 +32,7 @@ export interface FormStepProps {
 
 const FormStepper: FC<FormStepProps> = ({ step, setStep }) => {
   return (
-    <Stepper activeStep={step} alternativeLabel>
+    <Stepper activeStep={step} alternativeLabel sx={{ pb: 4 }}>
       {STEPS.map((step, index) => (
         <Step key={step.key}>
           <StepLabel>{step.label}</StepLabel>
@@ -44,15 +45,6 @@ const FormStepper: FC<FormStepProps> = ({ step, setStep }) => {
 const VaccineRegistration: FC = () => {
   const router = useRouter();
   const [step, setStep] = useState<AvailableSteps>(0);
-  const goToHomepage = () => {
-    router.push('/');
-  };
-  const stepBack = () => {
-    setStep((prev) => (prev - 1) as AvailableSteps);
-  };
-  const stepForward = () => {
-    setStep((prev) => (prev + 1) as AvailableSteps);
-  };
 
   const renderStepForm = () => {
     switch (step) {
@@ -63,7 +55,7 @@ const VaccineRegistration: FC = () => {
         return <ConfirmStep setStep={setStep} step={step} />;
       }
       case 2: {
-        break;
+        return <ResultStep />;
       }
       default: {
         break;
@@ -75,26 +67,6 @@ const VaccineRegistration: FC = () => {
       <PageTitle />
       <FormStepper step={step} setStep={setStep} />
       {renderStepForm()}
-      {/* <Stack direction="row" spacing={2} justifyContent="center">
-        {step < 1 ? (
-          <Button variant="outlined" onClick={goToHomepage}>
-            Hủy bỏ
-          </Button>
-        ) : (
-          <Button variant="outlined" onClick={stepBack}>
-            Quay lại
-          </Button>
-        )}
-        {step > 1 ? (
-          <Button variant="contained" onClick={() => alert('try to submit!')}>
-            Hoàn thành
-          </Button>
-        ) : (
-          <Button variant="contained" onClick={stepForward}>
-            Tiếp tục
-          </Button>
-        )}
-      </Stack> */}
     </Stack>
   );
 };
