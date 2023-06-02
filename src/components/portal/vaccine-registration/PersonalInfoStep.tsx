@@ -76,7 +76,7 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
     resolver: yupResolver(schema)
   });
 
-  const canSubmit = !isDirty && isValid;
+  const canSubmit = isDirty && !isValid;
 
   const onSubmit = (data: FormData) => {
     dispatch(submitFormData(data));
@@ -187,7 +187,7 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
         <Button variant="outlined" onClick={goToHomepage}>
           Hủy bỏ
         </Button>
-        <Button type="submit" variant="contained">
+        <Button type="submit" variant="contained" disabled={canSubmit}>
           Tiếp tục
         </Button>
       </Stack>
