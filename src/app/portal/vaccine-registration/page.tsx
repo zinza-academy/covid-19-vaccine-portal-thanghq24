@@ -21,9 +21,9 @@ const STEPS = [
   }
 ];
 
-type AvailableSteps = 0 | 1 | 2;
+export type AvailableSteps = 0 | 1 | 2;
 
-interface FormStepProps {
+export interface FormStepProps {
   step: AvailableSteps;
   setStep: Dispatch<SetStateAction<AvailableSteps>>;
 }
@@ -56,7 +56,7 @@ const VaccineRegistration: FC = () => {
   const renderStepForm = () => {
     switch (step) {
       case 0: {
-        return <PersonalInfoStep />;
+        return <PersonalInfoStep setStep={setStep} step={step} />;
       }
       case 1: {
         break;
@@ -74,7 +74,7 @@ const VaccineRegistration: FC = () => {
       <PageTitle />
       <FormStepper step={step} setStep={setStep} />
       {renderStepForm()}
-      <Stack direction="row" spacing={2} justifyContent="center">
+      {/* <Stack direction="row" spacing={2} justifyContent="center">
         {step < 1 ? (
           <Button variant="outlined" onClick={goToHomepage}>
             Hủy bỏ
@@ -93,7 +93,7 @@ const VaccineRegistration: FC = () => {
             Tiếp tục
           </Button>
         )}
-      </Stack>
+      </Stack> */}
     </Stack>
   );
 };
