@@ -51,7 +51,7 @@ const schema = yup
     job: yup.string(),
     workplace: yup.string(),
     address: yup.string().trim(),
-    appointmentDate: yup.date().required(),
+    appointmentDate: yup.date().min(dayjs().add(1, 'day').toDate()).required(),
     dayPhase: yup.string().required()
   })
   .required();
@@ -76,7 +76,7 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
     resolver: yupResolver(schema)
   });
 
-  const canSubmit = !isDirty && !isValid;
+  const canSubmit = !isDirty || !isValid;
 
   const onSubmit = (data: FormData) => {
     dispatch(submitFormData(data));
@@ -158,6 +158,7 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
             label="Ngày muốn được tiêm (dự kiến)"
             placeholder="Ngày/Tháng/Năm"
             errorMessage="Ngày muốn được tiêm không được bỏ trống và hợp lý"
+            disablePast
             required
           />
         </Grid>
