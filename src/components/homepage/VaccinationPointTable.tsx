@@ -164,6 +164,8 @@ const VaccinationPointTable: FC = () => {
               borderRadius: '4px'
             }}>
             <Button
+              disabled={page === 0}
+              onClick={() => setPage(0)}
               sx={{
                 py: 1,
                 px: 2,
@@ -177,6 +179,7 @@ const VaccinationPointTable: FC = () => {
               <Typography variant="body2">{`<<`}</Typography>
             </Button>
             <Button
+              disabled={page === 0}
               onClick={() => setPage((prev) => prev - 1)}
               sx={{
                 py: 1,
@@ -210,6 +213,9 @@ const VaccinationPointTable: FC = () => {
               </Button>
             ))}
             <Button
+              disabled={
+                page === Math.floor(vaccinationPointList.length / pageSize)
+              }
               onClick={() => setPage((prev) => prev + 1)}
               sx={{
                 py: 1,
@@ -224,6 +230,9 @@ const VaccinationPointTable: FC = () => {
               <Typography variant="body2">{`>`}</Typography>
             </Button>
             <Button
+              disabled={
+                page === Math.floor(vaccinationPointList.length / pageSize)
+              }
               onClick={() =>
                 setPage(Math.floor(vaccinationPointList.length / pageSize))
               }
