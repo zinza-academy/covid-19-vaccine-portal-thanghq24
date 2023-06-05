@@ -6,10 +6,26 @@ export interface UserData {
   fullName: string;
   healthInsuranceNumber: string;
   dob: string | number | Date | dayjs.Dayjs | null | undefined;
+  gender: string | null;
   citizenIdentification: string;
   province: string;
   district: string;
   ward: string;
+}
+
+export interface PersonalInfoFormData {
+  citizenIdentification: string;
+  fullName: string;
+  dob: string | number | Date | dayjs.Dayjs | null | undefined;
+  gender: string | null;
+  province: string;
+  district: string;
+  ward: string;
+}
+
+interface PasswordFormData {
+  password: string;
+  confirmPassword: string;
 }
 
 const userData: UserData = {
@@ -17,6 +33,7 @@ const userData: UserData = {
   healthInsuranceNumber: '',
   fullName: '',
   dob: null,
+  gender: null,
   province: '',
   district: '',
   ward: ''
@@ -33,11 +50,14 @@ export const userSlice = createSlice({
     },
     logout: () => {
       return { ...userData };
+    },
+    updateUserData: (state, action: PayloadAction<PersonalInfoFormData>) => {
+      return { ...state, ...action.payload };
     }
   }
 });
 
-export const { login, logout } = userSlice.actions;
+export const { login, logout, updateUserData } = userSlice.actions;
 
 export const selectUserData = (state: RootState) => state.user;
 

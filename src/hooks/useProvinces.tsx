@@ -87,7 +87,7 @@ const useProvinces = (province: string, district: string) => {
 
   const provinceSelections = (): SelectionObject[] => {
     let selections = provinces.data
-      ? provinces.data.map((province) => {
+      ? provinces?.data.map((province) => {
           return { value: province.code, label: province.name };
         })
       : [];
@@ -97,7 +97,7 @@ const useProvinces = (province: string, district: string) => {
 
   const districtSelections = (): SelectionObject[] => {
     let selections = districts.data
-      ? districts.data.districts.map((district) => {
+      ? districts?.data?.districts.map((district) => {
           return { value: district.code, label: district.name };
         })
       : [];
@@ -107,7 +107,7 @@ const useProvinces = (province: string, district: string) => {
 
   const wardSelections = (): SelectionObject[] => {
     let selections = wards.data
-      ? wards.data.wards.map((ward) => {
+      ? wards?.data?.wards.map((ward) => {
           return { value: ward.code, label: ward.name };
         })
       : [];

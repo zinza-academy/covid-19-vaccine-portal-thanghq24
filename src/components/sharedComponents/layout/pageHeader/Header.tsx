@@ -1,6 +1,5 @@
 import {
   AppBar,
-  Box,
   Button,
   Container,
   MenuItem,
@@ -14,8 +13,11 @@ import NavMenuItem from './NavMenuItem';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { blue, indigo, purple } from '@mui/material/colors';
 import Link from 'next/link';
+import { useAppSelector } from '@src/hooks/reduxHook';
+import { selectUserData } from '@src/redux/userSlice';
 
 const Header: FC = () => {
+  const userData = useAppSelector(selectUserData);
   return (
     <AppBar
       sx={{
@@ -65,21 +67,27 @@ const Header: FC = () => {
               ]}
             />
             <NavMenuItem label="Tài liệu" url="/user-manual" />
-            <Link href="/login">
-              <Button
-                variant="outlined"
-                size="large"
-                sx={{
-                  backgroundColor: '#fff',
-                  '&:hover': {
-                    backgroundColor: indigo[600],
-                    borderColor: '#fff',
-                    color: '#fff'
-                  }
-                }}>
-                Đăng nhập
-              </Button>
-            </Link>
+            {userData.fullName ? (
+              <MenuItem>
+                <Typography>{userData.fullName}</Typography>
+              </MenuItem>
+            ) : (
+              <Link href="/login">
+                <Button
+                  variant="outlined"
+                  size="large"
+                  sx={{
+                    backgroundColor: '#fff',
+                    '&:hover': {
+                      backgroundColor: indigo[600],
+                      borderColor: '#fff',
+                      color: '#fff'
+                    }
+                  }}>
+                  Đăng nhập
+                </Button>
+              </Link>
+            )}
           </Stack>
         </Stack>
       </Container>
