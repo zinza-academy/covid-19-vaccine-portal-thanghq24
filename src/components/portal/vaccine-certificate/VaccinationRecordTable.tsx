@@ -8,6 +8,7 @@ import {
   Typography,
   styled
 } from '@mui/material';
+import { InjectionRecord } from '@src/app/(mainPage)/portal/(accountPage)/vaccine-certificate/page';
 import React, { FC } from 'react';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -41,30 +42,19 @@ const TableBodyCell: FC<{ label: string | number }> = ({ label }) => {
   );
 };
 
-//data from api
-const fetchData = () => {
-  return [
-    {
-      injectionTime: '08/09/2021 - 16:56',
-      vaccineType: '	COVID-19 Vaccine AstraZeneca',
-      batchNumber: 'NJ0342',
-      vaccinationPoint: 'TYT Dịch Vọng Hậu'
-    },
-    {
-      injectionTime: '08/02/2022 - 04:23',
-      vaccineType: '	COVID-19 Vaccine AstraZeneca',
-      batchNumber: 'NJ0343',
-      vaccinationPoint: 'TYT Dịch Vọng Hậu'
-    }
-  ];
-};
+interface VaccinationRecordTableProps {
+  injectionRecordList: InjectionRecord[];
+}
 
-const VaccinationRecordTable: FC = () => {
+const VaccinationRecordTable: FC<VaccinationRecordTableProps> = ({
+  injectionRecordList
+}) => {
   return (
     <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
+            <TableHeadCell label="STT" />
             <TableHeadCell label="Mũi số" />
             <TableHeadCell label="Thời gian tiêm" />
             <TableHeadCell label="Tên vắc xin" />
@@ -72,8 +62,9 @@ const VaccinationRecordTable: FC = () => {
             <TableHeadCell label="Nơi tiêm" />
           </TableRow>
         </TableHead>
+
         <TableBody>
-          {fetchData().map((vaccinationRecord, index) => (
+          {injectionRecordList.map((vaccinationRecord, index) => (
             <StyledTableRow key={index}>
               <TableBodyCell label={index + 1} />
               <TableBodyCell label={vaccinationRecord.injectionTime} />
@@ -84,6 +75,11 @@ const VaccinationRecordTable: FC = () => {
           ))}
         </TableBody>
       </Table>
+      {injectionRecordList.length === 0 && (
+        <Typography variant="h6" textAlign="center">
+          Không có bản ghi nào
+        </Typography>
+      )}
     </TableContainer>
   );
 };

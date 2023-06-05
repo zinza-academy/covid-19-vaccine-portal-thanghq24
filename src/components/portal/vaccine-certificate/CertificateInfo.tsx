@@ -4,8 +4,13 @@ import { Button, Grid, Stack, Typography } from '@mui/material';
 import React, { FC } from 'react';
 import VaccinationRecordTable from './VaccinationRecordTable';
 import Link from 'next/link';
+import { InjectionRecord } from '@src/app/(mainPage)/portal/(accountPage)/vaccine-certificate/page';
 
-const CertificateInfo: FC = () => {
+interface CertificateInfoProps {
+  injectionRecordList: InjectionRecord[];
+}
+
+const CertificateInfo: FC<CertificateInfoProps> = ({ injectionRecordList }) => {
   return (
     <Stack spacing={2}>
       <Stack alignItems="center">
@@ -63,7 +68,7 @@ const CertificateInfo: FC = () => {
           </Typography>
         </Grid>
       </Grid>
-      <VaccinationRecordTable />
+      <VaccinationRecordTable injectionRecordList={injectionRecordList} />
       <Stack alignItems="center">
         <Link href="/portal/vaccine-registration">
           <Button variant="contained">Đăng ký mũi tiêm tiếp theo</Button>

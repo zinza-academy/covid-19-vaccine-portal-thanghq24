@@ -8,21 +8,31 @@ import QRImage from '@public/images/frame 1.png';
 import Person from '@public/images/person.png';
 import Date from '@public/images/date_range.png';
 import IDCard from '@public/images/featured_video.png';
-import { green } from '@mui/material/colors';
+import { green, orange, red, yellow } from '@mui/material/colors';
+import { InjectionRecord } from '@src/app/(mainPage)/portal/(accountPage)/vaccine-certificate/page';
 
-const CertificateCard: FC = () => {
+interface CertificateCardProps {
+  injectionRecordList: InjectionRecord[];
+}
+
+const CertificateCard: FC<CertificateCardProps> = ({ injectionRecordList }) => {
+  const getCertificationCardColor = () => {
+    if (injectionRecordList.length === 0) return red[700];
+    if (injectionRecordList.length === 1) return orange[600];
+    if (injectionRecordList.length >= 1) return green[500];
+  };
   return (
     <Paper
       elevation={3}
       sx={{
         color: '#fff',
-        backgroundColor: green[500],
+        backgroundColor: getCertificationCardColor(),
         borderRadius: 2
       }}>
       <Stack spacing={2} alignItems={'center'} padding={4}>
         <Image src={LogoImage} alt="Logo" width={100} height={100} />
         <Typography variant="h5" textAlign="center">
-          ĐÃ TIÊM 2 MŨI VẮC XIN
+          ĐÃ TIÊM {injectionRecordList.length} MŨI VẮC XIN
         </Typography>
         <Image src={QRImage} alt="Logo" width={196} height={196} />
         <Stack
