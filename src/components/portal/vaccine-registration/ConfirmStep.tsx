@@ -10,7 +10,7 @@ import {
 import {
   AvailableSteps,
   FormStepProps
-} from '@src/app/portal/vaccine-registration/page';
+} from '@src/app/(mainPage)/portal/vaccine-registration/page';
 import React, { FC, useState } from 'react';
 import Shield from '@public/images/shield 1.png';
 import Vaccine from '@public/images/vaccine2 1.png';

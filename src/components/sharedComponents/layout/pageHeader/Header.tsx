@@ -13,6 +13,7 @@ import LogoImage from '@public/images/logo.png';
 import NavMenuItem from './NavMenuItem';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { blue, indigo, purple } from '@mui/material/colors';
+import Link from 'next/link';
 
 const Header: FC = () => {
   return (
@@ -64,19 +65,21 @@ const Header: FC = () => {
               ]}
             />
             <NavMenuItem label="Tài liệu" url="/user-manual" />
-            <Button
-              variant="outlined"
-              size="large"
-              sx={{
-                backgroundColor: '#fff',
-                '&:hover': {
-                  backgroundColor: indigo[600],
-                  borderColor: '#fff',
-                  color: '#fff'
-                }
-              }}>
-              Đăng nhập
-            </Button>
+            <Link href="/register">
+              <Button
+                variant="outlined"
+                size="large"
+                sx={{
+                  backgroundColor: '#fff',
+                  '&:hover': {
+                    backgroundColor: indigo[600],
+                    borderColor: '#fff',
+                    color: '#fff'
+                  }
+                }}>
+                Đăng nhập
+              </Button>
+            </Link>
           </Stack>
         </Stack>
       </Container>

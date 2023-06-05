@@ -18,7 +18,7 @@ import { red } from '@mui/material/colors';
 import {
   AvailableSteps,
   FormStepProps
-} from '@src/app/portal/vaccine-registration/page';
+} from '@src/app/(mainPage)/portal/vaccine-registration/page';
 import { useRouter } from 'next/navigation';
 import DateInput from '@src/components/sharedComponents/DateInput';
 import dayPhases from '@src/utils/constants/dayPhases';
