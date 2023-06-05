@@ -51,7 +51,7 @@ const Header: FC = () => {
                 {
                   label: 'Tra cứu chứng nhận tiêm',
                   subLabel: 'Cập nhật nhanh và chính xác nhất',
-                  url: '/portal/search',
+                  url: '/portal/vaccine-certificate',
                   icon: <PeopleAltIcon />,
                   color: purple[600]
                 },
@@ -65,7 +65,7 @@ const Header: FC = () => {
               ]}
             />
             <NavMenuItem label="Tài liệu" url="/user-manual" />
-            <Link href="/register">
+            <Link href="/login">
               <Button
                 variant="outlined"
                 size="large"
