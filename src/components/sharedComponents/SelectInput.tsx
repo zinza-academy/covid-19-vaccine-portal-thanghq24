@@ -57,12 +57,6 @@ const SelectInput: FC<SelectInput> = ({
                 : {}
             }}
             {...field}>
-            {/* placeholder solution 2 */}
-            {/* {field.value === 'none' ? (
-              <MenuItem value="none" disabled>
-                {placeholder}
-              </MenuItem>
-            ) : null} */}
             {selections.map((selection, index) => (
               <MenuItem key={index} value={selection.value}>
                 {selection.label}

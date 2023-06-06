@@ -66,6 +66,13 @@ const AccountMenuItem: FC = () => {
                 icon={<BadgeIcon />}
                 color={blue[600]}
               />
+              <NavSubMenuItem
+                label="Quản trị viên"
+                subLabel="Thao tác quản trị viên"
+                url="/admin/vaccination-registration"
+                icon={<BadgeIcon />}
+                color={blue[600]}
+              />
               <MenuItem
                 onClick={handleLogout}
                 sx={{ px: 3, borderRadius: '12px' }}>
