@@ -122,7 +122,6 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
             control={control}
             label="Nghề nghiệp"
             placeholder="Nghề nghiệp"
-            // errorMessage="Nghề nghiệp không được bỏ trống"
             selections={jobs}
           />
         </Grid>
@@ -132,7 +131,6 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
             control={control}
             label="Đơn vị công tác"
             placeholder="Đơn vị công tác"
-            // errorMessage="Đơn vị công tác không được bỏ trống"
           />
         </Grid>
         <Grid item xs={4}>
@@ -141,7 +139,6 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
             control={control}
             label="Địa chỉ hiện tại"
             placeholder="Địa chỉ hiện tại"
-            // errorMessage="Nhóm ưu tiên không được bỏ trống"
           />
         </Grid>
       </Grid>

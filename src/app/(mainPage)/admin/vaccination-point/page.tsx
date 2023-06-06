@@ -2,7 +2,7 @@
 
 import React, { FC } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Stack } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import TextInput from '@src/components/sharedComponents/TextInput';
@@ -22,11 +22,7 @@ const schema = yup
   .required();
 
 const VaccinationPoint: FC = () => {
-  const {
-    control,
-    handleSubmit,
-    formState: {}
-  } = useForm<SearchFormData>({
+  const { control, handleSubmit } = useForm<SearchFormData>({
     defaultValues: {
       name: '',
       address: ''
@@ -41,22 +37,25 @@ const VaccinationPoint: FC = () => {
       <Stack
         spacing={2}
         direction="row"
-        alignItems="end"
         component="form"
         onSubmit={handleSubmit(onSubmit)}>
-        <TextInput
-          control={control}
-          name="name"
-          placeholder="Điểm tiêm"
-          size="small"
-        />
-        <TextInput
-          control={control}
-          name="address"
-          placeholder="Địa chỉ"
-          required
-          size="small"
-        />
+        <Box sx={{ width: '260px' }}>
+          <TextInput
+            control={control}
+            name="name"
+            placeholder="Điểm tiêm"
+            size="small"
+          />
+        </Box>
+        <Box sx={{ width: '260px' }}>
+          <TextInput
+            control={control}
+            name="address"
+            placeholder="Địa chỉ"
+            required
+            size="small"
+          />
+        </Box>
         <Button type="submit" variant="contained">
           Tìm kiếm
         </Button>
