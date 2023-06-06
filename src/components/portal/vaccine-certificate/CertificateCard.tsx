@@ -12,14 +12,14 @@ import { green, orange, red, yellow } from '@mui/material/colors';
 import { InjectionRecord } from '@src/app/(mainPage)/portal/(accountPage)/vaccine-certificate/page';
 
 interface CertificateCardProps {
-  injectionRecordList: InjectionRecord[];
+  injectionRecords: InjectionRecord[];
 }
 
-const CertificateCard: FC<CertificateCardProps> = ({ injectionRecordList }) => {
+const CertificateCard: FC<CertificateCardProps> = ({ injectionRecords }) => {
   const getCertificationCardColor = () => {
-    if (injectionRecordList.length === 0) return red[700];
-    if (injectionRecordList.length === 1) return orange[600];
-    if (injectionRecordList.length >= 1) return green[500];
+    if (injectionRecords.length === 0) return red[700];
+    if (injectionRecords.length === 1) return orange[600];
+    if (injectionRecords.length >= 1) return green[500];
   };
   return (
     <Paper
@@ -32,7 +32,7 @@ const CertificateCard: FC<CertificateCardProps> = ({ injectionRecordList }) => {
       <Stack spacing={2} alignItems={'center'} padding={4}>
         <Image src={LogoImage} alt="Logo" width={100} height={100} />
         <Typography variant="h5" textAlign="center">
-          ĐÃ TIÊM {injectionRecordList.length} MŨI VẮC XIN
+          ĐÃ TIÊM {injectionRecords.length} MŨI VẮC XIN
         </Typography>
         <Image src={QRImage} alt="Logo" width={196} height={196} />
         <Stack

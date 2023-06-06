@@ -37,6 +37,7 @@ const agreements = [
 
 const ConfirmStep: FC<FormStepProps> = ({ setStep }) => {
   const [agreement, setAgreement] = useState(false);
+
   const handleChange = () => {
     setAgreement((prev) => !prev);
   };
@@ -46,6 +47,7 @@ const ConfirmStep: FC<FormStepProps> = ({ setStep }) => {
   const stepForward = () => {
     setStep((prev) => (prev + 1) as AvailableSteps);
   };
+
   return (
     <Stack spacing={2}>
       <Stack divider={<Divider sx={{ my: 2 }} />}>

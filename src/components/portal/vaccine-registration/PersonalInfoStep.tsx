@@ -64,8 +64,6 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
   const {
     control,
     handleSubmit,
-    getValues,
-    watch,
     formState: { isDirty, isValid }
   } = useForm<FormData>({
     mode: 'onChange',

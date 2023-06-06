@@ -43,18 +43,17 @@ const TableBodyCell: FC<{ label: string | number }> = ({ label }) => {
 };
 
 interface VaccinationRecordTableProps {
-  injectionRecordList: InjectionRecord[];
+  injectionRecords: InjectionRecord[];
 }
 
 const VaccinationRecordTable: FC<VaccinationRecordTableProps> = ({
-  injectionRecordList
+  injectionRecords
 }) => {
   return (
     <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeadCell label="STT" />
             <TableHeadCell label="Mũi số" />
             <TableHeadCell label="Thời gian tiêm" />
             <TableHeadCell label="Tên vắc xin" />
@@ -64,7 +63,7 @@ const VaccinationRecordTable: FC<VaccinationRecordTableProps> = ({
         </TableHead>
 
         <TableBody>
-          {injectionRecordList.map((vaccinationRecord, index) => (
+          {injectionRecords.map((vaccinationRecord, index) => (
             <StyledTableRow key={index}>
               <TableBodyCell label={index + 1} />
               <TableBodyCell label={vaccinationRecord.injectionTime} />
@@ -75,7 +74,7 @@ const VaccinationRecordTable: FC<VaccinationRecordTableProps> = ({
           ))}
         </TableBody>
       </Table>
-      {injectionRecordList.length === 0 && (
+      {!injectionRecords.length && (
         <Typography variant="h6" textAlign="center">
           Không có bản ghi nào
         </Typography>

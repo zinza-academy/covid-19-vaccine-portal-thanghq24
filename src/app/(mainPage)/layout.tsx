@@ -2,11 +2,7 @@ import ClientSideLayout from '@src/components/sharedComponents/layout/ClientSide
 import React, { FC, PropsWithChildren } from 'react';
 
 const MainPageLayout: FC<PropsWithChildren> = ({ children }) => {
-  return (
-    <>
-      <ClientSideLayout>{children}</ClientSideLayout>
-    </>
-  );
+  return <ClientSideLayout>{children}</ClientSideLayout>;
 };
 
 export default MainPageLayout;

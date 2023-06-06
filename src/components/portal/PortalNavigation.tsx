@@ -1,8 +1,20 @@
 'use client';
 
-import { Tab, Tabs, styled } from '@mui/material';
-import { usePathname, useRouter } from 'next/navigation';
+import { BorderBottom } from '@mui/icons-material';
+import {
+  Box,
+  Divider,
+  MenuItem,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+  styled
+} from '@mui/material';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import React, { FC, useEffect } from 'react';
+import { forwardRef } from 'react';
 
 const tabs = [
   {
@@ -38,35 +50,47 @@ const CustomTab = styled(Tab)({
 
 const PortalNavigation: FC = () => {
   const pathname = usePathname();
-  const router = useRouter();
 
   const [tab, setTab] = React.useState<number | null>(null);
 
+  const getPath = () => {
+    const paths = pathname.split('/');
+    return paths[paths.length - 1];
+  };
+
   useEffect(() => {
     const getSelectedTab = () => {
-      const paths = pathname.split('/');
-      const selectedTab = tabs.findIndex(
-        (tab) => tab.path === paths[paths.length - 1]
-      );
+      const selectedTab = tabs.findIndex((tab) => tab.path === getPath());
       return selectedTab;
     };
     setTab(getSelectedTab);
   }, [pathname]);
 
-  const handleClick = (path: string) => {
-    router.push(`/portal/${path}`);
-  };
-
   return (
-    <CustomTabs value={tab}>
-      {tabs.map((tab, index) => (
-        <CustomTab
+    <Stack direction="row">
+      {tabs.map((t, index) => (
+        // <Link key={index} href={`/portal/${tab.path}`} passHref>
+        //   <CustomTab label={tab.label} />
+        // </Link>
+        <Link
           key={index}
-          label={tab.label}
-          onClick={() => handleClick(tab.path)}
-        />
+          href={`/portal/${t.path}`}
+          passHref
+          style={{
+            color: t.path === getPath() ? '#000' : 'rgba(0, 0, 0, 0.6)',
+            borderBottom: t.path === getPath() ? '2px solid #000' : '0'
+          }}>
+          <Stack
+            sx={{
+              height: '48px',
+              justifyContent: 'center',
+              padding: '0 16px'
+            }}>
+            {t.label}
+          </Stack>
+        </Link>
       ))}
-    </CustomTabs>
+    </Stack>
   );
 };
 

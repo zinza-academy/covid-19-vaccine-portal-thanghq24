@@ -7,10 +7,10 @@ import Link from 'next/link';
 import { InjectionRecord } from '@src/app/(mainPage)/portal/(accountPage)/vaccine-certificate/page';
 
 interface CertificateInfoProps {
-  injectionRecordList: InjectionRecord[];
+  injectionRecords: InjectionRecord[];
 }
 
-const CertificateInfo: FC<CertificateInfoProps> = ({ injectionRecordList }) => {
+const CertificateInfo: FC<CertificateInfoProps> = ({ injectionRecords }) => {
   return (
     <Stack spacing={2}>
       <Stack alignItems="center">
@@ -68,7 +68,7 @@ const CertificateInfo: FC<CertificateInfoProps> = ({ injectionRecordList }) => {
           </Typography>
         </Grid>
       </Grid>
-      <VaccinationRecordTable injectionRecordList={injectionRecordList} />
+      <VaccinationRecordTable injectionRecords={injectionRecords} />
       <Stack alignItems="center">
         <Link href="/portal/vaccine-registration">
           <Button variant="contained">Đăng ký mũi tiêm tiếp theo</Button>
