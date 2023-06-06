@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import { forwardRef } from 'react';
 
 const tabs = [
@@ -51,19 +51,9 @@ const CustomTab = styled(Tab)({
 const PortalNavigation: FC = () => {
   const pathname = usePathname();
 
-  const [tab, setTab] = React.useState<number | null>(null);
-
-  const getPath = () => {
+  const getPath = useCallback(() => {
     const paths = pathname.split('/');
     return paths[paths.length - 1];
-  };
-
-  useEffect(() => {
-    const getSelectedTab = () => {
-      const selectedTab = tabs.findIndex((tab) => tab.path === getPath());
-      return selectedTab;
-    };
-    setTab(getSelectedTab);
   }, [pathname]);
 
   return (
