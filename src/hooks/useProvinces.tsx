@@ -72,7 +72,7 @@ const useProvinces = (province: string, district: string) => {
   });
 
   const wards = useQuery<WardResult>({
-    queryKey: ['district', district],
+    queryKey: ['ward', district],
     queryFn: async () => {
       const response = await fetch(
         `https://provinces.open-api.vn/api/d/${district}?depth=2`
@@ -106,7 +106,7 @@ const useProvinces = (province: string, district: string) => {
   };
 
   const wardSelections = (): SelectionObject[] => {
-    let selections = wards.data
+    let selections = wards.isSuccess
       ? wards?.data?.wards.map((ward) => {
           return { value: ward.code, label: ward.name };
         })

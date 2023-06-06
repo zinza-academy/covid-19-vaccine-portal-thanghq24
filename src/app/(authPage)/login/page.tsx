@@ -60,9 +60,10 @@ const Login: FC = () => {
           healthInsuranceNumber: 'hd0910912332543', //need to add healthInsuranceNumber to register
           fullName: 'Ha Quoc Thang',
           dob: '07/05/1954',
-          province: 'Hanoi',
-          district: 'Hai Ba Trung',
-          ward: 'Minh Khai'
+          gender: 'M',
+          province: '1',
+          district: '1',
+          ward: '1'
         })
       );
       alert(
