@@ -15,6 +15,7 @@ import { blue, indigo, purple } from '@mui/material/colors';
 import Link from 'next/link';
 import { useAppSelector } from '@src/hooks/reduxHook';
 import { selectUserData } from '@src/redux/userSlice';
+import AccountMenuItem from './AccountMenuItem';
 
 const Header: FC = () => {
   const userData = useAppSelector(selectUserData);
@@ -67,7 +68,8 @@ const Header: FC = () => {
               ]}
             />
             <NavMenuItem label="Tài liệu" url="/user-manual" />
-            {userData.fullName ? (
+            <AccountMenuItem />
+            {/* {userData.fullName ? (
               <MenuItem>
                 <Typography>{userData.fullName}</Typography>
               </MenuItem>
@@ -87,7 +89,7 @@ const Header: FC = () => {
                   Đăng nhập
                 </Button>
               </Link>
-            )}
+            )} */}
           </Stack>
         </Stack>
       </Container>

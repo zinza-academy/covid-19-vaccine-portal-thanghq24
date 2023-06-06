@@ -48,8 +48,9 @@ export const userSlice = createSlice({
     login: (state, action: PayloadAction<UserData>) => {
       return { ...state, ...action.payload };
     },
-    logout: () => {
-      return { ...userData };
+    logout: (state) => {
+      state = userData;
+      return state;
     },
     updateUserData: (state, action: PayloadAction<PersonalInfoFormData>) => {
       return { ...state, ...action.payload };
