@@ -1,3 +1,5 @@
+'use client';
+
 import { styled } from '@mui/material/styles';
 import {
   Button,
@@ -17,6 +19,8 @@ import {
 import React, { FC, useState } from 'react';
 import { indigo } from '@mui/material/colors';
 import EditModal from '@components/admin/vaccination-point/EditModal';
+import dayjs from 'dayjs';
+import dayPhases from '@src/utils/constants/dayPhases';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -27,30 +31,26 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }
 }));
 
-export interface VaccinationPoint {
-  name: string;
-  address: string;
-  ward: string;
-  district: string;
-  province: string;
-  manager: string;
-  tableNumber: number;
+export interface VaccinationRegistration {
+  priorityType: number;
+  healthInsuranceNumber: string;
+  job: string;
+  appointmentDate: string | number | Date | dayjs.Dayjs | null | undefined;
+  dayPhase: number;
 }
 
-const vaccinationPoint: VaccinationPoint = {
-  name: 'Bệnh viện Đa khoa Medlatec',
-  address: '42-44 Nghĩa Dũng',
-  ward: 'Phúc Xá',
-  district: 'Quận Ba Đình',
-  province: 'Thành phố Hà Nội',
-  manager: 'Nguyễn Thị Kim Liên',
-  tableNumber: 8
+const vaccinationRegistration: VaccinationRegistration = {
+  priorityType: 1,
+  healthInsuranceNumber: 'HD203473829293',
+  job: 'Nhóm ngành Sư phạm',
+  appointmentDate: dayjs().format('DD/MM/YYYY'),
+  dayPhase: 1
 };
 
 const PAGE_SIZES = [10, 20, 50];
 
-const vaccinationPoints = new Array<VaccinationPoint>(32).fill(
-  vaccinationPoint
+const vaccinationRegistrations = new Array<VaccinationRegistration>(32).fill(
+  vaccinationRegistration
 );
 
 const TableHeadCell: FC<{ label: string }> = ({ label }) => {
@@ -72,25 +72,29 @@ const TableBodyCell: FC<{ label: string | number }> = ({ label }) => {
 };
 
 const fetchData = (page: number, pageSize: number) => {
-  return vaccinationPoints.slice(page * pageSize, page * pageSize + pageSize);
+  return vaccinationRegistrations.slice(
+    page * pageSize,
+    page * pageSize + pageSize
+  );
 };
 
 const getEmptyRows = (page: number, pageSize: number) => {
-  const maxPage = Math.floor(vaccinationPoints.length / pageSize);
+  const maxPage = Math.floor(vaccinationRegistrations.length / pageSize);
 
   if (page !== maxPage || page === 0) return [];
   const lastPageItemNumber = fetchData(maxPage, pageSize);
   return new Array(pageSize - lastPageItemNumber.length).fill('empty');
 };
 
-const VaccinationPointTable: FC = () => {
+const VaccinationRegistrationTable: FC = () => {
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(10);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
-  const [selectedPoint, setSelectedPoint] = useState<VaccinationPoint | null>();
+  const [selectedPoint, setSelectedPoint] =
+    useState<VaccinationRegistration | null>();
 
   const getPageOptions = () => {
-    const maxPage = Math.floor(vaccinationPoints.length / pageSize);
+    const maxPage = Math.floor(vaccinationRegistrations.length / pageSize);
     let pageOptions = [];
     for (let i = 0; i <= maxPage; i++) {
       pageOptions.push(i);
@@ -98,8 +102,10 @@ const VaccinationPointTable: FC = () => {
     return pageOptions;
   };
 
-  const handleOpenEditModal = (vaccinationPoint: VaccinationPoint) => {
-    setSelectedPoint(vaccinationPoint);
+  const handleOpenEditModal = (
+    vaccinationRegistration: VaccinationRegistration
+  ) => {
+    setSelectedPoint(vaccinationRegistration);
     setEditModalOpen(true);
   };
 
@@ -114,32 +120,41 @@ const VaccinationPointTable: FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableHeadCell label="STT" />
-              <TableHeadCell label="Tên điểm tiêm" />
-              <TableHeadCell label="Số nhà, tên đường" />
-              <TableHeadCell label="Xã/Phường" />
-              <TableHeadCell label="Quận/Huyện" />
-              <TableHeadCell label="Tỉnh/Thành phố" />
-              <TableHeadCell label="Người đứng đầu cơ sở tiêm chủng" />
-              <TableHeadCell label="Số bàn tiêm" />
+              <TableHeadCell label="Nhóm ưu tiên" />
+              <TableHeadCell label="Số thẻ BHYT" />
+              <TableHeadCell label="Nghề nghiệp" />
+              <TableHeadCell label="Ngày muốn được tiêm (dự kiến)" />
+              <TableHeadCell label="Buổi tiêm mong muốn" />
             </TableRow>
           </TableHead>
           <TableBody>
             {fetchData(page, pageSize)
               .concat(getEmptyRows(page, pageSize))
-              .map((vaccinationPoint, index) => (
+              .map((vaccinationRegistration, index) => (
                 <StyledTableRow
                   key={index}
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => handleOpenEditModal(vaccinationPoint)}>
-                  <TableBodyCell label={index + 1} />
-                  <TableBodyCell label={vaccinationPoint.name} />
-                  <TableBodyCell label={vaccinationPoint.address} />
-                  <TableBodyCell label={vaccinationPoint.ward} />
-                  <TableBodyCell label={vaccinationPoint.district} />
-                  <TableBodyCell label={vaccinationPoint.province} />
-                  <TableBodyCell label={vaccinationPoint.manager} />
-                  <TableBodyCell label={vaccinationPoint.tableNumber} />
+                  sx={{ cursor: 'pointer', height: '54px' }}
+                  onClick={() => handleOpenEditModal(vaccinationRegistration)}>
+                  <TableBodyCell label={vaccinationRegistration.priorityType} />
+                  <TableBodyCell
+                    label={vaccinationRegistration.healthInsuranceNumber}
+                  />
+                  <TableBodyCell label={vaccinationRegistration.job} />
+                  <TableBodyCell
+                    label={vaccinationRegistration.appointmentDate as string}
+                  />
+                  <TableBodyCell
+                    label={
+                      vaccinationRegistration.dayPhase
+                        ? dayPhases[
+                            dayPhases.findIndex(
+                              (phase) =>
+                                phase.value === vaccinationRegistration.dayPhase
+                            )
+                          ].label
+                        : ''
+                    }
+                  />
                 </StyledTableRow>
               ))}
           </TableBody>
@@ -164,7 +179,7 @@ const VaccinationPointTable: FC = () => {
           </Select>
           <Typography variant="body2">{`${page * pageSize + 1} - ${
             page * pageSize + pageSize
-          }/${vaccinationPoints.length}`}</Typography>
+          }/${vaccinationRegistrations.length}`}</Typography>
         </Stack>
         <Stack direction="row" alignItems="center">
           <Stack
@@ -227,7 +242,7 @@ const VaccinationPointTable: FC = () => {
             ))}
             <Button
               disabled={
-                page === Math.floor(vaccinationPoints.length / pageSize)
+                page === Math.floor(vaccinationRegistrations.length / pageSize)
               }
               onClick={() => setPage((prev) => prev + 1)}
               sx={{
@@ -244,10 +259,10 @@ const VaccinationPointTable: FC = () => {
             </Button>
             <Button
               disabled={
-                page === Math.floor(vaccinationPoints.length / pageSize)
+                page === Math.floor(vaccinationRegistrations.length / pageSize)
               }
               onClick={() =>
-                setPage(Math.floor(vaccinationPoints.length / pageSize))
+                setPage(Math.floor(vaccinationRegistrations.length / pageSize))
               }
               sx={{
                 py: 1,
@@ -264,13 +279,13 @@ const VaccinationPointTable: FC = () => {
           </Stack>
         </Stack>
       </Stack>
-      <EditModal
+      {/* <EditModal
         editModalOpen={editModalOpen}
         handleCloseEditModal={handleCloseEditModal}
-        vaccinationPoint={selectedPoint}
-      />
+        vaccinationRegistration={selectedPoint}
+      /> */}
     </Stack>
   );
 };
 
-export default VaccinationPointTable;
+export default VaccinationRegistrationTable;

@@ -16,6 +16,7 @@ interface DateInput {
   disableFuture: boolean | undefined;
   disablePast: boolean | undefined;
   required: boolean | undefined;
+  size: 'small' | 'medium';
 }
 
 const DateInput: React.FC<DateInput> = ({
@@ -26,7 +27,8 @@ const DateInput: React.FC<DateInput> = ({
   placeholder = 'Ngày/Tháng/Năm',
   disableFuture,
   disablePast,
-  required
+  required,
+  size
 }) => {
   return (
     <Stack spacing={1}>
@@ -49,7 +51,8 @@ const DateInput: React.FC<DateInput> = ({
                 textField: {
                   error: !!fieldState?.error,
                   helperText: !!fieldState.error?.message && errorMessage,
-                  placeholder: placeholder
+                  placeholder: placeholder,
+                  size: size
                 }
               }}
               sx={{ width: '100%' }}
