@@ -54,7 +54,6 @@ const VaccinationRecordTable: FC<VaccinationRecordTableProps> = ({
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeadCell label="STT" />
             <TableHeadCell label="Mũi số" />
             <TableHeadCell label="Thời gian tiêm" />
             <TableHeadCell label="Tên vắc xin" />
