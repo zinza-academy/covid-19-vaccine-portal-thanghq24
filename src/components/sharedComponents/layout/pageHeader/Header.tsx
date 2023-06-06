@@ -69,27 +69,6 @@ const Header: FC = () => {
             />
             <NavMenuItem label="Tài liệu" url="/user-manual" />
             <AccountMenuItem />
-            {/* {userData.fullName ? (
-              <MenuItem>
-                <Typography>{userData.fullName}</Typography>
-              </MenuItem>
-            ) : (
-              <Link href="/login">
-                <Button
-                  variant="outlined"
-                  size="large"
-                  sx={{
-                    backgroundColor: '#fff',
-                    '&:hover': {
-                      backgroundColor: indigo[600],
-                      borderColor: '#fff',
-                      color: '#fff'
-                    }
-                  }}>
-                  Đăng nhập
-                </Button>
-              </Link>
-            )} */}
           </Stack>
         </Stack>
       </Container>

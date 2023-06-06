@@ -1,20 +1,9 @@
 'use client';
 
-import { BorderBottom } from '@mui/icons-material';
-import {
-  Box,
-  Divider,
-  MenuItem,
-  Stack,
-  Tab,
-  Tabs,
-  Typography,
-  styled
-} from '@mui/material';
+import { Stack } from '@mui/material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { FC, useCallback, useEffect } from 'react';
-import { forwardRef } from 'react';
+import React, { FC, useCallback } from 'react';
 
 const tabs = [
   {
@@ -31,23 +20,6 @@ const tabs = [
   }
 ];
 
-const CustomTabs = styled(Tabs)({
-  '& .MuiTabs-indicator': {
-    backgroundColor: '#000'
-  }
-});
-
-const CustomTab = styled(Tab)({
-  textTransform: 'none',
-  color: 'rgba(0, 0, 0, 0.7)',
-  '&.Mui-selected': {
-    color: '#000'
-  },
-  '& .MuiTabs-indicator': {
-    backgroundColor: '#000'
-  }
-});
-
 const PortalNavigation: FC = () => {
   const pathname = usePathname();
 
@@ -59,9 +31,6 @@ const PortalNavigation: FC = () => {
   return (
     <Stack direction="row">
       {tabs.map((t, index) => (
-        // <Link key={index} href={`/portal/${tab.path}`} passHref>
-        //   <CustomTab label={tab.label} />
-        // </Link>
         <Link
           key={index}
           href={`/portal/${t.path}`}
