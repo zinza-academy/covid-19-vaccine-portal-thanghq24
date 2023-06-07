@@ -18,9 +18,9 @@ import {
 } from '@mui/material';
 import React, { FC, useState } from 'react';
 import { indigo } from '@mui/material/colors';
-import EditModal from '@components/admin/vaccination-point/EditModal';
 import dayjs from 'dayjs';
 import dayPhases from '@src/utils/constants/dayPhases';
+import ApprovalForm from './ApprovalForm';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -37,6 +37,13 @@ export interface VaccinationRegistration {
   job: string;
   appointmentDate: string | number | Date | dayjs.Dayjs | null | undefined;
   dayPhase: number;
+  citizenIdentification: string;
+  fullName: string;
+  dob: string | number | Date | dayjs.Dayjs | null | undefined;
+  gender: string | null;
+  province: string;
+  district: string;
+  ward: string;
 }
 
 const vaccinationRegistration: VaccinationRegistration = {
@@ -44,7 +51,14 @@ const vaccinationRegistration: VaccinationRegistration = {
   healthInsuranceNumber: 'HD203473829293',
   job: 'Nhóm ngành Sư phạm',
   appointmentDate: dayjs().format('DD/MM/YYYY'),
-  dayPhase: 1
+  dayPhase: 1,
+  citizenIdentification: '030012345678',
+  fullName: 'Nguyễn Văn A',
+  dob: '16/10/1994',
+  gender: 'Nam',
+  province: 'Thành phố Hà Nội',
+  district: 'Quận Long Biên',
+  ward: 'Phường Giang Biên'
 };
 
 const PAGE_SIZES = [10, 20, 50];
@@ -89,9 +103,9 @@ const getEmptyRows = (page: number, pageSize: number) => {
 const VaccinationRegistrationTable: FC = () => {
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(10);
-  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
-  const [selectedPoint, setSelectedPoint] =
-    useState<VaccinationRegistration | null>();
+  const [approvalModalOpen, setApprovalModalOpen] = useState<boolean>(false);
+  const [selectedRegistration, setSelectedRegistration] =
+    useState<VaccinationRegistration | null>(null);
 
   const getPageOptions = () => {
     const maxPage = Math.floor(vaccinationRegistrations.length / pageSize);
@@ -105,13 +119,13 @@ const VaccinationRegistrationTable: FC = () => {
   const handleOpenEditModal = (
     vaccinationRegistration: VaccinationRegistration
   ) => {
-    setSelectedPoint(vaccinationRegistration);
-    setEditModalOpen(true);
+    setSelectedRegistration(vaccinationRegistration);
+    setApprovalModalOpen(true);
   };
 
-  const handleCloseEditModal = () => {
-    setSelectedPoint(null);
-    setEditModalOpen(false);
+  const handleCloseApprovalModal = () => {
+    setSelectedRegistration(null);
+    setApprovalModalOpen(false);
   };
 
   return (
@@ -279,11 +293,11 @@ const VaccinationRegistrationTable: FC = () => {
           </Stack>
         </Stack>
       </Stack>
-      {/* <EditModal
-        editModalOpen={editModalOpen}
-        handleCloseEditModal={handleCloseEditModal}
-        vaccinationRegistration={selectedPoint}
-      /> */}
+      <ApprovalForm
+        approvalModalOpen={approvalModalOpen}
+        handleCloseApprovalModal={handleCloseApprovalModal}
+        vaccinationRegistration={selectedRegistration}
+      />
     </Stack>
   );
 };

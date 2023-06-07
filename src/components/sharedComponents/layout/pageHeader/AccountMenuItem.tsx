@@ -11,10 +11,11 @@ import HoverPopover from 'material-ui-popup-state/HoverPopover';
 import BadgeIcon from '@mui/icons-material/Badge';
 import LogoutIcon from '@mui/icons-material/Logout';
 import EastIcon from '@mui/icons-material/East';
-import { blue, indigo, orange } from '@mui/material/colors';
+import { blue, green, indigo, orange } from '@mui/material/colors';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHook';
 import { logout, selectUserData } from '@src/redux/userSlice';
 import Link from 'next/link';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const AccountMenuItem: FC = () => {
   const userData = useAppSelector(selectUserData);
@@ -70,8 +71,8 @@ const AccountMenuItem: FC = () => {
                 label="Quản trị viên"
                 subLabel="Thao tác quản trị viên"
                 url="/admin/vaccination-registration"
-                icon={<BadgeIcon />}
-                color={blue[600]}
+                icon={<AdminPanelSettingsIcon />}
+                color={green[600]}
               />
               <MenuItem
                 onClick={handleLogout}
