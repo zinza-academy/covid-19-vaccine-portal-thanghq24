@@ -68,7 +68,11 @@ const fetchData = () => {
   return new Array<Document>(6).fill(document);
 };
 
-const DocumentTable: FC = () => {
+interface DocumentTableProps {
+  readonly?: boolean;
+}
+
+const DocumentTable: FC<DocumentTableProps> = ({ readonly }) => {
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
   const [selectDocument, setSelectDocument] = useState<Document | null>(null);
 
@@ -81,8 +85,6 @@ const DocumentTable: FC = () => {
     setSelectDocument(null);
     setEditModalOpen(false);
   };
-
-  const handlePreview = () => {};
 
   return (
     <Stack>
@@ -109,23 +111,27 @@ const DocumentTable: FC = () => {
                       Download FIle
                     </a>
                   </StyledButton>
-                  <StyledButton
-                    variant="text"
-                    size="small"
-                    onClick={() => handleOpenEditModal(document)}>
-                    Chỉnh sửa
-                  </StyledButton>
+                  {readonly ? null : (
+                    <StyledButton
+                      variant="text"
+                      size="small"
+                      onClick={() => handleOpenEditModal(document)}>
+                      Chỉnh sửa
+                    </StyledButton>
+                  )}
                 </TableCell>
               </StyledTableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <EditModal
-        editModalOpen={editModalOpen}
-        handleCloseEditModal={handleCloseEditModal}
-        document={selectDocument}
-      />
+      {readonly ? null : (
+        <EditModal
+          editModalOpen={editModalOpen}
+          handleCloseEditModal={handleCloseEditModal}
+          document={selectDocument}
+        />
+      )}
     </Stack>
   );
 };

@@ -2,7 +2,7 @@
 
 import { Button, Stack, Step, StepLabel, Stepper } from '@mui/material';
 import ConfirmStep from '@src/components/portal/vaccine-registration/ConfirmStep';
-import PageTitle from '@src/components/portal/vaccine-registration/PageTitle';
+import PageTitle from '@src/components/portal/PageTitle';
 import PersonalInfoStep from '@src/components/portal/vaccine-registration/PersonalInfoStep';
 import ResultStep from '@src/components/portal/vaccine-registration/ResultStep';
 import { useRouter } from 'next/navigation';
@@ -64,7 +64,7 @@ const VaccineRegistration: FC = () => {
   };
   return (
     <Stack spacing={4} py={4}>
-      <PageTitle />
+      <PageTitle title="Đăng ký tiêm chủng cá nhân" />
       <FormStepper step={step} setStep={setStep} />
       {renderStepForm()}
     </Stack>

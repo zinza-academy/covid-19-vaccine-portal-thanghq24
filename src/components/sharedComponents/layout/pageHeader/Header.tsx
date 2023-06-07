@@ -56,7 +56,7 @@ const Header: FC = () => {
                 }
               ]}
             />
-            <NavMenuItem label="Tài liệu" url="/user-manual" />
+            <NavMenuItem label="Tài liệu" url="/portal/user-manual" />
             <AccountMenuItem />
           </Stack>
         </Stack>

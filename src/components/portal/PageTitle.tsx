@@ -1,7 +1,11 @@
 import { Box, Typography } from '@mui/material';
 import React, { FC, useEffect, useRef, useState } from 'react';
 
-const PageTitle: FC = () => {
+interface PageTitleProps {
+  title: string;
+}
+
+const PageTitle: FC<PageTitleProps> = ({ title }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [divPosition, setDivPostion] = useState<DOMRect>();
 
@@ -26,7 +30,7 @@ const PageTitle: FC = () => {
           backgroundColor: '#F7FBFE',
           zIndex: -1
         }}></Box>
-      <Typography variant="h5">Đăng ký tiêm cá nhân</Typography>
+      <Typography variant="h5">{title}</Typography>
     </Box>
   );
 };
