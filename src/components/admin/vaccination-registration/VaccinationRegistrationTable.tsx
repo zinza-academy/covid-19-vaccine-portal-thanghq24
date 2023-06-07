@@ -20,7 +20,7 @@ import React, { FC, useState } from 'react';
 import { indigo } from '@mui/material/colors';
 import dayjs from 'dayjs';
 import dayPhases from '@src/utils/constants/dayPhases';
-import ApprovalForm from './ApprovalForm';
+import ApprovalForm from '@src/components/admin/vaccination-registration/ApprovalForm';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
