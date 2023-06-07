@@ -74,9 +74,16 @@ const AccountMenuItem: FC = () => {
                 icon={<AdminPanelSettingsIcon />}
                 color={green[600]}
               />
-              <MenuItem
-                onClick={handleLogout}
-                sx={{ px: 3, borderRadius: '12px' }}>
+              <Box
+                sx={{
+                  padding: '6px 24px',
+                  borderRadius: '12px',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                    cursor: 'pointer'
+                  }
+                }}
+                onClick={handleLogout}>
                 <Stack
                   direction="row"
                   p={2}
@@ -102,7 +109,7 @@ const AccountMenuItem: FC = () => {
                   </Stack>
                   <EastIcon sx={{ ml: 3, color: orange[600] }} />
                 </Stack>
-              </MenuItem>
+              </Box>
             </Box>
           </HoverPopover>
         </>

@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import React, { FC } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useRouter } from 'next/navigation';
@@ -9,6 +9,7 @@ import {
   bindPopover
 } from 'material-ui-popup-state/hooks';
 import HoverPopover from 'material-ui-popup-state/HoverPopover';
+import Link from 'next/link';
 
 interface NavMenuItemProps {
   label: string;
@@ -24,24 +25,26 @@ const NavMenuItem: FC<NavMenuItemProps> = ({ label, url, subMenuItems }) => {
     popupId: 'popover'
   });
 
-  const goToUrl = (url: string | undefined) => {
-    return url ? router.push(url) : null;
-  };
-
   return (
     <>
-      <Button
-        variant="text"
-        sx={{ textTransform: 'none', color: 'white', fontWeight: 500 }}
-        onClick={() => goToUrl(url)}
-        {...bindHover(popupState)}>
-        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-          {label}
-        </Typography>
-        {subMenuItems ? (
-          <KeyboardArrowDownIcon sx={{ fontWeight: 500 }} />
-        ) : null}
-      </Button>
+      <Link href={url ? url : '#'}>
+        <Stack
+          direction="row"
+          sx={{
+            textTransform: 'none',
+            color: 'white',
+            fontWeight: 500,
+            padding: '6px 16px'
+          }}
+          {...bindHover(popupState)}>
+          <Typography variant="body1" sx={{ fontWeight: 500 }}>
+            {label}
+          </Typography>
+          {subMenuItems ? (
+            <KeyboardArrowDownIcon sx={{ fontWeight: 500 }} />
+          ) : null}
+        </Stack>
+      </Link>
       {subMenuItems ? (
         <HoverPopover
           {...bindPopover(popupState)}
@@ -57,7 +60,8 @@ const NavMenuItem: FC<NavMenuItemProps> = ({ label, url, subMenuItems }) => {
           <Box
             sx={{
               padding: '16px 0px',
-              borderRadius: '12px'
+              borderRadius: '12px',
+              overflow: 'hidden'
             }}>
             {subMenuItems.map((item, index) => (
               <NavSubMenuItem
