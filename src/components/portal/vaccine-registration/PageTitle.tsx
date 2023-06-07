@@ -4,9 +4,11 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 const PageTitle: FC = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [divPosition, setDivPostion] = useState<DOMRect>();
+
   useEffect(() => {
     ref.current && setDivPostion(ref.current.getBoundingClientRect());
   }, [ref]);
+
   return (
     <Box
       ref={ref}

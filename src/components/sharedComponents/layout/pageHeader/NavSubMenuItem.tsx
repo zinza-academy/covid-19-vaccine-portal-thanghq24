@@ -6,7 +6,7 @@ import EastIcon from '@mui/icons-material/East';
 export interface NavSubMenuItemProps {
   label: string;
   subLabel: string;
-  url: string;
+  url?: string;
   icon: ReactNode;
   color: string;
 }
@@ -26,7 +26,7 @@ const NavSubMenuItem: FC<NavSubMenuItemProps> = ({
 
   return (
     <MenuItem onClick={goToUrl} sx={{ px: 3, borderRadius: '12px' }}>
-      <Stack direction="row" p={2}>
+      <Stack direction="row" p={2} width="100%" justifyContent="space-between">
         <Stack direction="row" spacing={2} alignItems="center">
           <Box
             sx={{

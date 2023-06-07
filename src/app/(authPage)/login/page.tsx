@@ -15,6 +15,8 @@ import Link from 'next/link';
 import { indigo } from '@mui/material/colors';
 import TextInput from '@components/sharedComponents/TextInput';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { login } from '@src/redux/userSlice';
 
 interface LoginFormData {
   email: string;
@@ -31,6 +33,7 @@ const schema = yup
 
 const Login: FC = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const {
     control,
     handleSubmit,
@@ -50,6 +53,19 @@ const Login: FC = () => {
   const onSubmit = (data: LoginFormData) => {
     setLoading(true);
     setTimeout(() => {
+      dispatch(
+        // get address data from server after login
+        login({
+          citizenIdentification: '93310120201202',
+          healthInsuranceNumber: 'hd0910912332543', //need to add healthInsuranceNumber to register
+          fullName: 'Ha Quoc Thang',
+          dob: '07/05/1954',
+          gender: 'M',
+          province: '1',
+          district: '1',
+          ward: '1'
+        })
+      );
       alert(
         success
           ? 'trying to log in with this data: ' +

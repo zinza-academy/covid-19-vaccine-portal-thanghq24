@@ -10,7 +10,7 @@ import {
 import {
   AvailableSteps,
   FormStepProps
-} from '@src/app/portal/vaccine-registration/page';
+} from '@src/app/(mainPage)/portal/vaccine-registration/page';
 import React, { FC, useState } from 'react';
 import Shield from '@public/images/shield 1.png';
 import Vaccine from '@public/images/vaccine2 1.png';
@@ -37,6 +37,7 @@ const agreements = [
 
 const ConfirmStep: FC<FormStepProps> = ({ setStep }) => {
   const [agreement, setAgreement] = useState(false);
+
   const handleChange = () => {
     setAgreement((prev) => !prev);
   };
@@ -46,6 +47,7 @@ const ConfirmStep: FC<FormStepProps> = ({ setStep }) => {
   const stepForward = () => {
     setStep((prev) => (prev + 1) as AvailableSteps);
   };
+
   return (
     <Stack spacing={2}>
       <Stack divider={<Divider sx={{ my: 2 }} />}>

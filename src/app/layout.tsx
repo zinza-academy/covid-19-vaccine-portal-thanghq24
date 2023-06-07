@@ -21,9 +21,7 @@ const RootLayout: FC<PropsWithChildren> = ({ children }) => {
         <main>
           <ReduxStoreProvider>
             <TanStackQueryProvider>
-              <MUIThemeProvider>
-                <ClientSideLayout>{children}</ClientSideLayout>
-              </MUIThemeProvider>
+              <MUIThemeProvider>{children}</MUIThemeProvider>
             </TanStackQueryProvider>
           </ReduxStoreProvider>
         </main>

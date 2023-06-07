@@ -1,6 +1,5 @@
 import {
   AppBar,
-  Box,
   Button,
   Container,
   MenuItem,
@@ -13,8 +12,13 @@ import LogoImage from '@public/images/logo.png';
 import NavMenuItem from './NavMenuItem';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { blue, indigo, purple } from '@mui/material/colors';
+import Link from 'next/link';
+import { useAppSelector } from '@src/hooks/reduxHook';
+import { selectUserData } from '@src/redux/userSlice';
+import AccountMenuItem from './AccountMenuItem';
 
 const Header: FC = () => {
+  const userData = useAppSelector(selectUserData);
   return (
     <AppBar
       sx={{
@@ -50,7 +54,7 @@ const Header: FC = () => {
                 {
                   label: 'Tra cứu chứng nhận tiêm',
                   subLabel: 'Cập nhật nhanh và chính xác nhất',
-                  url: '/portal/search',
+                  url: '/portal/vaccine-certificate',
                   icon: <PeopleAltIcon />,
                   color: purple[600]
                 },
@@ -64,19 +68,7 @@ const Header: FC = () => {
               ]}
             />
             <NavMenuItem label="Tài liệu" url="/user-manual" />
-            <Button
-              variant="outlined"
-              size="large"
-              sx={{
-                backgroundColor: '#fff',
-                '&:hover': {
-                  backgroundColor: indigo[600],
-                  borderColor: '#fff',
-                  color: '#fff'
-                }
-              }}>
-              Đăng nhập
-            </Button>
+            <AccountMenuItem />
           </Stack>
         </Stack>
       </Container>

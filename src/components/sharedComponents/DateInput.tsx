@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/en-gb';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Stack, TextField, Typography } from '@mui/material';
 import { Control, Controller } from 'react-hook-form';

@@ -1,5 +1,4 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { vaccineRegistrationFormSlice } from './vaccineRegistrationSlice';
 import storage from 'redux-persist/lib/storage';
 import {
   FLUSH,
@@ -10,6 +9,8 @@ import {
   REGISTER,
   persistReducer
 } from 'redux-persist';
+import { vaccineRegistrationFormSlice } from './vaccineRegistrationSlice';
+import { userSlice } from './userSlice';
 
 const persistConfig = {
   key: 'root',
@@ -18,7 +19,8 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  vaccineRegistrationForm: vaccineRegistrationFormSlice.reducer
+  vaccineRegistrationForm: vaccineRegistrationFormSlice.reducer,
+  user: userSlice.reducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
