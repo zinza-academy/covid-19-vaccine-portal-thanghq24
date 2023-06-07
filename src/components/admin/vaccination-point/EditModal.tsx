@@ -58,79 +58,73 @@ const EditModal: FC<EditModalProps> = ({
   };
 
   return (
-    <>
-      <Modal hideBackdrop open={editModalOpen} onClose={handleCloseEditModal}>
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          sx={{
-            position: 'absolute' as 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            borderRadius: '4px',
-            width: '500px'
-          }}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            spacing={2}
-            p={2}>
-            <Typography variant="h6" onClick={() => console.log(getValues())}>
-              Cập nhật điểm tiêm
-            </Typography>
-            <IconButton color="default" onClick={handleCloseEditModal}>
-              <CloseIcon />
-            </IconButton>
-          </Stack>
-          <Divider />
-          <Stack spacing={2} p={2}>
-            <TextInput
-              control={control}
-              name="name"
-              label="Tên điểm tiêm"
-              placeholder="Tên điểm tiêm"
-              errorMessage="Tên điểm tiêm không được bỏ trống"
-              required
-            />
-            <TextInput
-              control={control}
-              name="address"
-              label="Số nhà, tên đường"
-              placeholder="Số nhà, tên đường"
-              errorMessage="Số nhà, tên đường không được bỏ trống"
-              required
-            />
-            <TextInput
-              control={control}
-              name="manager"
-              label="Người đứng đầu cơ sở tiêm chủng"
-              placeholder="Người đứng đầu cơ sở tiêm chủng"
-              errorMessage="Người đứng đầu cơ sở tiêm chủng không được bỏ trống"
-              required
-            />
-            <TextInput
-              control={control}
-              name="tableNumber"
-              label="Số bàn tiêm"
-              placeholder="Số bàn tiêm"
-              errorMessage="Số bàn tiêm không được bỏ trống"
-              required
-            />
-          </Stack>
-          <Stack direction="row" justifyContent="end" spacing={2} p={2}>
-            <Button variant="outlined" onClick={handleCloseEditModal}>
-              Hủy bỏ
-            </Button>
-            <Button type="submit" variant="contained">
-              Xác nhận
-            </Button>
-          </Stack>
-        </Box>
-      </Modal>
-    </>
+    <Modal hideBackdrop open={editModalOpen} onClose={handleCloseEditModal}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        sx={{
+          position: 'absolute' as 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          borderRadius: '4px',
+          width: '500px'
+        }}>
+        <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
+          <Typography variant="h6" onClick={() => console.log(getValues())}>
+            Cập nhật điểm tiêm
+          </Typography>
+          <IconButton color="default" onClick={handleCloseEditModal}>
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+        <Divider />
+        <Stack spacing={2} p={2}>
+          <TextInput
+            control={control}
+            name="name"
+            label="Tên điểm tiêm"
+            placeholder="Tên điểm tiêm"
+            errorMessage="Tên điểm tiêm không được bỏ trống"
+            required
+          />
+          <TextInput
+            control={control}
+            name="address"
+            label="Số nhà, tên đường"
+            placeholder="Số nhà, tên đường"
+            errorMessage="Số nhà, tên đường không được bỏ trống"
+            required
+          />
+          <TextInput
+            control={control}
+            name="manager"
+            label="Người đứng đầu cơ sở tiêm chủng"
+            placeholder="Người đứng đầu cơ sở tiêm chủng"
+            errorMessage="Người đứng đầu cơ sở tiêm chủng không được bỏ trống"
+            required
+          />
+          <TextInput
+            control={control}
+            name="tableNumber"
+            label="Số bàn tiêm"
+            placeholder="Số bàn tiêm"
+            errorMessage="Số bàn tiêm không được bỏ trống"
+            required
+          />
+        </Stack>
+        <Stack direction="row" justifyContent="end" spacing={2} p={2}>
+          <Button variant="outlined" onClick={handleCloseEditModal}>
+            Hủy bỏ
+          </Button>
+          <Button type="submit" variant="contained">
+            Xác nhận
+          </Button>
+        </Stack>
+      </Box>
+    </Modal>
   );
 };
 

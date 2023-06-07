@@ -87,7 +87,9 @@ const VaccinationPointTable: FC = () => {
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(10);
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
-  const [selectedPoint, setSelectedPoint] = useState<VaccinationPoint | null>();
+  const [selectedPoint, setSelectedPoint] = useState<VaccinationPoint | null>(
+    null
+  );
 
   const getPageOptions = () => {
     const maxPage = Math.floor(vaccinationPoints.length / pageSize);

@@ -1,24 +1,13 @@
-import {
-  AppBar,
-  Button,
-  Container,
-  MenuItem,
-  Stack,
-  Typography
-} from '@mui/material';
+import { AppBar, Container, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 import React, { FC } from 'react';
 import LogoImage from '@public/images/logo.png';
 import NavMenuItem from './NavMenuItem';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import { blue, indigo, purple } from '@mui/material/colors';
-import Link from 'next/link';
-import { useAppSelector } from '@src/hooks/reduxHook';
-import { selectUserData } from '@src/redux/userSlice';
+import { blue, purple } from '@mui/material/colors';
 import AccountMenuItem from './AccountMenuItem';
 
 const Header: FC = () => {
-  const userData = useAppSelector(selectUserData);
   return (
     <AppBar
       sx={{
