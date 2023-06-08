@@ -27,6 +27,13 @@ const injectionRecords: InjectionRecord[] = [
   }
 ];
 
+export interface InjectionRecord {
+  injectionTime: string;
+  vaccineType: string;
+  batchNumber: string;
+  vaccinationPoint: string;
+}
+
 const VaccineCertificate: FC = () => {
   return (
     <Grid container spacing={2}>

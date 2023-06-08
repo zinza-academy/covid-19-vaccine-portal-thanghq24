@@ -11,10 +11,11 @@ import HoverPopover from 'material-ui-popup-state/HoverPopover';
 import BadgeIcon from '@mui/icons-material/Badge';
 import LogoutIcon from '@mui/icons-material/Logout';
 import EastIcon from '@mui/icons-material/East';
-import { blue, indigo, orange } from '@mui/material/colors';
+import { blue, green, indigo, orange } from '@mui/material/colors';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHook';
 import { logout, selectUserData } from '@src/redux/userSlice';
 import Link from 'next/link';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const AccountMenuItem: FC = () => {
   const userData = useAppSelector(selectUserData);
@@ -66,9 +67,23 @@ const AccountMenuItem: FC = () => {
                 icon={<BadgeIcon />}
                 color={blue[600]}
               />
-              <MenuItem
-                onClick={handleLogout}
-                sx={{ px: 3, borderRadius: '12px' }}>
+              <NavSubMenuItem
+                label="Quản trị viên"
+                subLabel="Thao tác quản trị viên"
+                url="/admin/vaccination-registration"
+                icon={<AdminPanelSettingsIcon />}
+                color={green[600]}
+              />
+              <Box
+                sx={{
+                  padding: '6px 24px',
+                  borderRadius: '12px',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                    cursor: 'pointer'
+                  }
+                }}
+                onClick={handleLogout}>
                 <Stack
                   direction="row"
                   p={2}
@@ -94,7 +109,7 @@ const AccountMenuItem: FC = () => {
                   </Stack>
                   <EastIcon sx={{ ml: 3, color: orange[600] }} />
                 </Stack>
-              </MenuItem>
+              </Box>
             </Box>
           </HoverPopover>
         </>

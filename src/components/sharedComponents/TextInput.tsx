@@ -12,6 +12,7 @@ interface TextInput {
   label: string | undefined;
   type: React.HTMLInputTypeAttribute | undefined;
   required: boolean | undefined;
+  size: 'medium' | 'small';
 }
 
 const TextInput: FC<TextInput> = ({
@@ -22,7 +23,8 @@ const TextInput: FC<TextInput> = ({
   label,
   variant = 'outlined',
   type,
-  required = false
+  required = false,
+  size
 }) => {
   return (
     <Stack spacing={1}>
@@ -42,6 +44,7 @@ const TextInput: FC<TextInput> = ({
             placeholder={placeholder}
             error={!!fieldState.error}
             type={type}
+            size={size}
             {...field}
           />
         )}
