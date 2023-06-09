@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+.next
+.vscode
+*.DS_Store
+.gitignore
+README.md
+.dockerignore
+LICENSE
+.docker
+.gitlab
+.git
+.editorconfig
+.eslintrc.json
+.prettierignore
+.prettierrc

@@ -1,6 +1,6 @@
 import { MenuItem, Stack, TextField, Typography } from '@mui/material';
-import React, { FC } from 'react';
-import { Control, Controller } from 'react-hook-form';
+import React from 'react';
+import { Controller, FieldValues, UseControllerProps } from 'react-hook-form';
 import RequiredTag from './RequiredTag';
 
 interface SelectionObject {
@@ -8,19 +8,17 @@ interface SelectionObject {
   label: string | number;
 }
 
-interface SelectInput {
-  control: Control;
-  name: string;
-  errorMessage: string;
-  label: string | undefined;
-  placeholder: string;
-  defaultValue: string | number | boolean;
+interface SelectInputProps<T extends FieldValues>
+  extends UseControllerProps<T> {
+  errorMessage?: string;
+  label?: string | undefined;
+  placeholder?: string;
   selections: SelectionObject[];
-  required: boolean | undefined;
-  size: 'medium' | 'small';
+  required?: boolean | undefined;
+  size?: 'medium' | 'small';
 }
 
-const SelectInput: FC<SelectInput> = ({
+const SelectInput = <T extends FieldValues>({
   control,
   name,
   errorMessage,
@@ -29,7 +27,7 @@ const SelectInput: FC<SelectInput> = ({
   selections,
   required,
   size
-}) => {
+}: SelectInputProps<T>) => {
   return (
     <Stack spacing={1}>
       {label ? (
@@ -47,7 +45,6 @@ const SelectInput: FC<SelectInput> = ({
             select
             helperText={!!fieldState.error?.message && errorMessage}
             error={!!fieldState.error}
-            //placeholder solution 1
             sx={{
               '& .MuiSelect-select .notranslate::after': placeholder
                 ? {

@@ -3,23 +3,21 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'dayjs/locale/en-gb';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Stack, TextField, Typography } from '@mui/material';
-import { Control, Controller } from 'react-hook-form';
+import { Stack, Typography } from '@mui/material';
+import { Controller, FieldValues, UseControllerProps } from 'react-hook-form';
 import RequiredTag from './RequiredTag';
 
-interface DateInput {
-  control: Control;
-  name: string;
-  errorMessage: string;
-  label: string | undefined;
-  placeholder: string;
-  disableFuture: boolean | undefined;
-  disablePast: boolean | undefined;
-  required: boolean | undefined;
-  size: 'small' | 'medium';
+interface DateInputProps<T extends FieldValues> extends UseControllerProps<T> {
+  errorMessage?: string;
+  label?: string | undefined;
+  placeholder?: string;
+  disableFuture?: boolean | undefined;
+  disablePast?: boolean | undefined;
+  required?: boolean | undefined;
+  size?: 'small' | 'medium';
 }
 
-const DateInput: React.FC<DateInput> = ({
+const DateInput = <T extends FieldValues>({
   control,
   name,
   errorMessage,
@@ -29,7 +27,7 @@ const DateInput: React.FC<DateInput> = ({
   disablePast,
   required,
   size
-}) => {
+}: DateInputProps<T>) => {
   return (
     <Stack spacing={1}>
       {label ? (

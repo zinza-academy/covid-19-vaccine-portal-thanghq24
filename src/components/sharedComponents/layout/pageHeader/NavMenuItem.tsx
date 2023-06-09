@@ -30,7 +30,9 @@ const NavMenuItem: FC<NavMenuItemProps> = ({ label, url, subMenuItems }) => {
       <Link href={url ? url : '#'}>
         <Stack
           direction="row"
+          alignItems="center"
           sx={{
+            height: '100%',
             textTransform: 'none',
             color: 'white',
             fontWeight: 500,

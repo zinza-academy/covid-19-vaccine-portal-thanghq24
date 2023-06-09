@@ -8,7 +8,7 @@ import {
   Typography
 } from '@mui/material';
 import React, { FC, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FieldValues, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import TextInput from '@components/sharedComponents/TextInput';
@@ -18,7 +18,7 @@ import SelectInput from '@src/components/sharedComponents/SelectInput';
 import useProvinces from '@src/hooks/useProvinces';
 import dayjs from 'dayjs';
 
-interface FormData {
+export interface FormData extends FieldValues {
   citizenIdentification: string;
   email: string;
   password: string;
@@ -52,7 +52,7 @@ const schema = yup
   })
   .required();
 
-const defaultValues = {
+const defaultValues: FormData = {
   citizenIdentification: '',
   email: '',
   password: '',

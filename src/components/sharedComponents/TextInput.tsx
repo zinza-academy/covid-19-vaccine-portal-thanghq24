@@ -1,21 +1,19 @@
 import { Stack, TextField, TextFieldVariants, Typography } from '@mui/material';
 import React, { FC } from 'react';
-import { Control, Controller } from 'react-hook-form';
+import { Controller, FieldValues, UseControllerProps } from 'react-hook-form';
 import RequiredTag from './RequiredTag';
 
-interface TextInput {
-  variant: TextFieldVariants;
-  control: Control;
-  name: string;
-  errorMessage: string;
-  placeholder: string;
-  label: string | undefined;
-  type: React.HTMLInputTypeAttribute | undefined;
-  required: boolean | undefined;
-  size: 'medium' | 'small';
+interface TextInputProps<T extends FieldValues> extends UseControllerProps<T> {
+  variant?: TextFieldVariants;
+  errorMessage?: string;
+  placeholder?: string;
+  label?: string | undefined;
+  type?: React.HTMLInputTypeAttribute | undefined;
+  required?: boolean | undefined;
+  size?: 'medium' | 'small';
 }
 
-const TextInput: FC<TextInput> = ({
+const TextInput = <T extends FieldValues>({
   control,
   name,
   errorMessage,
@@ -25,7 +23,7 @@ const TextInput: FC<TextInput> = ({
   type,
   required = false,
   size
-}) => {
+}: TextInputProps<T>) => {
   return (
     <Stack spacing={1}>
       {label ? (

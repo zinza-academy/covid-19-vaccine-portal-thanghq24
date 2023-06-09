@@ -36,7 +36,7 @@ const VaccinationRegistration: FC = () => {
     resolver: yupResolver(schema)
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: SearchFormData) => {
     alert('try to search with ' + JSON.stringify(data));
   };
 
