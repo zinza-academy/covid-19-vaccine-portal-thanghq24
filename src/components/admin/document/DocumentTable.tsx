@@ -93,7 +93,7 @@ const DocumentTable: FC<DocumentTableProps> = ({ readonly }) => {
           <TableHead>
             <TableRow>
               <TableHeadCell label="STT" align="center" />
-              <TableHeadCell label="Tên điểm tiêm" align="center" />
+              <TableHeadCell label="Tên tài liệu" align="center" />
               <TableHeadCell label="Thao tác" align="center" />
             </TableRow>
           </TableHead>

@@ -3,7 +3,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN  npm install --production
+RUN  npm install
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED 1
