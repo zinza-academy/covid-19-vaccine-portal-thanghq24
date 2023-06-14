@@ -11,19 +11,15 @@
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
+    "@faker-js/faker": "^8.0.2",
     "@hookform/resolvers": "^3.1.0",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.13.3",
     "@mui/x-date-pickers": "^6.5.0",
     "@reduxjs/toolkit": "^1.9.5",
     "@tanstack/react-query": "^4.29.7",
-    "@types/node": "20.2.3",
-    "@types/react": "18.2.6",
-    "@types/react-dom": "18.2.4",
     "chart.js": "^4.3.0",
     "dayjs": "^1.11.7",
-    "eslint": "8.41.0",
-    "eslint-config-next": "13.4.3",
     "material-ui-popup-state": "^5.0.8",
     "next": "13.4.3",
     "react": "18.2.0",
@@ -32,12 +28,17 @@
     "react-hook-form": "^7.43.9",
     "react-redux": "^8.0.5",
     "redux-persist": "^6.0.0",
-    "typescript": "5.0.4",
     "yup": "^1.1.1"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.0.2",
+    "@next/eslint-plugin-next": "^13.4.5",
     "@tanstack/eslint-plugin-query": "^4.29.9",
-    "eslint-config-prettier": "^8.8.0"
+    "@types/node": "20.2.3",
+    "@types/react": "18.2.6",
+    "@types/react-dom": "18.2.4",
+    "eslint": "8.41.0",
+    "eslint-config-next": "13.4.3",
+    "eslint-config-prettier": "^8.8.0",
+    "typescript": "5.0.4"
   }
 }
