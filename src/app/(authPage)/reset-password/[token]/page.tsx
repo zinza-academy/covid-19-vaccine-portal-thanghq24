@@ -1,30 +1,44 @@
 'use client';
+
 import { Button, Stack, Typography } from '@mui/material';
 import TextInput from '@src/components/sharedComponents/TextInput';
 import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useRouter } from 'next/navigation';
-import RequiredTag from '@src/components/sharedComponents/RequiredTag';
+import { useRouter, useParams } from 'next/navigation';
 import fetchAPI from '@src/utils/fetchAPI';
 import { toast } from 'react-toastify';
+import RequiredTag from '@src/components/sharedComponents/RequiredTag';
+
 interface FormData {
-  email: string;
+  password: string;
+  confirmPassword: string;
 }
 const schema = yup
   .object()
   .shape({
-    email: yup.string().email().required()
+    password: yup.string().trim().min(8).required(),
+    confirmPassword: yup
+      .string()
+      .trim()
+      .min(8)
+      .required()
+      .oneOf(
+        [yup.ref('password')],
+        'Mật khẩu xác phải trùng mật khẩu thay đổi '
+      )
   })
   .required();
 
 const defaultValues = {
-  email: ''
+  password: '',
+  confirmPassword: ''
 };
 
-const ForgotPassword: FC = () => {
+const ResetPassword: FC = () => {
   const router = useRouter();
+  const params = useParams();
 
   const {
     control,
@@ -38,26 +52,29 @@ const ForgotPassword: FC = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const goToLogin = () => {
+    router.push('/login');
+  };
+
   const obSubmit = async (data: FormData) => {
     setLoading(true);
 
-    await fetchAPI('auth/forgot-password', 'POST', { email: data.email })
+    await fetchAPI(`auth/change-password/${params.token}`, 'POST', {
+      password: data.password
+    })
       .then((response) => {
-        toast.success('Link đổi mật khẩu đã được gửi!');
-        router.push('/reset-password/' + response.data.token);
+        toast.success('Đổi mật khẩu thành công!');
+        goToLogin();
       })
       .catch((error) => {
-        toast.error('Email không đúng!');
+        console.log(error);
+        toast.error('Có lỗi xảy ra hoặc yêu cầu đổi mật khẩu đã hết hạn!');
       });
 
     setLoading(false);
   };
 
   const canSubmit = !isValid || !isDirty || loading;
-
-  const goToLogin = () => {
-    router.push('/login');
-  };
 
   return (
     <Stack spacing={3} component="form" onSubmit={handleSubmit(obSubmit)}>
@@ -67,9 +84,21 @@ const ForgotPassword: FC = () => {
       </Typography>
       <TextInput
         control={control}
-        name="email"
-        placeholder="Email"
-        errorMessage="Email không được bỏ trống và phải đúng định dạng"
+        name="password"
+        label="Mật khẩu mới"
+        placeholder="Mật khẩu mới"
+        errorMessage="Mật khẩu mới không được bỏ trống, phải là số, độ dài chuẩn (9 hoặc 12)"
+        type="password"
+        required
+      />
+      <TextInput
+        control={control}
+        name="confirmPassword"
+        label="Xác nhận lại mật khẩu"
+        placeholder="Xác nhận lại mật khẩu"
+        errorMessage="Mật khẩu xác nhận không được bỏ trống, phải là số, độ dài chuẩn (9 hoặc 12) và phải trùng mật khẩu thay đổi"
+        type="password"
+        required
       />
       <Stack direction="row" spacing={2} justifyContent="center">
         <Button
@@ -77,7 +106,7 @@ const ForgotPassword: FC = () => {
           color="primary"
           size="large"
           onClick={goToLogin}>
-          Quay lại
+          Đăng nhập
         </Button>
         <Button
           variant="contained"
@@ -88,11 +117,11 @@ const ForgotPassword: FC = () => {
           sx={{
             padding: '6px 32px'
           }}>
-          Gửi
+          Đổi mật khẩu
         </Button>
       </Stack>
     </Stack>
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

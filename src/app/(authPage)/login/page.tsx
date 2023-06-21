@@ -1,12 +1,5 @@
 'use client';
-import {
-  Button,
-  FormControlLabel,
-  FormGroup,
-  Stack,
-  Switch,
-  Typography
-} from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,7 +9,10 @@ import { indigo } from '@mui/material/colors';
 import TextInput from '@components/sharedComponents/TextInput';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import { login } from '@src/redux/userSlice';
+import { login, selectUserData } from '@src/redux/userSlice';
+import { useAppSelector } from '@src/hooks/reduxHook';
+import fetchAPI from '@src/utils/fetchAPI';
+import { toast } from 'react-toastify';
 
 interface LoginFormData {
   email: string;
@@ -34,6 +30,10 @@ const schema = yup
 const Login: FC = () => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const userData = useAppSelector(selectUserData);
+
+  // const cook
+
   const {
     control,
     handleSubmit,
@@ -48,32 +48,24 @@ const Login: FC = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(true);
 
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     setLoading(true);
-    setTimeout(() => {
-      dispatch(
-        // get address data from server after login
-        login({
-          citizenIdentification: '93310120201202',
-          healthInsuranceNumber: 'hd0910912332543', //need to add healthInsuranceNumber to register
-          fullName: 'Ha Quoc Thang',
-          dob: '07/05/1954',
-          gender: 'M',
-          province: '1',
-          district: '1',
-          ward: '1'
-        })
-      );
-      alert(
-        success
-          ? 'trying to log in with this data: ' +
-              JSON.stringify({ email: data.email, password: data.password })
-          : 'Có lỗi xảy ra'
-      );
-      setLoading(false);
-    }, 2000);
+
+    await fetchAPI('auth/login', 'POST', {
+      email: data.email,
+      password: data.password
+    })
+      .then((response) => {
+        dispatch(login({ ...response.data }));
+        toast.success('Đăng nhập thành công!');
+        router.push('/');
+      })
+      .catch((error) => {
+        toast.error('Sai email hoặc mật khẩu!');
+      });
+
+    setLoading(false);
   };
 
   const canSubmit = !isValid || !isDirty || loading;
@@ -82,13 +74,12 @@ const Login: FC = () => {
     router.push('/register');
   };
 
-  const toggleSuccess = () => {
-    setSuccess((prev) => !prev);
-  };
-
   return (
     <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="h4" fontWeight="700">
+      <Typography
+        variant="h4"
+        fontWeight="700"
+        onClick={() => console.log(userData)}>
         Đăng nhập với tài khoản
       </Typography>
       <TextInput
@@ -137,14 +128,6 @@ const Login: FC = () => {
         onClick={goToRegister}>
         Đăng ký
       </Button>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch defaultChecked value={success} onChange={toggleSuccess} />
-          }
-          label="Fake API Call Success?"
-        />
-      </FormGroup>
     </Stack>
   );
 };
