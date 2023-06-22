@@ -32,8 +32,6 @@ const Login: FC = () => {
   const dispatch = useDispatch();
   const userData = useAppSelector(selectUserData);
 
-  // const cook
-
   const {
     control,
     handleSubmit,
@@ -57,7 +55,8 @@ const Login: FC = () => {
       password: data.password
     })
       .then((response) => {
-        dispatch(login({ ...response.data }));
+        console.log(response.data.user);
+        dispatch(login(response.data.user));
         toast.success('Đăng nhập thành công!');
         router.push('/');
       })
