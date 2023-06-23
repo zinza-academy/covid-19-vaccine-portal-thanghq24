@@ -1,38 +1,16 @@
 'use client';
-import {
-  Button,
-  FormControlLabel,
-  FormGroup,
-  Stack,
-  Switch,
-  Typography
-} from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import React, { FC, useEffect, useState } from 'react';
-import { FieldValues, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import TextInput from '@components/sharedComponents/TextInput';
-import { useRouter } from 'next/navigation';
 import DateInput from '@src/components/sharedComponents/DateInput';
 import SelectInput from '@src/components/sharedComponents/SelectInput';
 import useProvinces from '@src/hooks/useProvinces';
 import dayjs from 'dayjs';
-import fetchAPI from '@src/utils/fetchAPI';
-import { toast } from 'react-toastify';
 import { getISODate } from '@src/utils/getISODate';
-
-export interface FormData extends FieldValues {
-  citizenIdentification: number | '';
-  email: string;
-  password: string;
-  fullName: string;
-  dob: string | number | Date | dayjs.Dayjs | null | undefined;
-  gender: string | null;
-  province: string;
-  district: string;
-  ward: string;
-  roles: number[];
-}
+import useRegister, { RegisterFormData } from '@src/api/authApi/register';
 
 const schema = yup
   .object()
@@ -73,7 +51,7 @@ const schema = yup
   })
   .required();
 
-const defaultValues: FormData = {
+const defaultValues: RegisterFormData = {
   citizenIdentification: '',
   healthInsuranceNumber: '',
   email: '',
@@ -88,8 +66,6 @@ const defaultValues: FormData = {
 };
 
 const Register: FC = () => {
-  const router = useRouter();
-
   const {
     control,
     handleSubmit,
@@ -97,17 +73,16 @@ const Register: FC = () => {
     setValue,
     watch,
     formState: { isDirty, isValid }
-  } = useForm<FormData>({
+  } = useForm<RegisterFormData>({
     mode: 'onChange',
     defaultValues: defaultValues,
     resolver: yupResolver(schema)
   });
+
+  const registerMutation = useRegister();
   const { provinceSelections, districtSelections, wardSelections } =
     useProvinces(getValues('province'), getValues('district'));
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(true);
 
-  //watch updates of province and district to trigger api call to provinceAPI
   const watchProvince = watch('province');
   const watchDistrict = watch('district');
 
@@ -119,10 +94,8 @@ const Register: FC = () => {
     setValue('ward', '');
   }, [watchDistrict]);
 
-  const onSubmit = async (data: FormData) => {
-    setLoading(true);
-
-    let formData = {
+  const onSubmit = async (data: RegisterFormData) => {
+    let registerFormData = {
       ...data,
       dob: data.dob !== null ? getISODate(data.dob) : null,
       province: Number(data.province),
@@ -131,25 +104,10 @@ const Register: FC = () => {
       roles: defaultValues.roles
     };
 
-    console.log(formData);
-
-    await fetchAPI('auth/sign-up', 'POST', formData)
-      .then(() => {
-        toast.success('Đăng ký thành công');
-        router.push('/login');
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error('Đăng ký thất bại');
-        setLoading(false);
-      });
+    registerMutation.mutate(registerFormData);
   };
 
-  const canSubmit = !isValid || !isDirty || loading;
-
-  const toggleSuccess = () => {
-    setSuccess((prev) => !prev);
-  };
+  const canSubmit = !isValid || !isDirty || registerMutation.isLoading;
 
   return (
     <Stack
@@ -258,14 +216,6 @@ const Register: FC = () => {
           Tiếp tục
         </Button>
       </Stack>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch defaultChecked value={success} onChange={toggleSuccess} />
-          }
-          label="Fake API Call Success?"
-        />
-      </FormGroup>
     </Stack>
   );
 };

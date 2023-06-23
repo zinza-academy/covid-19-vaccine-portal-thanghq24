@@ -1,6 +1,6 @@
 'use client';
 import { Button, Stack, Typography } from '@mui/material';
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -8,11 +8,7 @@ import Link from 'next/link';
 import { indigo } from '@mui/material/colors';
 import TextInput from '@components/sharedComponents/TextInput';
 import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
-import { login, selectUserData } from '@src/redux/userSlice';
-import { useAppSelector } from '@src/hooks/reduxHook';
-import fetchAPI from '@src/utils/fetchAPI';
-import { toast } from 'react-toastify';
+import useLogin from '@src/api/authApi/login';
 
 interface LoginFormData {
   email: string;
@@ -29,8 +25,7 @@ const schema = yup
 
 const Login: FC = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
-  const userData = useAppSelector(selectUserData);
+  const loginMutation = useLogin();
 
   const {
     control,
@@ -45,29 +40,11 @@ const Login: FC = () => {
     resolver: yupResolver(schema)
   });
 
-  const [loading, setLoading] = useState(false);
-
-  const onSubmit = async (data: LoginFormData) => {
-    setLoading(true);
-
-    await fetchAPI('auth/login', 'POST', {
-      email: data.email,
-      password: data.password
-    })
-      .then((response) => {
-        console.log(response.data.user);
-        dispatch(login(response.data.user));
-        toast.success('Đăng nhập thành công!');
-        router.push('/');
-      })
-      .catch((error) => {
-        toast.error('Sai email hoặc mật khẩu!');
-      });
-
-    setLoading(false);
+  const onSubmit = async (loginFormData: LoginFormData) => {
+    loginMutation.mutate(loginFormData);
   };
 
-  const canSubmit = !isValid || !isDirty || loading;
+  const canSubmit = !isValid || !isDirty || loginMutation.isLoading;
 
   const goToRegister = () => {
     router.push('/register');
@@ -75,10 +52,7 @@ const Login: FC = () => {
 
   return (
     <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>
-      <Typography
-        variant="h4"
-        fontWeight="700"
-        onClick={() => console.log(userData)}>
+      <Typography variant="h4" fontWeight="700">
         Đăng nhập với tài khoản
       </Typography>
       <TextInput

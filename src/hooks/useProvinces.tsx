@@ -22,7 +22,7 @@ interface Ward {
   districtId: number | string;
 }
 
-const useProvinces = (province: string, district: string) => {
+const useProvinces = (province: string | number, district: string | number) => {
   const apiPrefix = process.env.NEXT_PUBLIC_API_URL;
 
   const provinces = useQuery<Province[]>({

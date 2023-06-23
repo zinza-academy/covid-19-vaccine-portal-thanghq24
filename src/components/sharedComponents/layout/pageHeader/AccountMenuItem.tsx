@@ -1,4 +1,4 @@
-import { Box, Button, MenuItem, Stack, Typography, alpha } from '@mui/material';
+import { Box, Button, Stack, Typography, alpha } from '@mui/material';
 import React, { FC } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import NavSubMenuItem from './NavSubMenuItem';
@@ -16,8 +16,12 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHook';
 import { logout, selectUserData } from '@src/redux/userSlice';
 import Link from 'next/link';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import api from '@src/api/axios';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 const AccountMenuItem: FC = () => {
+  const router = useRouter();
   const userData = useAppSelector(selectUserData);
   const dispatch = useAppDispatch();
 
@@ -26,9 +30,11 @@ const AccountMenuItem: FC = () => {
     popupId: 'popover'
   });
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     dispatch(logout());
-    alert('logged out');
+    await api.post('auth/logout');
+    toast.warning('Đã đăng xuất');
+    router.push('/');
   };
 
   return (

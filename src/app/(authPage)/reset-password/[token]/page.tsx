@@ -7,9 +7,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useRouter, useParams } from 'next/navigation';
-import fetchAPI from '@src/utils/fetchAPI';
-import { toast } from 'react-toastify';
 import RequiredTag from '@src/components/sharedComponents/RequiredTag';
+import useResetPassword from '@src/api/authApi/resetPassword';
 
 interface FormData {
   password: string;
@@ -50,34 +49,24 @@ const ResetPassword: FC = () => {
     resolver: yupResolver(schema)
   });
 
-  const [loading, setLoading] = useState(false);
+  const resetPasswordMutation = useResetPassword();
 
   const goToLogin = () => {
     router.push('/login');
   };
 
-  const obSubmit = async (data: FormData) => {
-    setLoading(true);
-
-    await fetchAPI(`auth/change-password/${params.token}`, 'POST', {
-      password: data.password
-    })
-      .then((response) => {
-        toast.success('Đổi mật khẩu thành công!');
-        goToLogin();
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error('Có lỗi xảy ra hoặc yêu cầu đổi mật khẩu đã hết hạn!');
-      });
-
-    setLoading(false);
+  const onSubmit = async (data: FormData) => {
+    const variables = {
+      password: data.password,
+      token: params.token
+    };
+    resetPasswordMutation.mutate(variables);
   };
 
-  const canSubmit = !isValid || !isDirty || loading;
+  const canSubmit = !isValid || !isDirty || resetPasswordMutation.isLoading;
 
   return (
-    <Stack spacing={3} component="form" onSubmit={handleSubmit(obSubmit)}>
+    <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>
       <Typography px={5} align="center">
         Để khôi phục mật khẩu, vui lòng nhập đúng email bạn đã dùng để đăng ký{' '}
         <RequiredTag />

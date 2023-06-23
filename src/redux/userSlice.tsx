@@ -2,6 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import dayjs from 'dayjs';
 
+export interface Role {
+  id: number;
+  name: string;
+}
 export interface UserData {
   fullName: string;
   healthInsuranceNumber: string;
@@ -11,6 +15,7 @@ export interface UserData {
   province: string;
   district: string;
   ward: string;
+  roles: Role[];
 }
 
 export interface PersonalInfoFormData {
@@ -37,7 +42,8 @@ const userData: UserData = {
   gender: null,
   province: '',
   district: '',
-  ward: ''
+  ward: '',
+  roles: []
 };
 
 const initialState = { isAuthenticated: false, user: userData };
@@ -57,7 +63,7 @@ export const userSlice = createSlice({
       return state;
     },
     updateUserData: (state, action: PayloadAction<PersonalInfoFormData>) => {
-      state.user = action.payload;
+      state.user = { ...state.user, ...action.payload };
       return state;
     }
   }
