@@ -4,17 +4,29 @@ import { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
+interface VariablesType {
+  password: string;
+  token: string;
+}
+
+interface ResetPasswordResponseType {
+  message: string;
+}
+
 const resetPasswordApi = async (password: string, token: string) => {
-  const { data } = await api.post('auth/change-password/' + token, {
-    password
-  });
+  const { data } = await api.post<ResetPasswordResponseType>(
+    'auth/change-password/' + token,
+    {
+      password
+    }
+  );
   return data;
 };
 
 const useResetPassword = () => {
   const router = useRouter();
   const resetPasswordMutation = useMutation(
-    (variables: { password: string; token: string }) =>
+    (variables: VariablesType) =>
       resetPasswordApi(variables.password, variables.token),
     {
       onSuccess: () => {

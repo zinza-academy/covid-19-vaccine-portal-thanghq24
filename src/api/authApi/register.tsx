@@ -19,8 +19,15 @@ export interface RegisterFormData {
   roles: number[];
 }
 
+interface RegisterResponseType {
+  message: string;
+}
+
 const registerApi = async (registerFormData: RegisterFormData) => {
-  const { data } = await api.post('/auth/sign-up', registerFormData);
+  const { data } = await api.post<RegisterResponseType>(
+    '/auth/sign-up',
+    registerFormData
+  );
   return data;
 };
 

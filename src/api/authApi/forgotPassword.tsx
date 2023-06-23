@@ -8,10 +8,14 @@ export interface ForgotPasswordFormData {
   email: string;
 }
 
+interface ForgotPasswordResponseType {
+  token: string;
+}
+
 const forgotPasswordApi = async (
   forgotPasswordFormData: ForgotPasswordFormData
 ) => {
-  const { data } = await api.post(
+  const { data } = await api.post<ForgotPasswordResponseType>(
     '/auth/forgot-password',
     forgotPasswordFormData
   );

@@ -12,9 +12,9 @@ export interface UserData {
   dob: string | number | Date | dayjs.Dayjs | null | undefined;
   gender: string | null;
   citizenIdentification: string;
-  province: string;
-  district: string;
-  ward: string;
+  province: number | string;
+  district: number | string;
+  ward: number | string;
   roles: Role[];
 }
 
@@ -24,9 +24,9 @@ export interface PersonalInfoFormData {
   fullName: string;
   dob: string | number | Date | dayjs.Dayjs | null | undefined;
   gender: string | null;
-  province: string;
-  district: string;
-  ward: string;
+  province: number | string;
+  district: number | string;
+  ward: number | string;
 }
 
 interface PasswordFormData {
