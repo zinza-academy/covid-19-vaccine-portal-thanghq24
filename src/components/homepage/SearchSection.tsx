@@ -1,48 +1,27 @@
 import { Box, Button, Stack } from '@mui/material';
 import React, { FC, useEffect, useState } from 'react';
 import SelectInput from '../sharedComponents/SelectInput';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { UseFormReturn } from 'react-hook-form';
 import useProvinces from '@src/hooks/useProvinces';
 import SearchIcon from '@mui/icons-material/Search';
+import useFindVaccinationPoint, {
+  VaccinationPointFindQueryType
+} from '@src/api/authApi/vaccinationPoint/find';
+import { toast } from 'react-toastify';
 
-interface FormData {
-  province: string;
-  district: string;
-  ward: string;
+interface VaccinationPointSearchPropTypes {
+  vaccinationPointForm: UseFormReturn<VaccinationPointFindQueryType, any>;
 }
 
-const schema = yup
-  .object()
-  .shape({
-    province: yup.string(),
-    district: yup.string(),
-    ward: yup.string()
-  })
-  .required();
-
-const defaultValues = {
-  province: '',
-  district: '',
-  ward: ''
-};
-
-const SearchSection: FC = () => {
-  const {
-    control,
-    handleSubmit,
-    getValues,
-    setValue,
-    watch,
-    formState: { isDirty, isValid }
-  } = useForm<FormData>({
-    mode: 'onChange',
-    defaultValues: defaultValues,
-    resolver: yupResolver(schema)
-  });
+const SearchSection: FC<VaccinationPointSearchPropTypes> = ({
+  vaccinationPointForm
+}) => {
+  const { control, handleSubmit, getValues, setValue, watch } =
+    vaccinationPointForm;
 
   const [loading, setLoading] = useState(false);
+
+  const { refetch } = useFindVaccinationPoint(getValues());
 
   const { provinceSelections, districtSelections, wardSelections } =
     useProvinces(getValues('province'), getValues('district'));
@@ -59,15 +38,20 @@ const SearchSection: FC = () => {
     setValue('ward', '');
   }, [watchDistrict]);
 
-  const canSubmit = loading;
+  const canSubmit = !loading;
 
-  const onSubmit = (data: FormData) => {
-    setLoading(true);
-    setTimeout(() => {
-      alert('trying to log in with this data: ' + JSON.stringify(data));
+  const onSubmit = async () => {
+    try {
+      setLoading(true);
+      await refetch();
+      toast.success('Dữ liệu đơn vị hành chính đã được cập nhật!');
+    } catch (error) {
+      toast.error('Không thể tải dữ liệu đơn vị hành chính!');
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
+
   return (
     <Stack
       component="form"
@@ -78,7 +62,6 @@ const SearchSection: FC = () => {
         <SelectInput
           control={control}
           errorMessage="Tỉnh/Thành phố không được bỏ trống"
-          // label="Tỉnh/Thành phố"
           name="province"
           selections={provinceSelections()}
           defaultValue=""
@@ -91,7 +74,6 @@ const SearchSection: FC = () => {
         <SelectInput
           control={control}
           errorMessage="Quận/Huyện không được bỏ trống"
-          // label="Quận/Huyện"
           name="district"
           selections={districtSelections()}
           defaultValue=""
@@ -104,7 +86,6 @@ const SearchSection: FC = () => {
         <SelectInput
           control={control}
           errorMessage="Xã/Phường không được bỏ trống"
-          // label="Xã/Phường"
           name="ward"
           selections={wardSelections()}
           defaultValue=""
@@ -117,9 +98,9 @@ const SearchSection: FC = () => {
         <Button
           type="submit"
           variant="contained"
-          disabled={canSubmit}
+          disabled={!canSubmit}
           endIcon={<SearchIcon />}>
-          Tiếp tục
+          Tìm kiếm
         </Button>
       </Box>
     </Stack>

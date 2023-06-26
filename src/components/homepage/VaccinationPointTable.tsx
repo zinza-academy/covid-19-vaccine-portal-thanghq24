@@ -14,8 +14,16 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import { indigo } from '@mui/material/colors';
+import useFindVaccinationPoint, {
+  VaccinationPointFindQueryType
+} from '@src/api/authApi/vaccinationPoint/find';
+import { UseFormReturn } from 'react-hook-form';
+
+interface VaccinationPointTablePropsType {
+  vaccinationPointForm: UseFormReturn<VaccinationPointFindQueryType, any>;
+}
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -48,7 +56,7 @@ const vaccinationPoint: VaccinationPoint = {
 
 const PAGE_SIZES = [10, 20, 50];
 
-const vaccinationPointList = new Array<VaccinationPoint>(32).fill(
+const vaccinationPoints = new Array<VaccinationPoint>(32).fill(
   vaccinationPoint
 );
 
@@ -71,26 +79,39 @@ const TableBodyCell: FC<{ label: string | number }> = ({ label }) => {
 };
 
 const fetchData = (page: number, pageSize: number) => {
-  return vaccinationPointList.slice(
-    page * pageSize,
-    page * pageSize + pageSize
-  );
+  return vaccinationPoints.slice(page * pageSize, page * pageSize + pageSize);
 };
 
 const getEmptyRows = (page: number, pageSize: number) => {
-  const maxPage = Math.floor(vaccinationPointList.length / pageSize);
+  const maxPage = Math.floor(vaccinationPoints.length / pageSize);
 
   if (page !== maxPage || page === 0) return [];
   const lastPageItemNumber = fetchData(maxPage, pageSize);
   return new Array(pageSize - lastPageItemNumber.length).fill('empty');
 };
 
-const VaccinationPointTable: FC = () => {
-  const [page, setPage] = useState<number>(0);
-  const [pageSize, setPageSize] = useState<number>(10);
+const VaccinationPointTable: FC<VaccinationPointTablePropsType> = ({
+  vaccinationPointForm
+}) => {
+  const { getValues, setValue } = vaccinationPointForm;
+  const { data } = useFindVaccinationPoint(getValues());
+
+  const vaccinationPoints = data?.data;
+  const page = getValues('page');
+  const pageSize = getValues('pageSize');
+
+  const setPage = (page: number) => {
+    setValue('page', page);
+  };
+
+  const setPageSize = (pageSize: number) => {
+    setValue('pageSize', pageSize);
+  };
 
   const getPageOptions = () => {
-    const maxPage = Math.floor(vaccinationPointList.length / pageSize);
+    const maxPage = vaccinationPoints
+      ? Math.floor(vaccinationPoints?.length / pageSize)
+      : 0;
     let pageOptions = [];
     for (let i = 0; i <= maxPage; i++) {
       pageOptions.push(i);
@@ -114,24 +135,33 @@ const VaccinationPointTable: FC = () => {
               <TableHeadCell label="Số bàn tiêm" />
             </TableRow>
           </TableHead>
-          <TableBody>
-            {fetchData(page, pageSize)
-              .concat(getEmptyRows(page, pageSize))
-              .map((vaccinationPoint, index) => (
-                <StyledTableRow key={index}>
-                  <TableBodyCell label={index + 1} />
-                  <TableBodyCell label={vaccinationPoint.name} />
-                  <TableBodyCell label={vaccinationPoint.address} />
-                  <TableBodyCell label={vaccinationPoint.ward} />
-                  <TableBodyCell label={vaccinationPoint.district} />
-                  <TableBodyCell label={vaccinationPoint.province} />
-                  <TableBodyCell label={vaccinationPoint.manager} />
-                  <TableBodyCell label={vaccinationPoint.tableNumber} />
-                </StyledTableRow>
-              ))}
-          </TableBody>
+          {vaccinationPoints && vaccinationPoints?.length > 0 && (
+            <TableBody>
+              {vaccinationPoints
+                .concat(getEmptyRows(page, pageSize))
+                .map((vaccinationPoint, index) => (
+                  <StyledTableRow key={index}>
+                    <TableBodyCell label={index + 1} />
+                    <TableBodyCell label={vaccinationPoint.name} />
+                    <TableBodyCell label={vaccinationPoint.address} />
+                    <TableBodyCell label={vaccinationPoint.ward.name} />
+                    <TableBodyCell
+                      label={vaccinationPoint.ward.district.name}
+                    />
+                    <TableBodyCell
+                      label={vaccinationPoint.ward.district.name}
+                    />
+                    <TableBodyCell label={vaccinationPoint.manager} />
+                    <TableBodyCell label={vaccinationPoint.tableNumber} />
+                  </StyledTableRow>
+                ))}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
+      {!vaccinationPoints && (
+        <Typography textAlign="center">Không có dữ liệu</Typography>
+      )}
       <Stack direction="row" justifyContent="space-between">
         <Stack direction="row" alignItems={'center'} spacing={1}>
           <Typography variant="body2">Số bản ghi:</Typography>
@@ -151,7 +181,7 @@ const VaccinationPointTable: FC = () => {
           </Select>
           <Typography variant="body2">{`${page * pageSize + 1} - ${
             page * pageSize + pageSize
-          }/${vaccinationPointList.length}`}</Typography>
+          }/${vaccinationPoints?.length}`}</Typography>
         </Stack>
         <Stack direction="row" alignItems="center">
           <Stack
@@ -180,7 +210,7 @@ const VaccinationPointTable: FC = () => {
             </Button>
             <Button
               disabled={page === 0}
-              onClick={() => setPage((prev) => prev - 1)}
+              onClick={() => setPage(page - 1)}
               sx={{
                 py: 1,
                 px: 2,
@@ -214,9 +244,12 @@ const VaccinationPointTable: FC = () => {
             ))}
             <Button
               disabled={
-                page === Math.floor(vaccinationPointList.length / pageSize)
+                page ===
+                (vaccinationPoints
+                  ? Math.floor(vaccinationPoints?.length / pageSize)
+                  : true)
               }
-              onClick={() => setPage((prev) => prev + 1)}
+              onClick={() => setPage(page + 1)}
               sx={{
                 py: 1,
                 px: 2,
@@ -231,10 +264,17 @@ const VaccinationPointTable: FC = () => {
             </Button>
             <Button
               disabled={
-                page === Math.floor(vaccinationPointList.length / pageSize)
+                page ===
+                (vaccinationPoints
+                  ? Math.floor(vaccinationPoints?.length / pageSize)
+                  : true)
               }
               onClick={() =>
-                setPage(Math.floor(vaccinationPointList.length / pageSize))
+                setPage(
+                  vaccinationPoints
+                    ? Math.floor(vaccinationPoints?.length / pageSize)
+                    : 0
+                )
               }
               sx={{
                 py: 1,

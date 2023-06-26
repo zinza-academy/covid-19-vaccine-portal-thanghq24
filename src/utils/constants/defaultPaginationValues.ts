@@ -1,0 +1,6 @@
+const DEFAULT_PAGINATION_VALUES = {
+  PAGE: 0,
+  PAGE_SIZE: 10
+};
+
+export default DEFAULT_PAGINATION_VALUES;
