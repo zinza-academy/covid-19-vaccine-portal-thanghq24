@@ -11,6 +11,9 @@ import useProvinces from '@src/hooks/useProvinces';
 import dayjs from 'dayjs';
 import { getISODate } from '@src/utils/getISODate';
 import useRegister, { RegisterFormData } from '@src/api/authApi/register';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const schema = yup
   .object()
@@ -66,6 +69,10 @@ const defaultValues: RegisterFormData = {
 };
 
 const Register: FC = () => {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -95,19 +102,34 @@ const Register: FC = () => {
   }, [watchDistrict]);
 
   const onSubmit = async (data: RegisterFormData) => {
-    let registerFormData = {
-      ...data,
-      dob: data.dob !== null ? getISODate(data.dob) : null,
-      province: Number(data.province),
-      district: Number(data.district),
-      ward: Number(data.ward),
-      roles: defaultValues.roles
-    };
+    try {
+      let registerFormData = {
+        ...data,
+        dob: data.dob !== null ? getISODate(data.dob) : null,
+        province: Number(data.province),
+        district: Number(data.district),
+        ward: Number(data.ward),
+        roles: defaultValues.roles
+      };
 
-    registerMutation.mutate(registerFormData);
+      await registerMutation.mutateAsync(registerFormData);
+      toast.success('Đăng ký thành công');
+      router.push('/login');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
+        else if (error?.response?.status === 409)
+          toast.error('Email đã được sử dụng!');
+        else toast.error('Đăng ký thất bại!');
+      } else {
+        toast.error('Có lỗi xảy ra!');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const canSubmit = !isValid || !isDirty || registerMutation.isLoading;
+  const canSubmit = !isValid || !isDirty || loading;
 
   return (
     <Stack

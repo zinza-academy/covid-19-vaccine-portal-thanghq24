@@ -9,6 +9,8 @@ import * as yup from 'yup';
 import { useRouter, useParams } from 'next/navigation';
 import RequiredTag from '@src/components/sharedComponents/RequiredTag';
 import useResetPassword from '@src/api/authApi/resetPassword';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 interface FormData {
   password: string;
@@ -39,6 +41,8 @@ const ResetPassword: FC = () => {
   const router = useRouter();
   const params = useParams();
 
+  const [loading, setLoading] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -56,14 +60,33 @@ const ResetPassword: FC = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    const variables = {
-      password: data.password,
-      token: params.token
-    };
-    resetPasswordMutation.mutate(variables);
+    try {
+      setLoading(true);
+
+      const variables = {
+        password: data.password,
+        token: params.token
+      };
+      await resetPasswordMutation.mutateAsync(variables);
+      toast.success('Đổi mật khẩu thành công!');
+      router.push('/login');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
+        else if (error?.response?.status === 404)
+          toast.error('Không tìm thấy user này!');
+        else if (error?.response?.status === 401)
+          toast.error('Token đã hết hạn!');
+        else toast.error('Đổi mật khẩu thất bại!');
+      } else {
+        toast.error('Có lỗi xảy ra!');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const canSubmit = !isValid || !isDirty || resetPasswordMutation.isLoading;
+  const canSubmit = !isValid || !isDirty || loading;
 
   return (
     <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>

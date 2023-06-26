@@ -1,6 +1,6 @@
 'use client';
 import { Button, Stack, Typography } from '@mui/material';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -8,7 +8,11 @@ import Link from 'next/link';
 import { indigo } from '@mui/material/colors';
 import TextInput from '@components/sharedComponents/TextInput';
 import { useRouter } from 'next/navigation';
-import useLogin from '@src/api/authApi/login';
+import useLogin, { LoginResponseUserType } from '@src/api/authApi/login';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { login } from '@src/redux/userSlice';
+import { useAppDispatch } from '@src/hooks/reduxHook';
 
 interface LoginFormData {
   email: string;
@@ -25,7 +29,10 @@ const schema = yup
 
 const Login: FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const loginMutation = useLogin();
+
+  const [loading, setLoading] = useState(false);
 
   const {
     control,
@@ -40,11 +47,32 @@ const Login: FC = () => {
     resolver: yupResolver(schema)
   });
 
-  const onSubmit = async (loginFormData: LoginFormData) => {
-    loginMutation.mutate(loginFormData);
+  const onLoggedIn = (user: LoginResponseUserType) => {
+    dispatch(login(user));
+    router.push('/');
   };
 
-  const canSubmit = !isValid || !isDirty || loginMutation.isLoading;
+  const onSubmit = async (loginFormData: LoginFormData) => {
+    try {
+      setLoading(true);
+      const { user } = await loginMutation.mutateAsync(loginFormData);
+      toast.success('Đăng nhập thành công!');
+      onLoggedIn(user);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
+        else if (error?.response?.status === 401)
+          toast.error('Sai email hoặc mật khẩu!');
+        else toast.error('Đăng nhập thất bại!');
+      } else {
+        toast.error('Có lỗi xảy ra!');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const canSubmit = !isValid || !isDirty || loading;
 
   const goToRegister = () => {
     router.push('/register');
