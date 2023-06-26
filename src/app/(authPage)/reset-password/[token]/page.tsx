@@ -86,7 +86,7 @@ const ResetPassword: FC = () => {
     }
   };
 
-  const canSubmit = !isValid || !isDirty || resetPasswordMutation.isLoading;
+  const canSubmit = !isValid || !isDirty || loading;
 
   return (
     <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>

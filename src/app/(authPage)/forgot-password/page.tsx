@@ -1,7 +1,7 @@
 'use client';
 import { Button, Stack, Typography } from '@mui/material';
 import TextInput from '@src/components/sharedComponents/TextInput';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -60,7 +60,7 @@ const ForgotPassword: FC = () => {
     }
   };
 
-  const canSubmit = !isValid || !isDirty || forgotPasswordMutation.isLoading;
+  const canSubmit = !isValid || !isDirty || loading;
 
   const goToLogin = () => {
     router.push('/login');

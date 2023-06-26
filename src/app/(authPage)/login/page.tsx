@@ -1,6 +1,6 @@
 'use client';
 import { Button, Stack, Typography } from '@mui/material';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -72,7 +72,7 @@ const Login: FC = () => {
     }
   };
 
-  const canSubmit = !isValid || !isDirty || loginMutation.isLoading;
+  const canSubmit = !isValid || !isDirty || loading;
 
   const goToRegister = () => {
     router.push('/register');
