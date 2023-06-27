@@ -2,25 +2,31 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import dayjs from 'dayjs';
 
+export interface Role {
+  id: number;
+  name: string;
+}
 export interface UserData {
   fullName: string;
   healthInsuranceNumber: string;
   dob: string | number | Date | dayjs.Dayjs | null | undefined;
   gender: string | null;
   citizenIdentification: string;
-  province: string;
-  district: string;
-  ward: string;
+  province: number | string;
+  district: number | string;
+  ward: number | string;
+  roles: Role[];
 }
 
 export interface PersonalInfoFormData {
   citizenIdentification: string;
+  healthInsuranceNumber: string;
   fullName: string;
   dob: string | number | Date | dayjs.Dayjs | null | undefined;
   gender: string | null;
-  province: string;
-  district: string;
-  ward: string;
+  province: number | string;
+  district: number | string;
+  ward: number | string;
 }
 
 interface PasswordFormData {
@@ -36,30 +42,36 @@ const userData: UserData = {
   gender: null,
   province: '',
   district: '',
-  ward: ''
+  ward: '',
+  roles: []
 };
 
-const initialState = userData;
+const initialState = { isAuthenticated: false, user: userData };
 
 export const userSlice = createSlice({
   name: 'userSlice',
   initialState,
   reducers: {
     login: (state, action: PayloadAction<UserData>) => {
-      return { ...state, ...action.payload };
+      state.isAuthenticated = true;
+      state.user = action.payload;
+      return state;
     },
     logout: (state) => {
-      state = userData;
+      state.isAuthenticated = false;
+      state.user = userData;
       return state;
     },
     updateUserData: (state, action: PayloadAction<PersonalInfoFormData>) => {
-      return { ...state, ...action.payload };
+      state.user = { ...state.user, ...action.payload };
+      return state;
     }
   }
 });
 
 export const { login, logout, updateUserData } = userSlice.actions;
 
-export const selectUserData = (state: RootState) => state.user;
+export const selectUserData = (state: RootState) => state.user.user;
+export const selectAuthState = (state: RootState) => state.user.isAuthenticated;
 
 export default userSlice.reducer;

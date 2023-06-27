@@ -1,12 +1,5 @@
 'use client';
-import {
-  Button,
-  FormControlLabel,
-  FormGroup,
-  Stack,
-  Switch,
-  Typography
-} from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,8 +8,11 @@ import Link from 'next/link';
 import { indigo } from '@mui/material/colors';
 import TextInput from '@components/sharedComponents/TextInput';
 import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
+import useLogin, { LoginResponseUserType } from '@src/api/authApi/login';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 import { login } from '@src/redux/userSlice';
+import { useAppDispatch } from '@src/hooks/reduxHook';
 
 interface LoginFormData {
   email: string;
@@ -33,7 +29,11 @@ const schema = yup
 
 const Login: FC = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const loginMutation = useLogin();
+
+  const [loading, setLoading] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -47,43 +47,35 @@ const Login: FC = () => {
     resolver: yupResolver(schema)
   });
 
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(true);
+  const onLoggedIn = (user: LoginResponseUserType) => {
+    dispatch(login(user));
+    router.push('/');
+  };
 
-  const onSubmit = (data: LoginFormData) => {
-    setLoading(true);
-    setTimeout(() => {
-      dispatch(
-        // get address data from server after login
-        login({
-          citizenIdentification: '93310120201202',
-          healthInsuranceNumber: 'hd0910912332543', //need to add healthInsuranceNumber to register
-          fullName: 'Ha Quoc Thang',
-          dob: '07/05/1954',
-          gender: 'M',
-          province: '1',
-          district: '1',
-          ward: '1'
-        })
-      );
-      alert(
-        success
-          ? 'trying to log in with this data: ' +
-              JSON.stringify({ email: data.email, password: data.password })
-          : 'Có lỗi xảy ra'
-      );
+  const onSubmit = async (loginFormData: LoginFormData) => {
+    try {
+      setLoading(true);
+      const { user } = await loginMutation.mutateAsync(loginFormData);
+      toast.success('Đăng nhập thành công!');
+      onLoggedIn(user);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
+        else if (error?.response?.status === 401)
+          toast.error('Sai email hoặc mật khẩu!');
+        else toast.error('Đăng nhập thất bại!');
+      } else {
+        toast.error('Có lỗi xảy ra!');
+      }
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   const canSubmit = !isValid || !isDirty || loading;
 
   const goToRegister = () => {
     router.push('/register');
-  };
-
-  const toggleSuccess = () => {
-    setSuccess((prev) => !prev);
   };
 
   return (
@@ -137,14 +129,6 @@ const Login: FC = () => {
         onClick={goToRegister}>
         Đăng ký
       </Button>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch defaultChecked value={success} onChange={toggleSuccess} />
-          }
-          label="Fake API Call Success?"
-        />
-      </FormGroup>
     </Stack>
   );
 };

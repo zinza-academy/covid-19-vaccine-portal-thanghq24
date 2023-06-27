@@ -1,46 +1,47 @@
 'use client';
-import {
-  Button,
-  FormControlLabel,
-  FormGroup,
-  Stack,
-  Switch,
-  Typography
-} from '@mui/material';
-import React, { FC, useState } from 'react';
-import { FieldValues, useForm } from 'react-hook-form';
+import { Button, Stack, Typography } from '@mui/material';
+import React, { FC, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import TextInput from '@components/sharedComponents/TextInput';
-import { useRouter } from 'next/navigation';
 import DateInput from '@src/components/sharedComponents/DateInput';
 import SelectInput from '@src/components/sharedComponents/SelectInput';
 import useProvinces from '@src/hooks/useProvinces';
 import dayjs from 'dayjs';
-
-export interface FormData extends FieldValues {
-  citizenIdentification: string;
-  email: string;
-  password: string;
-  fullName: string;
-  dob: Date | null;
-  gender: string | null;
-  province: string;
-  district: string;
-  ward: string;
-}
+import { getISODate } from '@src/utils/getISODate';
+import useRegister, { RegisterFormData } from '@src/api/authApi/register';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const schema = yup
   .object()
   .shape({
     citizenIdentification: yup
+      .number()
+      .min(100000000000)
+      .max(999999999999)
+      .required(),
+    healthInsuranceNumber: yup
       .string()
-      .matches(/^[0-9]+$/)
-      .test(
-        'check ID length',
-        'ID length must be 9 or 12',
-        (value) => value?.length === 9 || value?.length === 12
-      ),
+      .trim()
+      .length(15)
+      .uppercase()
+      .test('health-insurance-number-check', (value) => {
+        let checkFirstTwoChars = yup
+          .string()
+          .matches(/^[A-Z]+$/) //?
+          .isValid(value?.slice(0, 2));
+        let checkLastThirteenNums = yup
+          .string()
+          .length(13)
+          .matches(/[^0-9]/);
+        if (!checkFirstTwoChars) return false;
+        if (!checkLastThirteenNums) return false;
+        return true;
+      })
+      .required(),
     email: yup.string().email().required(),
     password: yup.string().trim().min(8).required(),
     fullName: yup.string().required(),
@@ -48,12 +49,14 @@ const schema = yup
     gender: yup.string().max(1).required(),
     province: yup.string().required(),
     district: yup.string().required(),
-    ward: yup.string().required()
+    ward: yup.string().required(),
+    roles: yup.array(yup.number())
   })
   .required();
 
-const defaultValues: FormData = {
+const defaultValues: RegisterFormData = {
   citizenIdentification: '',
+  healthInsuranceNumber: '',
   email: '',
   password: '',
   fullName: '',
@@ -61,62 +64,72 @@ const defaultValues: FormData = {
   gender: '',
   province: '',
   district: '',
-  ward: ''
+  ward: '',
+  roles: [3]
 };
 
 const Register: FC = () => {
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
+
   const {
     control,
     handleSubmit,
     getValues,
+    setValue,
     watch,
     formState: { isDirty, isValid }
-  } = useForm<FormData>({
+  } = useForm<RegisterFormData>({
     mode: 'onChange',
     defaultValues: defaultValues,
     resolver: yupResolver(schema)
   });
+
+  const registerMutation = useRegister();
   const { provinceSelections, districtSelections, wardSelections } =
     useProvinces(getValues('province'), getValues('district'));
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(true);
 
-  //watch updates of province and district to trigger api call to provinceAPI
-  watch('province');
-  watch('district');
+  const watchProvince = watch('province');
+  const watchDistrict = watch('district');
 
-  const onSubmit = (data: FormData) => {
-    setLoading(true);
-    let formData = data;
-    setTimeout(() => {
-      alert(
-        success
-          ? 'trying to log in with this data: ' +
-              JSON.stringify({
-                ...formData,
-                dob:
-                  formData.dob !== null
-                    ? new Date(formData.dob).toLocaleDateString('en-GB')
-                    : null
-              })
-          : 'Có lỗi xảy ra'
-      );
+  useEffect(() => {
+    setValue('district', '');
+    setValue('ward', '');
+  }, [watchProvince]);
+  useEffect(() => {
+    setValue('ward', '');
+  }, [watchDistrict]);
+
+  const onSubmit = async (data: RegisterFormData) => {
+    try {
+      let registerFormData = {
+        ...data,
+        dob: data.dob !== null ? getISODate(data.dob) : null,
+        province: Number(data.province),
+        district: Number(data.district),
+        ward: Number(data.ward),
+        roles: defaultValues.roles
+      };
+
+      await registerMutation.mutateAsync(registerFormData);
+      toast.success('Đăng ký thành công');
+      router.push('/login');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
+        else if (error?.response?.status === 409)
+          toast.error('Email đã được sử dụng!');
+        else toast.error('Đăng ký thất bại!');
+      } else {
+        toast.error('Có lỗi xảy ra!');
+      }
+    } finally {
       setLoading(false);
-      success ? goToHomePage() : null;
-    }, 2000);
+    }
   };
 
   const canSubmit = !isValid || !isDirty || loading;
-
-  const goToHomePage = () => {
-    router.push('/');
-  };
-
-  const toggleSuccess = () => {
-    setSuccess((prev) => !prev);
-  };
 
   return (
     <Stack
@@ -133,6 +146,14 @@ const Register: FC = () => {
         label="Số CMND/CCCD"
         placeholder="Số CMND/CCCD"
         errorMessage="Số CMND/CCCD không được bỏ trống, phải là số, độ dài chuẩn (9 hoặc 12)"
+        required
+      />
+      <TextInput
+        name="healthInsuranceNumber"
+        control={control}
+        label="Số thẻ BHYT"
+        placeholder="Số thẻ BHYT"
+        errorMessage="Nhóm ưu tiên không được bỏ trống và được nhập đúng đinh dạng"
         required
       />
       <TextInput
@@ -217,14 +238,6 @@ const Register: FC = () => {
           Tiếp tục
         </Button>
       </Stack>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch defaultChecked value={success} onChange={toggleSuccess} />
-          }
-          label="Fake API Call Success?"
-        />
-      </FormGroup>
     </Stack>
   );
 };

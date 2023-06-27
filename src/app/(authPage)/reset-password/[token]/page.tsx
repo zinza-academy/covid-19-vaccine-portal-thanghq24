@@ -1,31 +1,45 @@
 'use client';
+
 import { Button, Stack, Typography } from '@mui/material';
 import TextInput from '@src/components/sharedComponents/TextInput';
 import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import RequiredTag from '@src/components/sharedComponents/RequiredTag';
-import useForgotPassword, {
-  ForgotPasswordFormData
-} from '@src/api/authApi/forgotPassword';
+import useResetPassword from '@src/api/authApi/resetPassword';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
+interface FormData {
+  password: string;
+  confirmPassword: string;
+}
 const schema = yup
   .object()
   .shape({
-    email: yup.string().email().required()
+    password: yup.string().trim().min(8).required(),
+    confirmPassword: yup
+      .string()
+      .trim()
+      .min(8)
+      .required()
+      .oneOf(
+        [yup.ref('password')],
+        'Mật khẩu xác phải trùng mật khẩu thay đổi '
+      )
   })
   .required();
 
 const defaultValues = {
-  email: ''
+  password: '',
+  confirmPassword: ''
 };
 
-const ForgotPassword: FC = () => {
+const ResetPassword: FC = () => {
   const router = useRouter();
+  const params = useParams();
 
   const [loading, setLoading] = useState(false);
 
@@ -33,25 +47,37 @@ const ForgotPassword: FC = () => {
     control,
     handleSubmit,
     formState: { isDirty, isValid }
-  } = useForm<ForgotPasswordFormData>({
+  } = useForm<FormData>({
     mode: 'onChange',
     defaultValues,
     resolver: yupResolver(schema)
   });
 
-  const forgotPasswordMutation = useForgotPassword();
+  const resetPasswordMutation = useResetPassword();
 
-  const onSubmit = async (data: ForgotPasswordFormData) => {
+  const goToLogin = () => {
+    router.push('/login');
+  };
+
+  const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-      await forgotPasswordMutation.mutateAsync(data);
-      toast.success('Link đổi mật khẩu đã được gửi!');
+
+      const variables = {
+        password: data.password,
+        token: params.token
+      };
+      await resetPasswordMutation.mutateAsync(variables);
+      toast.success('Đổi mật khẩu thành công!');
+      router.push('/login');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
         else if (error?.response?.status === 404)
-          toast.error('Không tìm thấy user với email này!');
-        else toast.error('Không thể gửi link reset mật khẩu!');
+          toast.error('Không tìm thấy user này!');
+        else if (error?.response?.status === 401)
+          toast.error('Token đã hết hạn!');
+        else toast.error('Đổi mật khẩu thất bại!');
       } else {
         toast.error('Có lỗi xảy ra!');
       }
@@ -62,10 +88,6 @@ const ForgotPassword: FC = () => {
 
   const canSubmit = !isValid || !isDirty || loading;
 
-  const goToLogin = () => {
-    router.push('/login');
-  };
-
   return (
     <Stack spacing={3} component="form" onSubmit={handleSubmit(onSubmit)}>
       <Typography px={5} align="center">
@@ -74,9 +96,21 @@ const ForgotPassword: FC = () => {
       </Typography>
       <TextInput
         control={control}
-        name="email"
-        placeholder="Email"
-        errorMessage="Email không được bỏ trống và phải đúng định dạng"
+        name="password"
+        label="Mật khẩu mới"
+        placeholder="Mật khẩu mới"
+        errorMessage="Mật khẩu mới không được bỏ trống, phải là số, độ dài chuẩn (9 hoặc 12)"
+        type="password"
+        required
+      />
+      <TextInput
+        control={control}
+        name="confirmPassword"
+        label="Xác nhận lại mật khẩu"
+        placeholder="Xác nhận lại mật khẩu"
+        errorMessage="Mật khẩu xác nhận không được bỏ trống, phải là số, độ dài chuẩn (9 hoặc 12) và phải trùng mật khẩu thay đổi"
+        type="password"
+        required
       />
       <Stack direction="row" spacing={2} justifyContent="center">
         <Button
@@ -84,7 +118,7 @@ const ForgotPassword: FC = () => {
           color="primary"
           size="large"
           onClick={goToLogin}>
-          Quay lại
+          Đăng nhập
         </Button>
         <Button
           variant="contained"
@@ -95,11 +129,11 @@ const ForgotPassword: FC = () => {
           sx={{
             padding: '6px 32px'
           }}>
-          Gửi
+          Đổi mật khẩu
         </Button>
       </Stack>
     </Stack>
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

@@ -7,49 +7,28 @@ interface SelectionObject {
 
 interface Province {
   name: string;
-  code: string | number;
-  division_type: string;
-  codename: string;
-  phone_code: number;
+  id: number | string;
 }
 
 interface District {
   name: string;
-  code: string | number;
-  division_type: string;
-  codename: string;
-  district_code: number;
+  id: number | string;
+  provinceId: number | string;
 }
 
 interface Ward {
   name: string;
-  code: string | number;
-  division_type: string;
-  codename: string;
-  district_code: number;
+  id: number | string;
+  districtId: number | string;
 }
 
-interface ProvinceResult extends Province {
-  districts: District[];
-}
+const useProvinces = (province: string | number, district: string | number) => {
+  const apiPrefix = process.env.NEXT_PUBLIC_API_URL;
 
-interface DistrictResult extends Province {
-  districts: District[];
-  wards: Ward[];
-}
-
-interface WardResult extends Province {
-  wards: Ward[];
-}
-
-const useProvinces = (province: string, district: string) => {
-  //provinces.open-api.vn/api/p get provinces
-  //provinces.open-api.vn/api/p/1?depth=2 get district array inside one province object
-  //provinces.open-api.vn/api/d/7?depth=2 get ward array inside one district object
-  const provinces = useQuery<ProvinceResult[]>({
+  const provinces = useQuery<Province[]>({
     queryKey: ['province'],
     queryFn: async () => {
-      const response = await fetch('https://provinces.open-api.vn/api/p/');
+      const response = await fetch(apiPrefix + 'provinces');
       if (!response.ok) {
         throw new Error('Có lỗi xảy ra');
       }
@@ -57,11 +36,11 @@ const useProvinces = (province: string, district: string) => {
     }
   });
 
-  const districts = useQuery<DistrictResult>({
+  const districts = useQuery<District[]>({
     queryKey: ['district', province],
     queryFn: async () => {
       const response = await fetch(
-        `https://provinces.open-api.vn/api/p/${province}?depth=2`
+        `${apiPrefix}districts/by-province/${province}`
       );
       if (!response.ok) {
         throw new Error('Có lỗi xảy ra');
@@ -71,12 +50,10 @@ const useProvinces = (province: string, district: string) => {
     enabled: !!province
   });
 
-  const wards = useQuery<WardResult>({
+  const wards = useQuery<Ward[]>({
     queryKey: ['ward', district],
     queryFn: async () => {
-      const response = await fetch(
-        `https://provinces.open-api.vn/api/d/${district}?depth=2`
-      );
+      const response = await fetch(`${apiPrefix}wards/by-district/${district}`);
       if (!response.ok) {
         throw new Error('Có lỗi xảy ra');
       }
@@ -88,7 +65,7 @@ const useProvinces = (province: string, district: string) => {
   const provinceSelections = (): SelectionObject[] => {
     let selections = provinces.data
       ? provinces?.data.map((province) => {
-          return { value: province.code, label: province.name };
+          return { value: province.id, label: province.name };
         })
       : [];
     selections.splice(0, 0, { value: '', label: 'Không có lựa chọn' });
@@ -97,8 +74,8 @@ const useProvinces = (province: string, district: string) => {
 
   const districtSelections = (): SelectionObject[] => {
     let selections = districts.data
-      ? districts?.data?.districts.map((district) => {
-          return { value: district.code, label: district.name };
+      ? districts?.data.map((district) => {
+          return { value: district.id, label: district.name };
         })
       : [];
     selections.splice(0, 0, { value: '', label: 'Không có lựa chọn' });
@@ -107,8 +84,8 @@ const useProvinces = (province: string, district: string) => {
 
   const wardSelections = (): SelectionObject[] => {
     let selections = wards.isSuccess
-      ? wards?.data?.wards.map((ward) => {
-          return { value: ward.code, label: ward.name };
+      ? wards?.data.map((ward) => {
+          return { value: ward.id, label: ward.name };
         })
       : [];
     selections.splice(0, 0, { value: '', label: 'Không có lựa chọn' });
