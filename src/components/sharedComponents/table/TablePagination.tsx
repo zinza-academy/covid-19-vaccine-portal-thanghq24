@@ -39,6 +39,7 @@ const TablePagination: FC<TablePaginationPropsType> = ({
           size="small"
           value={pageSize}
           onChange={(e: SelectChangeEvent<number>) => {
+            setPage(0);
             setPageSize(e.target.value as number);
           }}
           sx={{ width: '100px' }}>

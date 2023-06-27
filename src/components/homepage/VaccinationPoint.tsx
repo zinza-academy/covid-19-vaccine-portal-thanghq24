@@ -19,8 +19,8 @@ const schema = yup.object({
 });
 
 const defaultValues: VaccinationPointFindQueryType = {
-  page: 0,
-  pageSize: 5,
+  page: DEFAULT_PAGINATION_VALUES.PAGE,
+  pageSize: DEFAULT_PAGINATION_VALUES.PAGE_SIZE,
   ward: '',
   district: '',
   province: '',

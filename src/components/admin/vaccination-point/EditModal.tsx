@@ -8,17 +8,33 @@ import {
   Typography
 } from '@mui/material';
 import TextInput from '@src/components/sharedComponents/TextInput';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import { VaccinationPoint } from './VaccinationPointTable';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { VaccinationPointFindOneResponseType } from '@src/api/vaccinationPoint/findOne';
+import useProvinces from '@src/hooks/useProvinces';
+import SelectInput from '@src/components/sharedComponents/SelectInput';
 
 interface EditModalProps {
   editModalOpen: boolean;
   handleCloseEditModal: () => void;
-  vaccinationPoint: VaccinationPoint | null;
+  vaccinationPoint: VaccinationPointFindOneResponseType | null;
+}
+
+interface VaccinationSiteFormData {
+  id: number;
+  name: string;
+  address: string;
+  ward: string | number;
+  manager: string;
+  tableNumber: number;
+}
+
+interface ProvinceDistrictFormData {
+  province: string | number;
+  district: string | number;
 }
 
 const schema = yup
@@ -39,21 +55,64 @@ const EditModal: FC<EditModalProps> = ({
   handleCloseEditModal,
   vaccinationPoint
 }) => {
-  const {
-    control,
-    getValues,
-    handleSubmit,
-    reset,
-    formState: { isDirty, isValid }
-  } = useForm<VaccinationPoint>({
-    resolver: yupResolver(schema)
+  const provinceDistrictForm = useForm<ProvinceDistrictFormData>({
+    defaultValues: {
+      province: vaccinationPoint?.ward.district.province.id || '',
+      district: vaccinationPoint?.ward.district.id || ''
+    }
   });
 
-  useEffect(() => {
-    if (vaccinationPoint !== null) reset(vaccinationPoint);
-  }, [vaccinationPoint]);
+  const { control, getValues, setValue, watch, handleSubmit, reset } =
+    useForm<VaccinationSiteFormData>({
+      defaultValues: {
+        id: vaccinationPoint?.id,
+        name: vaccinationPoint?.name,
+        address: vaccinationPoint?.address,
+        ward: vaccinationPoint?.ward.id || '',
+        manager: vaccinationPoint?.manager,
+        tableNumber: vaccinationPoint?.tableNumber
+      },
+      resolver: yupResolver(schema)
+    });
 
-  const onSubmit = (data: VaccinationPoint) => {
+  const { provinceSelections, districtSelections, wardSelections } =
+    useProvinces(
+      provinceDistrictForm.getValues('province'),
+      provinceDistrictForm.getValues('district')
+    );
+
+  const watchProvince = provinceDistrictForm.watch('province');
+  const watchDistrict = provinceDistrictForm.watch('district');
+  watch('name');
+  watch('address');
+
+  useEffect(() => {
+    provinceDistrictForm.setValue('district', '');
+    setValue('ward', '');
+  }, [provinceDistrictForm, watchProvince, setValue]);
+
+  useEffect(() => {
+    setValue('ward', '');
+  }, [watchDistrict, setValue]);
+
+  useEffect(() => {
+    if (vaccinationPoint !== null) {
+      reset({
+        id: vaccinationPoint.id,
+        name: vaccinationPoint.name,
+        address: vaccinationPoint.address,
+        ward: vaccinationPoint.ward.id,
+        manager: vaccinationPoint.manager,
+        tableNumber: vaccinationPoint.tableNumber
+      });
+      provinceDistrictForm.reset({
+        province: vaccinationPoint.ward.district.province.id,
+        district: vaccinationPoint.ward.district.id
+      });
+    }
+  }, [vaccinationPoint, reset, provinceDistrictForm]);
+
+  const onSubmit = (data: VaccinationSiteFormData) => {
     alert('try to modify vaccination point' + JSON.stringify(data));
   };
 
@@ -97,6 +156,32 @@ const EditModal: FC<EditModalProps> = ({
             placeholder="Số nhà, tên đường"
             errorMessage="Số nhà, tên đường không được bỏ trống"
             required
+          />
+          <SelectInput
+            control={provinceDistrictForm.control}
+            errorMessage="Tỉnh/Thành phố không được bỏ trống"
+            name="province"
+            selections={provinceSelections()}
+            defaultValue=""
+            placeholder="Tỉnh/Thành phố"
+            required
+          />
+          <SelectInput
+            control={provinceDistrictForm.control}
+            errorMessage="Quận/Huyện không được bỏ trống"
+            name="district"
+            selections={districtSelections()}
+            defaultValue=""
+            placeholder="Quận/Huyện"
+            required
+          />
+          <SelectInput
+            control={control}
+            errorMessage="Xã/Phường không được bỏ trống"
+            name="ward"
+            selections={wardSelections()}
+            defaultValue=""
+            placeholder="Xã/Phường"
           />
           <TextInput
             control={control}

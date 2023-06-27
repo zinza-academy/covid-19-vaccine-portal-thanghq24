@@ -12,10 +12,10 @@ import useFindVaccinationPoint, {
 } from '@src/api/vaccinationPoint/find';
 import { UseFormReturn } from 'react-hook-form';
 import usePagination from '@src/hooks/usePagination';
-import TableHeadCell from '../sharedComponents/table/TableHeadCell';
-import TableBodyCell from '../sharedComponents/table/TableBodyCell';
-import TableRow from '../sharedComponents/table/TableRow';
-import TablePagination from '../sharedComponents/table/TablePagination';
+import TableHeadCell from '@components/sharedComponents/table/TableHeadCell';
+import TableBodyCell from '@components/sharedComponents/table/TableBodyCell';
+import TableRow from '@components/sharedComponents/table/TableRow';
+import TablePagination from '@components/sharedComponents/table/TablePagination';
 import DEFAULT_PAGINATION_VALUES from '@src/utils/constants/defaultPaginationValues';
 
 interface VaccinationPointTablePropsType {
