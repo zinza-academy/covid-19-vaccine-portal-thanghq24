@@ -20,10 +20,11 @@ export interface VaccinationPointEditResponseType {
 }
 
 const editVaccinationPointApi = async (
+  id: number | undefined,
   vaccinationPointEditFormData: VaccinationPointEditFormData
 ) => {
-  const { data } = await api.post<VaccinationPointEditResponseType>(
-    'vaccination-sites',
+  const { data } = await api.patch<VaccinationPointEditResponseType>(
+    'vaccination-sites/' + id,
     vaccinationPointEditFormData
   );
   return data;
@@ -31,8 +32,14 @@ const editVaccinationPointApi = async (
 
 const useEditVaccinationPoint = () => {
   const editMutation = useMutation(
-    (vaccinationPointEditFormData: VaccinationPointEditFormData) =>
-      editVaccinationPointApi(vaccinationPointEditFormData)
+    (variables: {
+      id: number | undefined;
+      vaccinationPointEditFormData: VaccinationPointEditFormData;
+    }) =>
+      editVaccinationPointApi(
+        variables.id,
+        variables.vaccinationPointEditFormData
+      )
   );
 
   return editMutation;

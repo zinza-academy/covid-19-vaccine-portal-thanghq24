@@ -29,7 +29,6 @@ interface EditModalProps {
 }
 
 interface VaccinationSiteFormData {
-  id: number;
   name: string;
   address: string;
   ward: string | number;
@@ -72,7 +71,6 @@ const EditModal: FC<EditModalProps> = ({
   const { control, getValues, setValue, watch, handleSubmit, reset } =
     useForm<VaccinationSiteFormData>({
       defaultValues: {
-        id: vaccinationPoint?.id,
         name: vaccinationPoint?.name,
         address: vaccinationPoint?.address,
         ward: vaccinationPoint?.ward.id || '',
@@ -105,7 +103,6 @@ const EditModal: FC<EditModalProps> = ({
   useEffect(() => {
     if (vaccinationPoint !== null) {
       reset({
-        id: vaccinationPoint.id,
         name: vaccinationPoint.name,
         address: vaccinationPoint.address,
         ward: vaccinationPoint.ward.id,
@@ -122,7 +119,11 @@ const EditModal: FC<EditModalProps> = ({
   const onSubmit = async (data: VaccinationSiteFormData) => {
     try {
       setLoading(true);
-      await editVaccinationPointMutation.mutateAsync(data);
+      const variables = {
+        id: vaccinationPoint?.id,
+        vaccinationPointEditFormData: data
+      };
+      await editVaccinationPointMutation.mutateAsync(variables);
       toast.success('Chỉnh sửa thành công');
       handleCloseEditModal();
     } catch (error) {
