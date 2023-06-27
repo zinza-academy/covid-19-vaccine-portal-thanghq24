@@ -13,34 +13,31 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { VaccinationPointFindOneResponseType } from '@src/api/vaccinationPoint/findOne';
 import useProvinces from '@src/hooks/useProvinces';
 import SelectInput from '@src/components/sharedComponents/SelectInput';
-import useEditVaccinationPoint, {
-  VaccinationPointEditFormData
-} from '@src/api/vaccinationPoint/edit';
+import useCreateVaccinationPoint, {
+  VaccinationPointCreateFormData
+} from '@src/api/vaccinationPoint/create';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
-interface EditModalProps {
-  editModalOpen: boolean;
-  handleCloseEditModal: () => void;
-  vaccinationPoint: VaccinationPointFindOneResponseType | null;
-}
-
-interface VaccinationSiteFormData {
-  id: number;
-  name: string;
-  address: string;
-  ward: string | number;
-  manager: string;
-  tableNumber: number;
+interface CreateModalProps {
+  createModalOpen: boolean;
+  handleCloseCreateModal: () => void;
 }
 
 interface ProvinceDistrictFormData {
   province: string | number;
   district: string | number;
 }
+
+const provinceDistrictSchema = yup
+  .object()
+  .shape({
+    district: yup.string().required(),
+    province: yup.string().required()
+  })
+  .required();
 
 const schema = yup
   .object()
@@ -53,31 +50,30 @@ const schema = yup
   })
   .required();
 
-const EditModal: FC<EditModalProps> = ({
-  editModalOpen,
-  handleCloseEditModal,
-  vaccinationPoint
+const CreateModal: FC<CreateModalProps> = ({
+  createModalOpen,
+  handleCloseCreateModal
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const editVaccinationPointMutation = useEditVaccinationPoint();
+  const createVaccinationPointMutation = useCreateVaccinationPoint();
 
   const provinceDistrictForm = useForm<ProvinceDistrictFormData>({
     defaultValues: {
-      province: vaccinationPoint?.ward.district.province.id || '',
-      district: vaccinationPoint?.ward.district.id || ''
-    }
+      province: '',
+      district: ''
+    },
+    resolver: yupResolver(provinceDistrictSchema)
   });
 
-  const { control, getValues, setValue, watch, handleSubmit, reset } =
-    useForm<VaccinationSiteFormData>({
+  const { control, setValue, watch, handleSubmit } =
+    useForm<VaccinationPointCreateFormData>({
       defaultValues: {
-        id: vaccinationPoint?.id,
-        name: vaccinationPoint?.name,
-        address: vaccinationPoint?.address,
-        ward: vaccinationPoint?.ward.id || '',
-        manager: vaccinationPoint?.manager,
-        tableNumber: vaccinationPoint?.tableNumber
+        name: '',
+        address: '',
+        ward: '',
+        manager: '',
+        tableNumber: 0
       },
       resolver: yupResolver(schema)
     });
@@ -102,35 +98,18 @@ const EditModal: FC<EditModalProps> = ({
     setValue('ward', '');
   }, [watchDistrict, setValue]);
 
-  useEffect(() => {
-    if (vaccinationPoint !== null) {
-      reset({
-        id: vaccinationPoint.id,
-        name: vaccinationPoint.name,
-        address: vaccinationPoint.address,
-        ward: vaccinationPoint.ward.id,
-        manager: vaccinationPoint.manager,
-        tableNumber: vaccinationPoint.tableNumber
-      });
-      provinceDistrictForm.reset({
-        province: vaccinationPoint.ward.district.province.id,
-        district: vaccinationPoint.ward.district.id
-      });
-    }
-  }, [vaccinationPoint, reset, provinceDistrictForm]);
-
-  const onSubmit = async (data: VaccinationSiteFormData) => {
+  const onSubmit = async (data: VaccinationPointCreateFormData) => {
     try {
       setLoading(true);
-      await editVaccinationPointMutation.mutateAsync(data);
-      toast.success('Chỉnh sửa thành công');
-      handleCloseEditModal();
+      await createVaccinationPointMutation.mutateAsync(data);
+      toast.success('Tạo mới thành công');
+      handleCloseCreateModal();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
         else if (error?.response?.status === 401)
           toast.error('Không có quyền thực hiện!');
-        else toast.error('Chỉnh sửa thất bại!');
+        else toast.error('Tạo mới thất bại!');
       } else {
         toast.error('Có lỗi xảy ra!');
       }
@@ -140,7 +119,7 @@ const EditModal: FC<EditModalProps> = ({
   };
 
   return (
-    <Modal hideBackdrop open={editModalOpen} onClose={handleCloseEditModal}>
+    <Modal hideBackdrop open={createModalOpen} onClose={handleCloseCreateModal}>
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
@@ -155,10 +134,8 @@ const EditModal: FC<EditModalProps> = ({
           width: '500px'
         }}>
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
-          <Typography variant="h6" onClick={() => console.log(getValues())}>
-            Cập nhật điểm tiêm
-          </Typography>
-          <IconButton color="default" onClick={handleCloseEditModal}>
+          <Typography variant="h6">Tạo mới điểm tiêm</Typography>
+          <IconButton color="default" onClick={handleCloseCreateModal}>
             <CloseIcon />
           </IconButton>
         </Stack>
@@ -224,11 +201,11 @@ const EditModal: FC<EditModalProps> = ({
           />
         </Stack>
         <Stack direction="row" justifyContent="end" spacing={2} p={2}>
-          <Button variant="outlined" onClick={handleCloseEditModal}>
+          <Button variant="outlined" onClick={handleCloseCreateModal}>
             Hủy bỏ
           </Button>
           <Button type="submit" variant="contained" disabled={loading}>
-            Xác nhận
+            Tạo mới
           </Button>
         </Stack>
       </Box>
@@ -236,4 +213,4 @@ const EditModal: FC<EditModalProps> = ({
   );
 };
 
-export default EditModal;
+export default CreateModal;

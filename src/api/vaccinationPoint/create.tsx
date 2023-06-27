@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 export interface VaccinationPointCreateFormData {
   name: string;
   address: string;
-  ward: number;
+  ward: number | string;
   manager: string;
   tableNumber: number;
 }
