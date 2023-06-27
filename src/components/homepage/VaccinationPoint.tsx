@@ -2,7 +2,7 @@ import { Divider, Paper, Typography } from '@mui/material';
 import React, { FC } from 'react';
 import SearchSection from './SearchSection';
 import VaccinationPointTable from './VaccinationPointTable';
-import { VaccinationPointFindQueryType } from '@src/api/authApi/vaccinationPoint/find';
+import { VaccinationPointFindQueryType } from '@src/api/vaccinationPoint/find';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -19,8 +19,8 @@ const schema = yup.object({
 });
 
 const defaultValues: VaccinationPointFindQueryType = {
-  page: DEFAULT_PAGINATION_VALUES.PAGE,
-  pageSize: DEFAULT_PAGINATION_VALUES.PAGE_SIZE,
+  page: 0,
+  pageSize: 5,
   ward: '',
   district: '',
   province: '',
@@ -31,7 +31,6 @@ const defaultValues: VaccinationPointFindQueryType = {
 const VaccinationPoint: FC = () => {
   const vaccinationPointForm = useForm({
     defaultValues,
-    mode: 'all',
     resolver: yupResolver(schema)
   });
 

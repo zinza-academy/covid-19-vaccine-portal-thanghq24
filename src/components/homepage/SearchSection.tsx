@@ -6,7 +6,7 @@ import useProvinces from '@src/hooks/useProvinces';
 import SearchIcon from '@mui/icons-material/Search';
 import useFindVaccinationPoint, {
   VaccinationPointFindQueryType
-} from '@src/api/authApi/vaccinationPoint/find';
+} from '@src/api/vaccinationPoint/find';
 import { toast } from 'react-toastify';
 
 interface VaccinationPointSearchPropTypes {
@@ -32,11 +32,11 @@ const SearchSection: FC<VaccinationPointSearchPropTypes> = ({
   useEffect(() => {
     setValue('district', '');
     setValue('ward', '');
-  }, [watchProvince]);
+  }, [watchProvince, setValue, watch]);
 
   useEffect(() => {
     setValue('ward', '');
-  }, [watchDistrict]);
+  }, [watchDistrict, setValue, watch]);
 
   const canSubmit = !loading;
 

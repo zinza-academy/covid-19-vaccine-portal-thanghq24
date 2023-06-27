@@ -33,15 +33,12 @@ const findVaccinationPointApi = async (
 const useFindVaccinationPoint = (
   vaccinationPointFindQuery: VaccinationPointFindQueryType
 ) => {
-  const { page, pageSize, ward, district, province, name, address } =
-    vaccinationPointFindQuery;
+  const { page, pageSize } = vaccinationPointFindQuery;
 
   const findQuery = useQuery({
-    queryKey: [
-      'vaccination-points',
-      { page, pageSize, ward, district, province, name, address }
-    ],
-    queryFn: () => findVaccinationPointApi(vaccinationPointFindQuery)
+    queryKey: ['vaccination-points', { page, pageSize }],
+    queryFn: () => findVaccinationPointApi(vaccinationPointFindQuery),
+    enabled: !!page || !!pageSize
   });
 
   return findQuery;
