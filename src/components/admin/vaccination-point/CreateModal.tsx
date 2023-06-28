@@ -13,37 +13,37 @@ import CloseIcon from '@mui/icons-material/Close';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { VaccinationPointFindOneResponseType } from '@src/api/vaccinationPoint/findOne';
 import useProvinces from '@src/hooks/useProvinces';
 import SelectInput from '@src/components/sharedComponents/SelectInput';
-import useEditVaccinationPoint from '@src/api/vaccinationPoint/edit';
+import useCreateVaccinationPoint, {
+  VaccinationPointCreateFormData
+} from '@src/api/vaccinationPoint/create';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   VaccinationPointFindQueryType,
   VaccinationPointFindResponseType
 } from '@src/api/vaccinationPoint/find';
+import { useQueryClient } from '@tanstack/react-query';
 
-interface EditModalProps {
-  editModalOpen: boolean;
-  handleCloseEditModal: () => void;
-  vaccinationPoint: VaccinationPointFindOneResponseType | null;
+interface CreateModalProps {
+  createModalOpen: boolean;
+  handleCloseCreateModal: () => void;
   vaccinationPointForm: UseFormReturn<VaccinationPointFindQueryType, any>;
-}
-
-interface VaccinationSiteFormData {
-  name: string;
-  address: string;
-  ward: string | number;
-  manager: string;
-  tableNumber: number;
 }
 
 interface ProvinceDistrictFormData {
   province: string | number;
   district: string | number;
 }
+
+const provinceDistrictSchema = yup
+  .object()
+  .shape({
+    district: yup.string().required(),
+    province: yup.string().required()
+  })
+  .required();
 
 const schema = yup
   .object()
@@ -56,29 +56,23 @@ const schema = yup
   })
   .required();
 
-const EditModal: FC<EditModalProps> = ({
-  editModalOpen,
-  handleCloseEditModal,
-  vaccinationPoint,
+const CreateModal: FC<CreateModalProps> = ({
+  createModalOpen,
+  handleCloseCreateModal,
   vaccinationPointForm
 }) => {
   const queryClient = useQueryClient();
 
   const [loading, setLoading] = useState(false);
-  const [prevProvince, setPrevProvince] = useState<
-    string | number | undefined
-  >();
-  const [prevDistrict, setPrevDistrict] = useState<
-    string | number | undefined
-  >();
 
-  const editVaccinationPointMutation = useEditVaccinationPoint();
+  const createVaccinationPointMutation = useCreateVaccinationPoint();
 
   const provinceDistrictForm = useForm<ProvinceDistrictFormData>({
     defaultValues: {
-      province: vaccinationPoint?.ward.district.province.id || '',
-      district: vaccinationPoint?.ward.district.id || ''
-    }
+      province: '',
+      district: ''
+    },
+    resolver: yupResolver(provinceDistrictSchema)
   });
 
   const {
@@ -88,13 +82,13 @@ const EditModal: FC<EditModalProps> = ({
     handleSubmit,
     reset,
     formState: { isDirty }
-  } = useForm<VaccinationSiteFormData>({
+  } = useForm<VaccinationPointCreateFormData>({
     defaultValues: {
-      name: vaccinationPoint?.name,
-      address: vaccinationPoint?.address,
-      ward: vaccinationPoint?.ward.id || '',
-      manager: vaccinationPoint?.manager,
-      tableNumber: vaccinationPoint?.tableNumber
+      name: '',
+      address: '',
+      ward: '',
+      manager: '',
+      tableNumber: 0
     },
     resolver: yupResolver(schema)
   });
@@ -111,82 +105,52 @@ const EditModal: FC<EditModalProps> = ({
   watch('address');
 
   useEffect(() => {
-    if (prevProvince !== undefined && watchProvince !== prevProvince) {
-      setPrevProvince(watchProvince);
-      provinceDistrictForm.setValue('district', '', {
-        shouldValidate: true
-      });
-      setValue('ward', '', {
-        shouldValidate: true
-      });
-    }
-  }, [provinceDistrictForm, watchProvince, setValue, prevProvince]);
+    provinceDistrictForm.setValue('district', '', {
+      shouldValidate: true
+    });
+    setValue('ward', '', {
+      shouldValidate: true
+    });
+  }, [provinceDistrictForm, watchProvince, setValue]);
 
   useEffect(() => {
-    if (prevDistrict !== undefined && watchDistrict !== prevDistrict) {
-      setPrevDistrict(watchDistrict);
-      setValue('ward', '', {
-        shouldValidate: true
-      });
-    }
-  }, [watchDistrict, setValue, prevDistrict]);
+    setValue('ward', '', {
+      shouldValidate: true
+    });
+  }, [watchDistrict, setValue]);
 
-  useEffect(() => {
-    if (vaccinationPoint !== null) {
-      reset({
-        name: vaccinationPoint.name,
-        address: vaccinationPoint.address,
-        ward: vaccinationPoint.ward.id,
-        manager: vaccinationPoint.manager,
-        tableNumber: vaccinationPoint.tableNumber
-      });
-      provinceDistrictForm.reset({
-        province: vaccinationPoint.ward.district.province.id,
-        district: vaccinationPoint.ward.district.id
-      });
-      setPrevProvince(vaccinationPoint.ward.district.provinceId);
-      setPrevDistrict(vaccinationPoint.ward.districtId);
-    }
-  }, [vaccinationPoint, reset, provinceDistrictForm]);
-
-  const onSubmit = async (data: VaccinationSiteFormData) => {
+  const onSubmit = async (data: VaccinationPointCreateFormData) => {
     try {
       setLoading(true);
 
-      const variables = {
-        id: vaccinationPoint?.id,
-        vaccinationPointEditFormData: data
-      };
-      const result = await editVaccinationPointMutation.mutateAsync(variables);
-
-      queryClient.setQueryData<VaccinationPointFindResponseType | undefined>(
-        [
+      await createVaccinationPointMutation.mutateAsync(data);
+      const vaccinationPointsQuery =
+        queryClient.getQueryData<VaccinationPointFindResponseType>([
           'vaccination-points',
+          vaccinationPointForm
+        ]);
+
+      if (vaccinationPointsQuery)
+        vaccinationPointForm.setValue(
+          'page',
+          Math.floor(
+            vaccinationPointsQuery?.count /
+              vaccinationPointForm.getValues('pageSize')
+          ),
           {
-            page: vaccinationPointForm.getValues('page'),
-            pageSize: vaccinationPointForm.getValues('pageSize')
+            shouldValidate: true
           }
-        ],
-        (vaccinationPoints) => {
-          if (!vaccinationPoints) return vaccinationPoints;
+        );
 
-          let updateVaccinationPointIndex = vaccinationPoints.data.findIndex(
-            (vaccinationPoint) => vaccinationPoint.id === result.id
-          );
-          vaccinationPoints.data[updateVaccinationPointIndex] = result;
+      toast.success('Tạo mới thành công');
 
-          return vaccinationPoints;
-        }
-      );
-
-      toast.success('Chỉnh sửa thành công');
-      handleCloseEditModal();
+      handleClose();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
         else if (error?.response?.status === 401)
           toast.error('Không có quyền thực hiện!');
-        else toast.error('Chỉnh sửa thất bại!');
+        else toast.error('Tạo mới thất bại!');
       } else {
         toast.error('Có lỗi xảy ra!');
       }
@@ -195,8 +159,13 @@ const EditModal: FC<EditModalProps> = ({
     }
   };
 
+  const handleClose = () => {
+    reset();
+    handleCloseCreateModal();
+  };
+
   return (
-    <Modal hideBackdrop open={editModalOpen} onClose={handleCloseEditModal}>
+    <Modal hideBackdrop open={createModalOpen} onClose={handleCloseCreateModal}>
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
@@ -211,8 +180,8 @@ const EditModal: FC<EditModalProps> = ({
           width: '500px'
         }}>
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
-          <Typography variant="h6">Cập nhật điểm tiêm</Typography>
-          <IconButton color="default" onClick={handleCloseEditModal}>
+          <Typography variant="h6">Tạo mới điểm tiêm</Typography>
+          <IconButton color="default" onClick={handleClose}>
             <CloseIcon />
           </IconButton>
         </Stack>
@@ -278,14 +247,14 @@ const EditModal: FC<EditModalProps> = ({
           />
         </Stack>
         <Stack direction="row" justifyContent="end" spacing={2} p={2}>
-          <Button variant="outlined" onClick={handleCloseEditModal}>
+          <Button variant="outlined" onClick={handleClose}>
             Hủy bỏ
           </Button>
           <Button
             type="submit"
             variant="contained"
             disabled={loading || !isDirty}>
-            Xác nhận
+            Tạo mới
           </Button>
         </Stack>
       </Box>
@@ -293,4 +262,4 @@ const EditModal: FC<EditModalProps> = ({
   );
 };
 
-export default EditModal;
+export default CreateModal;

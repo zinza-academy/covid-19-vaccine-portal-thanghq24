@@ -1,66 +1,68 @@
 'use client';
 
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import TextInput from '@src/components/sharedComponents/TextInput';
+import DEFAULT_PAGINATION_VALUES from '@utils/constants/defaultPaginationValues';
+import { VaccinationPointFindQueryType } from '@src/api/vaccinationPoint/find';
 import VaccinationPointTable from '@src/components/admin/vaccination-point/VaccinationPointTable';
+import { Box, Button, Stack } from '@mui/material';
+import SearchSection from '@src/components/admin/vaccination-point/SearchSection';
+import CreateModal from '@src/components/admin/vaccination-point/CreateModal';
 
-interface SearchFormData {
-  name: string;
-  address: string;
-}
+const schema = yup.object({
+  page: yup.number().required(),
+  pageSize: yup.number().required(),
+  province: yup.string(),
+  district: yup.string(),
+  ward: yup.string(),
+  name: yup.string(),
+  address: yup.string()
+});
 
-const schema = yup
-  .object()
-  .shape({
-    vaccinationPoint: yup.string(),
-    address: yup.string()
-  })
-  .required();
+const defaultValues: VaccinationPointFindQueryType = {
+  page: DEFAULT_PAGINATION_VALUES.PAGE,
+  pageSize: DEFAULT_PAGINATION_VALUES.PAGE_SIZE,
+  ward: '',
+  district: '',
+  province: '',
+  name: '',
+  address: ''
+};
 
 const VaccinationPoint: FC = () => {
-  const { control, handleSubmit } = useForm<SearchFormData>({
-    defaultValues: {
-      name: '',
-      address: ''
-    },
+  const [createModal, setCreateModalOpen] = useState<boolean>(false);
+
+  const vaccinationPointForm = useForm({
+    defaultValues,
     resolver: yupResolver(schema)
   });
 
-  const onSubmit = (data: SearchFormData) => {};
+  const handleOpenCreateModal = () => {
+    setCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setCreateModalOpen(false);
+  };
 
   return (
     <Stack spacing={2}>
-      <Stack
-        spacing={2}
-        direction="row"
-        component="form"
-        onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ width: '260px' }}>
-          <TextInput
-            control={control}
-            name="name"
-            placeholder="Điểm tiêm"
-            size="small"
-          />
+      <Stack direction="row" justifyContent="space-between">
+        <SearchSection vaccinationPointForm={vaccinationPointForm} />
+        <Box>
+          <Button variant="contained" onClick={handleOpenCreateModal}>
+            Tạo mới
+          </Button>
         </Box>
-        <Box sx={{ width: '260px' }}>
-          <TextInput
-            control={control}
-            name="address"
-            placeholder="Địa chỉ"
-            required
-            size="small"
-          />
-        </Box>
-        <Button type="submit" variant="contained">
-          Tìm kiếm
-        </Button>
       </Stack>
-      <VaccinationPointTable />
+      <VaccinationPointTable vaccinationPointForm={vaccinationPointForm} />
+      <CreateModal
+        createModalOpen={createModal}
+        handleCloseCreateModal={handleCloseCreateModal}
+        vaccinationPointForm={vaccinationPointForm}
+      />
     </Stack>
   );
 };

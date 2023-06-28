@@ -1,101 +1,50 @@
-import { styled } from '@mui/material/styles';
 import {
-  Button,
-  Divider,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   Stack,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
-  TableRow,
   Typography
 } from '@mui/material';
-import React, { FC, useEffect, useState } from 'react';
-import { indigo } from '@mui/material/colors';
+import React, { FC } from 'react';
+import useFindVaccinationPoint, {
+  VaccinationPointFindQueryType
+} from '@src/api/vaccinationPoint/find';
+import { UseFormReturn } from 'react-hook-form';
+import usePagination from '@src/hooks/usePagination';
+import TableHeadCell from '@components/sharedComponents/table/TableHeadCell';
+import TableBodyCell from '@components/sharedComponents/table/TableBodyCell';
+import TableRow from '@components/sharedComponents/table/TableRow';
+import TablePagination from '@components/sharedComponents/table/TablePagination';
+import DEFAULT_PAGINATION_VALUES from '@src/utils/constants/defaultPaginationValues';
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover
-  },
-  '&:last-child td, &:last-child th': {
-    border: 0
-  }
-}));
-
-interface VaccinationPoint {
-  name: string;
-  address: string;
-  ward: string;
-  district: string;
-  province: string;
-  manager: string;
-  tableNumber: number;
+interface VaccinationPointTablePropsType {
+  vaccinationPointForm: UseFormReturn<VaccinationPointFindQueryType, any>;
 }
 
-const vaccinationPoint: VaccinationPoint = {
-  name: 'Bệnh viện Đa khoa Medlatec',
-  address: '42-44 Nghĩa Dũng',
-  ward: 'Phúc Xá',
-  district: 'Quận Ba Đình',
-  province: 'Thành phố Hà Nội',
-  manager: 'Nguyễn Thị Kim Liên',
-  tableNumber: 8
-};
+const VaccinationPointTable: FC<VaccinationPointTablePropsType> = ({
+  vaccinationPointForm
+}) => {
+  const { getValues, setValue, watch } = vaccinationPointForm;
 
-const PAGE_SIZES = [10, 20, 50];
+  const { data } = useFindVaccinationPoint({ ...getValues() });
 
-const vaccinationPointList = new Array<VaccinationPoint>(32).fill(
-  vaccinationPoint
-);
+  const page = watch('page');
+  const pageSize = watch('pageSize');
 
-const TableHeadCell: FC<{ label: string }> = ({ label }) => {
-  return (
-    <TableCell align="center">
-      <Typography variant="body1" fontWeight={500}>
-        {label}
-      </Typography>
-    </TableCell>
-  );
-};
+  const { pageOptions, emptyRows, maxPage } = usePagination({
+    items: data?.data,
+    count: data?.count,
+    page: page,
+    pageSize: pageSize
+  });
 
-const TableBodyCell: FC<{ label: string | number }> = ({ label }) => {
-  return (
-    <TableCell align="center">
-      <Typography variant="body2">{label}</Typography>
-    </TableCell>
-  );
-};
+  const setPage = (page: number) => {
+    setValue('page', page);
+  };
 
-const fetchData = (page: number, pageSize: number) => {
-  return vaccinationPointList.slice(
-    page * pageSize,
-    page * pageSize + pageSize
-  );
-};
-
-const getEmptyRows = (page: number, pageSize: number) => {
-  const maxPage = Math.floor(vaccinationPointList.length / pageSize);
-
-  if (page !== maxPage || page === 0) return [];
-  const lastPageItemNumber = fetchData(maxPage, pageSize);
-  return new Array(pageSize - lastPageItemNumber.length).fill('empty');
-};
-
-const VaccinationPointTable: FC = () => {
-  const [page, setPage] = useState<number>(0);
-  const [pageSize, setPageSize] = useState<number>(10);
-
-  const getPageOptions = () => {
-    const maxPage = Math.floor(vaccinationPointList.length / pageSize);
-    let pageOptions = [];
-    for (let i = 0; i <= maxPage; i++) {
-      pageOptions.push(i);
-    }
-    return pageOptions;
+  const setPageSize = (pageSize: number) => {
+    setValue('pageSize', pageSize);
   };
 
   return (
@@ -114,143 +63,39 @@ const VaccinationPointTable: FC = () => {
               <TableHeadCell label="Số bàn tiêm" />
             </TableRow>
           </TableHead>
-          <TableBody>
-            {fetchData(page, pageSize)
-              .concat(getEmptyRows(page, pageSize))
-              .map((vaccinationPoint, index) => (
-                <StyledTableRow key={index}>
-                  <TableBodyCell label={index + 1} />
+          {data?.data && data?.data.length > 0 && (
+            <TableBody>
+              {data?.data.map((vaccinationPoint, index) => (
+                <TableRow key={index}>
+                  <TableBodyCell label={page * pageSize + index + 1} />
                   <TableBodyCell label={vaccinationPoint.name} />
                   <TableBodyCell label={vaccinationPoint.address} />
-                  <TableBodyCell label={vaccinationPoint.ward} />
-                  <TableBodyCell label={vaccinationPoint.district} />
-                  <TableBodyCell label={vaccinationPoint.province} />
+                  <TableBodyCell label={vaccinationPoint.ward.name} />
+                  <TableBodyCell label={vaccinationPoint.ward.district.name} />
+                  <TableBodyCell
+                    label={vaccinationPoint.ward.district.province.name}
+                  />
                   <TableBodyCell label={vaccinationPoint.manager} />
                   <TableBodyCell label={vaccinationPoint.tableNumber} />
-                </StyledTableRow>
+                </TableRow>
               ))}
-          </TableBody>
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
-      <Stack direction="row" justifyContent="space-between">
-        <Stack direction="row" alignItems={'center'} spacing={1}>
-          <Typography variant="body2">Số bản ghi:</Typography>
-          <Select
-            size="small"
-            value={pageSize}
-            onChange={(e: SelectChangeEvent<number>) => {
-              setPage(0);
-              setPageSize(e.target.value as number);
-            }}
-            sx={{ width: '100px' }}>
-            {PAGE_SIZES.map((pageSize, index) => (
-              <MenuItem key={index} value={pageSize}>
-                {pageSize}
-              </MenuItem>
-            ))}
-          </Select>
-          <Typography variant="body2">{`${page * pageSize + 1} - ${
-            page * pageSize + pageSize
-          }/${vaccinationPointList.length}`}</Typography>
-        </Stack>
-        <Stack direction="row" alignItems="center">
-          <Stack
-            direction="row"
-            alignItems="center"
-            divider={<Divider orientation="vertical" flexItem />}
-            sx={{
-              border: 1,
-              borderColor: 'rgba(0, 0, 0, 0.12)',
-              borderRadius: '4px'
-            }}>
-            <Button
-              disabled={page === 0}
-              onClick={() => setPage(0)}
-              sx={{
-                py: 1,
-                px: 2,
-                minWidth: 0,
-                borderRadius: '4px 0 0 4px',
-                '&:hover': {
-                  backgroundColor: indigo[600],
-                  color: '#fff'
-                }
-              }}>
-              <Typography variant="body2">{`<<`}</Typography>
-            </Button>
-            <Button
-              disabled={page === 0}
-              onClick={() => setPage((prev) => prev - 1)}
-              sx={{
-                py: 1,
-                px: 2,
-                minWidth: 0,
-                borderRadius: 0,
-                '&:hover': {
-                  backgroundColor: indigo[600],
-                  color: '#fff'
-                }
-              }}>
-              <Typography variant="body2">{`<`}</Typography>
-            </Button>
-            {getPageOptions().map((p, index) => (
-              <Button
-                key={index}
-                sx={{
-                  py: 1,
-                  px: 2,
-                  minWidth: 0,
-                  borderRadius: 0,
-                  backgroundColor: p === page ? indigo[600] : '#fff',
-                  color: p !== page ? indigo[700] : '#fff',
-                  '&:hover': {
-                    backgroundColor: indigo[600],
-                    color: '#fff'
-                  }
-                }}
-                onClick={() => setPage(p)}>
-                <Typography variant="body2">{p + 1}</Typography>
-              </Button>
-            ))}
-            <Button
-              disabled={
-                page === Math.floor(vaccinationPointList.length / pageSize)
-              }
-              onClick={() => setPage((prev) => prev + 1)}
-              sx={{
-                py: 1,
-                px: 2,
-                minWidth: 0,
-                borderRadius: 0,
-                '&:hover': {
-                  backgroundColor: indigo[600],
-                  color: '#fff'
-                }
-              }}>
-              <Typography variant="body2">{`>`}</Typography>
-            </Button>
-            <Button
-              disabled={
-                page === Math.floor(vaccinationPointList.length / pageSize)
-              }
-              onClick={() =>
-                setPage(Math.floor(vaccinationPointList.length / pageSize))
-              }
-              sx={{
-                py: 1,
-                px: 2,
-                minWidth: 0,
-                borderRadius: '0 4px 4px 0',
-                '&:hover': {
-                  backgroundColor: indigo[600],
-                  color: '#fff'
-                }
-              }}>
-              <Typography variant="body2">{`>>`}</Typography>
-            </Button>
-          </Stack>
-        </Stack>
-      </Stack>
+      {(!data?.data || data?.data.length === 0) && (
+        <Typography textAlign="center">Không có dữ liệu</Typography>
+      )}
+      <TablePagination
+        page={page}
+        pageSize={pageSize}
+        maxPage={maxPage}
+        count={data?.count}
+        pageOptions={pageOptions}
+        pageSizeOptions={DEFAULT_PAGINATION_VALUES.PAGE_SIZES_OPTIONS}
+        setPage={setPage}
+        setPageSize={setPageSize}
+      />
     </Stack>
   );
 };
