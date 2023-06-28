@@ -83,7 +83,6 @@ const EditModal: FC<EditModalProps> = ({
 
   const {
     control,
-    getValues,
     setValue,
     watch,
     handleSubmit,
@@ -114,15 +113,21 @@ const EditModal: FC<EditModalProps> = ({
   useEffect(() => {
     if (prevProvince !== undefined && watchProvince !== prevProvince) {
       setPrevProvince(watchProvince);
-      provinceDistrictForm.setValue('district', '');
-      setValue('ward', '');
+      provinceDistrictForm.setValue('district', '', {
+        shouldValidate: true
+      });
+      setValue('ward', '', {
+        shouldValidate: true
+      });
     }
   }, [provinceDistrictForm, watchProvince, setValue, prevProvince]);
 
   useEffect(() => {
     if (prevDistrict !== undefined && watchDistrict !== prevDistrict) {
       setPrevDistrict(watchDistrict);
-      setValue('ward', '');
+      setValue('ward', '', {
+        shouldValidate: true
+      });
     }
   }, [watchDistrict, setValue, prevDistrict]);
 

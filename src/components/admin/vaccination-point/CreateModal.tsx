@@ -105,12 +105,18 @@ const CreateModal: FC<CreateModalProps> = ({
   watch('address');
 
   useEffect(() => {
-    provinceDistrictForm.setValue('district', '');
-    setValue('ward', '');
+    provinceDistrictForm.setValue('district', '', {
+      shouldValidate: true
+    });
+    setValue('ward', '', {
+      shouldValidate: true
+    });
   }, [provinceDistrictForm, watchProvince, setValue]);
 
   useEffect(() => {
-    setValue('ward', '');
+    setValue('ward', '', {
+      shouldValidate: true
+    });
   }, [watchDistrict, setValue]);
 
   const onSubmit = async (data: VaccinationPointCreateFormData) => {
@@ -121,10 +127,7 @@ const CreateModal: FC<CreateModalProps> = ({
       const vaccinationPointsQuery =
         queryClient.getQueryData<VaccinationPointFindResponseType>([
           'vaccination-points',
-          {
-            page: vaccinationPointForm.getValues('page'),
-            pageSize: vaccinationPointForm.getValues('pageSize')
-          }
+          vaccinationPointForm
         ]);
 
       if (vaccinationPointsQuery)
@@ -133,7 +136,10 @@ const CreateModal: FC<CreateModalProps> = ({
           Math.floor(
             vaccinationPointsQuery?.count /
               vaccinationPointForm.getValues('pageSize')
-          )
+          ),
+          {
+            shouldValidate: true
+          }
         );
 
       toast.success('Tạo mới thành công');

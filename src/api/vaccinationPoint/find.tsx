@@ -1,5 +1,5 @@
 import api from '@src/api/axios';
-import { useQuery } from '@tanstack/react-query';
+import { QueryFunctionContext, useQuery } from '@tanstack/react-query';
 import { VaccinationPointFindOneResponseType } from './findOne';
 
 export interface VaccinationPointFindQueryType {
@@ -22,10 +22,11 @@ export interface VaccinationPointFindResponseType {
 const findVaccinationPointApi = async (
   vaccinationPointFindQuery: VaccinationPointFindQueryType
 ) => {
-  const { page, pageSize, ward, district, province, name, address } =
-    vaccinationPointFindQuery;
   const { data } = await api.get<VaccinationPointFindResponseType>(
-    `vaccination-sites?page=${page}&pageSize=${pageSize}&ward=${ward}&district=${district}&province=${province}&name=${name}&address=${address}`
+    'vaccination-sites',
+    {
+      params: vaccinationPointFindQuery
+    }
   );
   return data;
 };
@@ -33,12 +34,9 @@ const findVaccinationPointApi = async (
 const useFindVaccinationPoint = (
   vaccinationPointFindQuery: VaccinationPointFindQueryType
 ) => {
-  const { page, pageSize } = vaccinationPointFindQuery;
-
   const findQuery = useQuery({
-    queryKey: ['vaccination-points', { page, pageSize }],
-    queryFn: () => findVaccinationPointApi(vaccinationPointFindQuery),
-    enabled: !!page || !!pageSize
+    queryKey: ['vaccination-points', vaccinationPointFindQuery],
+    queryFn: () => findVaccinationPointApi(vaccinationPointFindQuery)
   });
 
   return findQuery;

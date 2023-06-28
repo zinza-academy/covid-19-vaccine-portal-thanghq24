@@ -1,7 +1,7 @@
 import { Box, Button, Stack } from '@mui/material';
 import React, { FC, useEffect, useState } from 'react';
 import SelectInput from '@components/sharedComponents/SelectInput';
-import { UseFormReturn } from 'react-hook-form';
+import { UseFormReturn, useForm } from 'react-hook-form';
 import useProvinces from '@src/hooks/useProvinces';
 import SearchIcon from '@mui/icons-material/Search';
 import useFindVaccinationPoint, {
@@ -9,20 +9,45 @@ import useFindVaccinationPoint, {
 } from '@src/api/vaccinationPoint/find';
 import { toast } from 'react-toastify';
 import TextInput from '@src/components/sharedComponents/TextInput';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 interface VaccinationPointSearchPropTypes {
   vaccinationPointForm: UseFormReturn<VaccinationPointFindQueryType, any>;
 }
 
+interface SearchFilterForm {
+  province: string | number;
+  district: string | number;
+  ward: string | number;
+  name: string;
+  address: string;
+}
+
+const searchFilterSchema = yup.object({
+  province: yup.string(),
+  district: yup.string(),
+  ward: yup.string(),
+  name: yup.string(),
+  address: yup.string()
+});
+
 const SearchSection: FC<VaccinationPointSearchPropTypes> = ({
   vaccinationPointForm
 }) => {
-  const { control, handleSubmit, getValues, setValue, watch } =
-    vaccinationPointForm;
+  const { control, getValues, setValue, watch, handleSubmit } =
+    useForm<SearchFilterForm>({
+      defaultValues: {
+        ward: '',
+        district: '',
+        province: '',
+        name: '',
+        address: ''
+      },
+      resolver: yupResolver(searchFilterSchema)
+    });
 
   const [loading, setLoading] = useState(false);
-
-  const { refetch } = useFindVaccinationPoint(getValues());
 
   const { provinceSelections, districtSelections, wardSelections } =
     useProvinces(getValues('province'), getValues('district'));
@@ -33,20 +58,40 @@ const SearchSection: FC<VaccinationPointSearchPropTypes> = ({
   watch('address');
 
   useEffect(() => {
-    setValue('district', '');
-    setValue('ward', '');
+    setValue('district', '', {
+      shouldValidate: true
+    });
+    setValue('ward', '', {
+      shouldValidate: true
+    });
   }, [watchProvince, setValue, watch]);
 
   useEffect(() => {
-    setValue('ward', '');
+    setValue('ward', '', {
+      shouldValidate: true
+    });
   }, [watchDistrict, setValue, watch]);
 
-  const canSubmit = !loading;
-
-  const onSubmit = async () => {
+  const onSubmit = async (data: SearchFilterForm) => {
     try {
       setLoading(true);
-      await refetch();
+
+      vaccinationPointForm.setValue('province', data.province, {
+        shouldValidate: true
+      });
+      vaccinationPointForm.setValue('district', data.district, {
+        shouldValidate: true
+      });
+      vaccinationPointForm.setValue('ward', data.ward, {
+        shouldValidate: true
+      });
+      vaccinationPointForm.setValue('name', data.name, {
+        shouldValidate: true
+      });
+      vaccinationPointForm.setValue('address', data.address, {
+        shouldValidate: true
+      });
+
       toast.success('Dữ liệu đơn vị hành chính đã được cập nhật!');
     } catch (error) {
       toast.error('Không thể tải dữ liệu đơn vị hành chính!');
@@ -119,7 +164,7 @@ const SearchSection: FC<VaccinationPointSearchPropTypes> = ({
         <Button
           type="submit"
           variant="contained"
-          disabled={!canSubmit}
+          disabled={loading}
           endIcon={<SearchIcon />}>
           Tìm kiếm
         </Button>

@@ -31,9 +31,11 @@ const VaccinationPointTable: FC<VaccinationPointTablePropsType> = ({
   const [selectedPoint, setSelectedPoint] =
     useState<VaccinationPointFindOneResponseType | null>(null);
 
-  const { getValues, setValue, watch } = vaccinationPointForm;
+  const { setValue, watch } = vaccinationPointForm;
 
-  const { data } = useFindVaccinationPoint({ ...getValues() });
+  const { data, status } = useFindVaccinationPoint({ ...watch() });
+
+  console.log(status);
 
   const page = watch('page');
   const pageSize = watch('pageSize');
