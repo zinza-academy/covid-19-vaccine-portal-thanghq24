@@ -121,6 +121,7 @@ const VaccinationPointTable: FC<VaccinationPointTablePropsType> = ({
         editModalOpen={editModalOpen}
         handleCloseEditModal={handleCloseEditModal}
         vaccinationPoint={selectedPoint}
+        vaccinationPointForm={vaccinationPointForm}
       />
     </Stack>
   );

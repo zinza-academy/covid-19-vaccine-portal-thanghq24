@@ -10,7 +10,7 @@ import {
 import TextInput from '@src/components/sharedComponents/TextInput';
 import React, { FC, useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import { useForm } from 'react-hook-form';
+import { UseFormReturn, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import useProvinces from '@src/hooks/useProvinces';
@@ -20,10 +20,16 @@ import useCreateVaccinationPoint, {
 } from '@src/api/vaccinationPoint/create';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import {
+  VaccinationPointFindQueryType,
+  VaccinationPointFindResponseType
+} from '@src/api/vaccinationPoint/find';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface CreateModalProps {
   createModalOpen: boolean;
   handleCloseCreateModal: () => void;
+  vaccinationPointForm: UseFormReturn<VaccinationPointFindQueryType, any>;
 }
 
 interface ProvinceDistrictFormData {
@@ -52,8 +58,11 @@ const schema = yup
 
 const CreateModal: FC<CreateModalProps> = ({
   createModalOpen,
-  handleCloseCreateModal
+  handleCloseCreateModal,
+  vaccinationPointForm
 }) => {
+  const queryClient = useQueryClient();
+
   const [loading, setLoading] = useState(false);
 
   const createVaccinationPointMutation = useCreateVaccinationPoint();
@@ -66,17 +75,23 @@ const CreateModal: FC<CreateModalProps> = ({
     resolver: yupResolver(provinceDistrictSchema)
   });
 
-  const { control, setValue, watch, handleSubmit } =
-    useForm<VaccinationPointCreateFormData>({
-      defaultValues: {
-        name: '',
-        address: '',
-        ward: '',
-        manager: '',
-        tableNumber: 0
-      },
-      resolver: yupResolver(schema)
-    });
+  const {
+    control,
+    setValue,
+    watch,
+    handleSubmit,
+    reset,
+    formState: { isDirty }
+  } = useForm<VaccinationPointCreateFormData>({
+    defaultValues: {
+      name: '',
+      address: '',
+      ward: '',
+      manager: '',
+      tableNumber: 0
+    },
+    resolver: yupResolver(schema)
+  });
 
   const { provinceSelections, districtSelections, wardSelections } =
     useProvinces(
@@ -101,9 +116,29 @@ const CreateModal: FC<CreateModalProps> = ({
   const onSubmit = async (data: VaccinationPointCreateFormData) => {
     try {
       setLoading(true);
+
       await createVaccinationPointMutation.mutateAsync(data);
+      const vaccinationPointsQuery =
+        queryClient.getQueryData<VaccinationPointFindResponseType>([
+          'vaccination-points',
+          {
+            page: vaccinationPointForm.getValues('page'),
+            pageSize: vaccinationPointForm.getValues('pageSize')
+          }
+        ]);
+
+      if (vaccinationPointsQuery)
+        vaccinationPointForm.setValue(
+          'page',
+          Math.floor(
+            vaccinationPointsQuery?.count /
+              vaccinationPointForm.getValues('pageSize')
+          )
+        );
+
       toast.success('Tạo mới thành công');
-      handleCloseCreateModal();
+
+      handleClose();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
@@ -116,6 +151,11 @@ const CreateModal: FC<CreateModalProps> = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleClose = () => {
+    reset();
+    handleCloseCreateModal();
   };
 
   return (
@@ -135,7 +175,7 @@ const CreateModal: FC<CreateModalProps> = ({
         }}>
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
           <Typography variant="h6">Tạo mới điểm tiêm</Typography>
-          <IconButton color="default" onClick={handleCloseCreateModal}>
+          <IconButton color="default" onClick={handleClose}>
             <CloseIcon />
           </IconButton>
         </Stack>
@@ -196,15 +236,18 @@ const CreateModal: FC<CreateModalProps> = ({
             name="tableNumber"
             label="Số bàn tiêm"
             placeholder="Số bàn tiêm"
-            errorMessage="Số bàn tiêm không được bỏ trống"
+            errorMessage="Số bàn tiêm là số và không được bỏ trống"
             required
           />
         </Stack>
         <Stack direction="row" justifyContent="end" spacing={2} p={2}>
-          <Button variant="outlined" onClick={handleCloseCreateModal}>
+          <Button variant="outlined" onClick={handleClose}>
             Hủy bỏ
           </Button>
-          <Button type="submit" variant="contained" disabled={loading}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={loading || !isDirty}>
             Tạo mới
           </Button>
         </Stack>

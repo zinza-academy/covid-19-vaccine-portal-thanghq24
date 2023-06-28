@@ -1,5 +1,6 @@
 import api from '@src/api/axios';
 import { useMutation } from '@tanstack/react-query';
+import { VaccinationPointFindOneResponseType } from './findOne';
 
 export interface VaccinationPointEditFormData {
   name: string;
@@ -9,15 +10,8 @@ export interface VaccinationPointEditFormData {
   tableNumber: number;
 }
 
-export interface VaccinationPointEditResponseType {
-  name: string;
-  address: string;
-  ward: {
-    id: number;
-  };
-  manager: string;
-  tableNumber: number;
-}
+export interface VaccinationPointEditResponseType
+  extends VaccinationPointFindOneResponseType {}
 
 const editVaccinationPointApi = async (
   id: number | undefined,

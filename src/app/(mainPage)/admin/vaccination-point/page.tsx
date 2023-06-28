@@ -61,6 +61,7 @@ const VaccinationPoint: FC = () => {
       <CreateModal
         createModalOpen={createModal}
         handleCloseCreateModal={handleCloseCreateModal}
+        vaccinationPointForm={vaccinationPointForm}
       />
     </Stack>
   );
