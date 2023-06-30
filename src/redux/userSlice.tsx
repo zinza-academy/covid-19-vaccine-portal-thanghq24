@@ -1,11 +1,24 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import dayjs from 'dayjs';
+import { WardResponse } from '@src/hooks/useProvinces';
 
 export interface Role {
   id: number;
   name: string;
 }
+export interface FullRelationUserData {
+  id: number;
+  fullName: string;
+  email: string;
+  healthInsuranceNumber: string;
+  dob: Date;
+  gender: string;
+  citizenIdentification: string;
+  roles: Role[];
+  ward: WardResponse;
+}
+
 export interface UserData {
   fullName: string;
   healthInsuranceNumber: string;

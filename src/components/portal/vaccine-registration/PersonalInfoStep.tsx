@@ -5,7 +5,7 @@ import {
   selectVaccineRegistrationFormData,
   submitFormData
 } from '@src/redux/vaccineRegistrationSlice';
-import { Button, Grid, Stack, Typography } from '@mui/material';
+import { Button, Grid, Stack, TextField, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -23,31 +23,13 @@ import { useRouter } from 'next/navigation';
 import DateInput from '@src/components/sharedComponents/DateInput';
 import dayPhases from '@src/utils/constants/dayPhases';
 import dayjs from 'dayjs';
+import { selectUserData } from '@src/redux/userSlice';
 
 const schema = yup
   .object()
   .shape({
     priorityType: yup.number().required(),
     // healthInsuranceNumber must be a string with 15 characters and first 2 chars are letters, the rest is number
-    healthInsuranceNumber: yup
-      .string()
-      .trim()
-      .length(15)
-      .uppercase()
-      .test('health-insurance-number-check', (value) => {
-        let checkFirstTwoChars = yup
-          .string()
-          .matches(/^[A-Z]+$/) //?
-          .isValid(value?.slice(0, 2));
-        let checkLastThirteenNums = yup
-          .string()
-          .length(13)
-          .matches(/[^0-9]/);
-        if (!checkFirstTwoChars) return false;
-        if (!checkLastThirteenNums) return false;
-        return true;
-      })
-      .required(),
     job: yup.string(),
     workplace: yup.string(),
     address: yup.string().trim(),
@@ -58,11 +40,13 @@ const schema = yup
 
 const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
   const router = useRouter();
+  const userData = useAppSelector(selectUserData);
   const currentFormData = useAppSelector(selectVaccineRegistrationFormData);
   const dispatch = useAppDispatch();
 
   const {
     control,
+    getValues,
     handleSubmit,
     formState: { isDirty, isValid }
   } = useForm<FormData>({
@@ -90,7 +74,10 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
 
   return (
     <Stack component="form" onSubmit={handleSubmit(onSubmit)} spacing={2}>
-      <Typography variant="body1" fontWeight={600}>
+      <Typography
+        variant="body1"
+        fontWeight={600}
+        onClick={() => console.log(getValues())}>
         1. Thông tin người đăng ký tiêm
       </Typography>
       <Grid container spacing={2}>
@@ -106,13 +93,19 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
           />
         </Grid>
         <Grid item xs={4}>
-          <TextInput
+          {/* <TextInput
             name="healthInsuranceNumber"
             control={control}
             label="Số thẻ BHYT"
             placeholder="Số thẻ BHYT"
             errorMessage="Nhóm ưu tiên không được bỏ trống và được nhập đúng đinh dạng"
             required
+          /> */}
+          <Typography mb={1}>Số thẻ BHYT</Typography>
+          <TextField
+            fullWidth
+            defaultValue={userData.healthInsuranceNumber}
+            disabled
           />
         </Grid>
         <Grid item xs={4}></Grid>
