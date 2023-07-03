@@ -28,7 +28,6 @@ const PersonalInfoStep: FC<VaccineRegistrationFormStepProps> = ({
 
   const {
     control,
-    getValues,
     handleSubmit,
     formState: { isValid }
   } = vaccineRegistrationForm;
@@ -53,10 +52,7 @@ const PersonalInfoStep: FC<VaccineRegistrationFormStepProps> = ({
 
   return (
     <Stack component="form" onSubmit={handleSubmit(onSubmit)} spacing={2}>
-      <Typography
-        variant="body1"
-        fontWeight={600}
-        onClick={() => console.log(getValues())}>
+      <Typography variant="body1" fontWeight={600}>
         1. Thông tin người đăng ký tiêm
       </Typography>
       <Grid container spacing={2}>

@@ -35,8 +35,6 @@ const VaccinationPointTable: FC<VaccinationPointTablePropsType> = ({
 
   const { data, status } = useFindVaccinationPoint({ ...watch() });
 
-  console.log(status);
-
   const page = watch('page');
   const pageSize = watch('pageSize');
 

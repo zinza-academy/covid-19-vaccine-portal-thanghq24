@@ -116,9 +116,7 @@ const ApprovalForm: FC<ApprovalFormProps> = ({
           borderRadius: '4px'
         }}>
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
-          <Typography variant="h6" onClick={() => console.log(data)}>
-            Phê duyệt đăng ký tiêm chủng
-          </Typography>
+          <Typography variant="h6">Phê duyệt đăng ký tiêm chủng</Typography>
           <IconButton color="default" onClick={handleCloseApprovalModal}>
             <CloseIcon />
           </IconButton>

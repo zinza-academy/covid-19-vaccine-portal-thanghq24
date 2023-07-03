@@ -67,12 +67,10 @@ const VaccinationRegistrationTable: FC<
 
   const handleOpenEditModal = (id: number) => {
     setSelectRegistration(id);
-    // setApprovalModalOpen(true);
   };
 
   const handleCloseApprovalModal = () => {
     setSelectRegistration(null);
-    // setApprovalModalOpen(false);
   };
 
   if (!data) return <Typography>Loading</Typography>;
