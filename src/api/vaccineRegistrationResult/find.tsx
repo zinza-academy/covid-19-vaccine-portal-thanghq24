@@ -1,34 +1,34 @@
 import api from '../axios';
 import { useQuery } from '@tanstack/react-query';
-import {
-  VaccineRegistrationResultFindResponseType,
-  VaccineRegistrationResultFindParamsType
-} from './types';
+import { VaccineRegistrationFindResponseType } from '../vaccineRegistration/types';
 import { STATUS } from '../vaccineRegistration/types';
+import { CompletedVaccineRegistrationResultFindParamsType } from './types';
 
-const findVaccineRegistrationResultApi = async (
-  params: VaccineRegistrationResultFindParamsType
+const findVaccineRegistrationApi = async (
+  params: CompletedVaccineRegistrationResultFindParamsType
 ) => {
-  const { data } = await api.get<VaccineRegistrationResultFindResponseType>(
-    `vaccination-registration-results`,
+  const { data } = await api.get<VaccineRegistrationFindResponseType>(
+    `vaccine-registrations`,
     {
       params: {
         userId: params.userId,
-        status: STATUS.COMPLETED
+        status: STATUS.COMPLETED,
+        page: params.page,
+        pageSize: params.pageSize
       }
     }
   );
   return data;
 };
 
-const useFindVaccineRegistrationResult = (
-  params: VaccineRegistrationResultFindParamsType
+const useFindVaccineRegistration = (
+  params: CompletedVaccineRegistrationResultFindParamsType
 ) => {
-  const findVaccineRegistrationResultQuery = useQuery({
-    queryKey: ['vaccine-registration-results', params],
-    queryFn: () => findVaccineRegistrationResultApi(params)
+  const findVaccineRegistrationQuery = useQuery({
+    queryKey: ['vaccine-registrations-completed', params],
+    queryFn: () => findVaccineRegistrationApi(params)
   });
-  return findVaccineRegistrationResultQuery;
+  return findVaccineRegistrationQuery;
 };
 
-export default useFindVaccineRegistrationResult;
+export default useFindVaccineRegistration;

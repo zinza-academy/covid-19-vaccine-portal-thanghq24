@@ -9,7 +9,7 @@ const findVaccineRegistrationApi = async (
   params: VaccineRegistrationFindParamsType
 ) => {
   const { data } = await api.get<VaccineRegistrationFindResponseType>(
-    `vaccination-registrations`,
+    `vaccine-registrations`,
     {
       params: params
     }

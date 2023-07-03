@@ -7,7 +7,7 @@ import {
 
 const findVaccineRegistrationApi = async (id: number) => {
   const { data } = await api.get<VaccineRegistrationFindOneResponseType>(
-    `vaccination-registrations/${id}`
+    `vaccine-registrations/${id}`
   );
   return data;
 };

@@ -12,7 +12,7 @@ export interface FullRelationUserData {
   fullName: string;
   email: string;
   healthInsuranceNumber: string;
-  dob: Date;
+  dob: string | number | Date | dayjs.Dayjs | null | undefined;
   gender: string;
   citizenIdentification: string;
   roles: Role[];
@@ -28,9 +28,7 @@ export interface UserData {
   gender: string | null;
   citizenIdentification: string;
   roles: Role[];
-  ward: number | string;
-  district: number | string;
-  province: number | string;
+  ward: WardResponse | null;
 }
 
 export interface PersonalInfoFormData {
@@ -57,9 +55,7 @@ const userData: UserData = {
   fullName: '',
   dob: null,
   gender: null,
-  province: '',
-  district: '',
-  ward: '',
+  ward: null,
   roles: []
 };
 
@@ -78,15 +74,15 @@ export const userSlice = createSlice({
       state.isAuthenticated = false;
       state.user = userData;
       return state;
-    },
-    updateUserData: (state, action: PayloadAction<PersonalInfoFormData>) => {
-      state.user = { ...state.user, ...action.payload };
-      return state;
     }
+    // updateUserData: (state, action: PayloadAction<PersonalInfoFormData>) => {
+    //   state.user = { ...state.user, ...action.payload };
+    //   return state;
+    // }
   }
 });
 
-export const { login, logout, updateUserData } = userSlice.actions;
+export const { login, logout } = userSlice.actions;
 
 export const selectUserData = (state: RootState) => state.user.user;
 export const selectAuthState = (state: RootState) => state.user.isAuthenticated;

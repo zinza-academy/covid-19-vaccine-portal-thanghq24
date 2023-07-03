@@ -63,7 +63,7 @@ export interface VaccineRegistrationDecideApprovalFormData {
 
 export interface VaccineRegistrationFindOneResponseType {
   id: number;
-  status: string;
+  status: STATUS;
   priorityType: number;
   job: number;
   workplace: string;

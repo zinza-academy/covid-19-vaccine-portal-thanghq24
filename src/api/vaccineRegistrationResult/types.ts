@@ -34,6 +34,12 @@ export interface VaccineRegistrationResultFindParamsType {
   userId: number | null;
 }
 
+export interface CompletedVaccineRegistrationResultFindParamsType
+  extends VaccineRegistrationResultFindParamsType {
+  page: number;
+  pageSize: number;
+}
+
 export interface VaccineRegistrationResultUpdateFormData {
   injectingTime: string | number | Date | dayjs.Dayjs | null | undefined;
   vaccinationSite: number;

@@ -1,6 +1,6 @@
 'use client';
 
-import { Stack } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { FC, useCallback } from 'react';
@@ -45,7 +45,7 @@ const PortalNavigation: FC = () => {
               justifyContent: 'center',
               padding: '0 16px'
             }}>
-            {t.label}
+            <Typography>{t.label}</Typography>
           </Stack>
         </Link>
       ))}

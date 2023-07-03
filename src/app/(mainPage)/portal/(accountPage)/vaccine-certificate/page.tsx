@@ -38,7 +38,7 @@ const VaccineCertificate: FC = () => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={9}>
-        <CertificateInfo injectionRecords={injectionRecords} />
+        <CertificateInfo />
       </Grid>
       <Grid item xs={3}>
         <CertificateCard injectionRecords={injectionRecords} />

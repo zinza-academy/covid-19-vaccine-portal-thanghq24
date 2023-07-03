@@ -11,7 +11,7 @@ const decideApprovalVaccineRegistrationApi = async (
 ) => {
   const { data } =
     await api.patch<VaccineRegistrationDecideApprovalResponseType>(
-      'vaccination-registrations/' + id,
+      'vaccine-registrations/' + id,
       vaccinationRegistrationDecideApprovalFormData
     );
   return data;

@@ -10,7 +10,7 @@ const updateVaccineRegistrationApi = async (
   vaccinationRegistrationUpdateFormData: VaccineRegistrationUpdateFormData
 ) => {
   const { data } = await api.patch<VaccineRegistrationUpdateResponseType>(
-    'vaccination-registrations/' + id,
+    'vaccine-registrations/' + id,
     vaccinationRegistrationUpdateFormData
   );
   return data;
