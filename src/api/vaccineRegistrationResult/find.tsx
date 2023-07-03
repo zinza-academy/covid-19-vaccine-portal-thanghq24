@@ -1,7 +1,7 @@
 import api from '../axios';
 import { useQuery } from '@tanstack/react-query';
 import { VaccineRegistrationFindResponseType } from '../vaccineRegistration/types';
-import { STATUS } from '../vaccineRegistration/types';
+import { VaccineRegistrationStatus } from '../vaccineRegistration/types';
 import { CompletedVaccineRegistrationResultFindParamsType } from './types';
 
 const findVaccineRegistrationApi = async (
@@ -12,7 +12,7 @@ const findVaccineRegistrationApi = async (
     {
       params: {
         userId: params.userId,
-        status: STATUS.COMPLETED,
+        status: VaccineRegistrationStatus.Completed,
         page: params.page,
         pageSize: params.pageSize
       }

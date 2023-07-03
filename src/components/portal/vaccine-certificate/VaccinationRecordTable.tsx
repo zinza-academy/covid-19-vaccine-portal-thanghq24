@@ -43,7 +43,7 @@ const VaccinationRecordTable: FC<VaccinationRecordTablePropsType> = ({
                 label={dayjs(
                   vaccinationRegistration.vaccineRegistrationResult
                     ?.injectingTime
-                ).toString()}
+                ).format('YYYY-MM-DD HH:mm')}
               />
               <TableBodyCell
                 label={

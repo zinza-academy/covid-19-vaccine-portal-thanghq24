@@ -1,11 +1,11 @@
 import { FullRelationUserData } from '@src/redux/userSlice';
 import dayjs from 'dayjs';
 
-export enum STATUS {
-  REQUESTED = 'REQUESTED',
-  ACCEPTED = 'ACCEPTED',
-  REJECTED = 'REJECTED',
-  COMPLETED = 'COMPLETED'
+export enum VaccineRegistrationStatus {
+  Requested = 'requested',
+  Accepted = 'accepted',
+  Rejected = 'rejected',
+  Completed = 'completed'
 }
 
 export interface VaccineRegistrationResult {
@@ -39,7 +39,7 @@ export interface VaccineRegistrationFindParamsType {
   pageSize: number;
   priorityType: number | string | null;
   appointmentDate: string | number | Date | dayjs.Dayjs | null | undefined;
-  status: STATUS | null;
+  status: VaccineRegistrationStatus | null;
 }
 
 export interface VaccineRegistrationCreateFormData
@@ -57,12 +57,12 @@ export interface VaccineRegistrationUpdateFormData {
 }
 
 export interface VaccineRegistrationDecideApprovalFormData {
-  status: STATUS;
+  status: VaccineRegistrationStatus;
 }
 
 export interface VaccineRegistrationFindOneResponseType {
   id: number;
-  status: STATUS;
+  status: VaccineRegistrationStatus;
   priorityType: number;
   job: number;
   workplace: string;

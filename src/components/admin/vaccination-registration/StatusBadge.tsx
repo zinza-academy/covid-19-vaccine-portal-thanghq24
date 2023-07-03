@@ -1,33 +1,33 @@
 import { Chip } from '@mui/material';
-import { STATUS } from '@src/api/vaccineRegistration/types';
+import { VaccineRegistrationStatus } from '@src/api/vaccineRegistration/types';
 import { FC } from 'react';
 
 interface StatusBadgeProps {
-  status: STATUS;
+  status: VaccineRegistrationStatus;
 }
 
-const getBadgeColor = (status: STATUS) => {
+const getBadgeColor = (status: VaccineRegistrationStatus) => {
   switch (status) {
-    case STATUS.REQUESTED:
+    case VaccineRegistrationStatus.Requested:
       return 'default';
-    case STATUS.ACCEPTED:
+    case VaccineRegistrationStatus.Accepted:
       return 'primary';
-    case STATUS.REJECTED:
+    case VaccineRegistrationStatus.Rejected:
       return 'warning';
-    case STATUS.COMPLETED:
+    case VaccineRegistrationStatus.Completed:
       return 'success';
   }
 };
 
-const getBadgeLabel = (status: STATUS) => {
+const getBadgeLabel = (status: VaccineRegistrationStatus) => {
   switch (status) {
-    case STATUS.REQUESTED:
+    case VaccineRegistrationStatus.Requested:
       return 'Đăng ký thành công';
-    case STATUS.ACCEPTED:
+    case VaccineRegistrationStatus.Accepted:
       return 'Đã được chấp nhận';
-    case STATUS.REJECTED:
+    case VaccineRegistrationStatus.Rejected:
       return 'Đã bị từ chối';
-    case STATUS.COMPLETED:
+    case VaccineRegistrationStatus.Completed:
       return 'Đã hoàn thành tiêm';
   }
 };

@@ -10,10 +10,8 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import {
-  STATUS,
-  VaccineRegistrationFindOneResponseType
-} from '@src/api/vaccineRegistration/types';
+import { VaccineRegistrationFindOneResponseType } from '@src/api/vaccineRegistration/types';
+import StatusBadge from '@src/components/admin/vaccination-registration/StatusBadge';
 import TableBodyCell from '@src/components/sharedComponents/table/TableBodyCell';
 import TableHeadCell from '@src/components/sharedComponents/table/TableHeadCell';
 import StyledTableRow from '@src/components/sharedComponents/table/TableRow';
@@ -24,40 +22,6 @@ import React, { FC } from 'react';
 interface VaccinationRegistrationTableProps {
   vaccineRegistrationList: VaccineRegistrationFindOneResponseType[];
 }
-
-interface StatusBadgeProps {
-  status: STATUS;
-}
-
-const getBadgeColor = (status: STATUS) => {
-  switch (status) {
-    case STATUS.REQUESTED:
-      return 'default';
-    case STATUS.ACCEPTED:
-      return 'primary';
-    case STATUS.REJECTED:
-      return 'warning';
-    case STATUS.COMPLETED:
-      return 'success';
-  }
-};
-
-const getBadgeLabel = (status: STATUS) => {
-  switch (status) {
-    case STATUS.REQUESTED:
-      return 'Đăng ký thành công';
-    case STATUS.ACCEPTED:
-      return 'Đã được chấp nhận';
-    case STATUS.REJECTED:
-      return 'Đã bị từ chối';
-    case STATUS.COMPLETED:
-      return 'Đã hoàn thành tiêm';
-  }
-};
-
-const StatusBadge: FC<StatusBadgeProps> = ({ status }) => (
-  <Chip color={getBadgeColor(status)} label={getBadgeLabel(status)} />
-);
 
 const VaccinationRegistrationTable: FC<VaccinationRegistrationTableProps> = ({
   vaccineRegistrationList

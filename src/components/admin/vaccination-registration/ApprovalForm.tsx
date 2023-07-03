@@ -15,7 +15,7 @@ import useFindOneVaccineRegistration from '@src/api/vaccineRegistration/findOne'
 import { getISODate } from '@src/utils/getISODate';
 import useDecideApprovalVaccineRegistration from '@src/api/vaccineRegistration/decideApproval';
 import {
-  STATUS,
+  VaccineRegistrationStatus,
   VaccineRegistrationFindParamsType,
   VaccineRegistrationFindResponseType
 } from '@src/api/vaccineRegistration/types';
@@ -49,7 +49,7 @@ const ApprovalForm: FC<ApprovalFormProps> = ({
 
   const { mutateAsync } = useDecideApprovalVaccineRegistration();
 
-  const handleDecide = async (status: STATUS) => {
+  const handleDecide = async (status: VaccineRegistrationStatus) => {
     try {
       setLoading(true);
       if (vaccinationRegistrationId) {
@@ -215,13 +215,13 @@ const ApprovalForm: FC<ApprovalFormProps> = ({
           <Button
             variant="outlined"
             disabled={loading}
-            onClick={() => handleDecide(STATUS.REJECTED)}>
+            onClick={() => handleDecide(VaccineRegistrationStatus.Rejected)}>
             Từ chối
           </Button>
           <Button
             variant="contained"
             disabled={loading}
-            onClick={() => handleDecide(STATUS.ACCEPTED)}>
+            onClick={() => handleDecide(VaccineRegistrationStatus.Accepted)}>
             Chấp nhận
           </Button>
         </Stack>
