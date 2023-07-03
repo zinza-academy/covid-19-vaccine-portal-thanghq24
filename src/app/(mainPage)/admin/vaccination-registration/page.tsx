@@ -2,69 +2,43 @@
 
 import React, { FC } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import VaccinationRegistrationTable from '@src/components/admin/vaccination-registration/VaccinationRegistrationTable';
-import dayjs from 'dayjs';
-import SelectInput from '@src/components/sharedComponents/SelectInput';
-import DateInput from '@src/components/sharedComponents/DateInput';
-import priorityType from '@src/utils/constants/priorityType';
+import DEFAULT_PAGINATION_VALUES from '@src/utils/constants/defaultPaginationValues';
+import { VaccineRegistrationFindParamsType } from '@src/api/vaccineRegistration/types';
+import SearchSection from '@src/components/admin/vaccination-registration/SearchSection';
 
-interface SearchFormData {
-  priorityType: number | '';
-  appointmentDate: string | number | Date | dayjs.Dayjs | null | undefined;
-}
-
-const schema = yup.object().shape({
-  priorityType: yup
-    .number()
-    .transform((value, originalValue) => {
-      return originalValue === '' ? null : originalValue;
-    })
-    .nullable(),
+const schema = yup.object({
+  page: yup.number().required(),
+  pageSize: yup.number().required(),
+  priorityType: yup.number().nullable(),
   appointmentDate: yup.date().nullable()
 });
 
+const defaultValues: VaccineRegistrationFindParamsType = {
+  page: DEFAULT_PAGINATION_VALUES.PAGE,
+  pageSize: DEFAULT_PAGINATION_VALUES.PAGE_SIZE,
+  appointmentDate: null,
+  priorityType: null,
+  status: null,
+  userId: null
+};
+
 const VaccinationRegistration: FC = () => {
-  const { control, handleSubmit } = useForm<SearchFormData>({
+  const vaccineRegistrationForm = useForm<VaccineRegistrationFindParamsType>({
     mode: 'onChange',
-    defaultValues: {
-      priorityType: '',
-      appointmentDate: null
-    },
+    defaultValues: defaultValues,
     resolver: yupResolver(schema)
   });
 
-  const onSubmit = (data: SearchFormData) => {
-    alert('try to search with ' + JSON.stringify(data));
-  };
-
   return (
-    <Stack spacing={2} component="form" onSubmit={handleSubmit(onSubmit)}>
-      <Stack direction="row" spacing={2}>
-        <Box sx={{ width: '260px' }}>
-          <SelectInput
-            name="priorityType"
-            control={control}
-            placeholder="Nhóm ưu tiên"
-            selections={priorityType}
-            size="small"
-          />
-        </Box>
-        <Box sx={{ width: '260px' }}>
-          <DateInput
-            control={control}
-            name="appointmentDate"
-            placeholder="Ngày/Tháng/Năm"
-            size="small"
-          />
-        </Box>
-        <Button type="submit" variant="contained">
-          Tìm kiếm
-        </Button>
-      </Stack>
-      <VaccinationRegistrationTable />
+    <Stack spacing={2}>
+      <SearchSection vaccineRegistrationForm={vaccineRegistrationForm} />
+      <VaccinationRegistrationTable
+        vaccineRegistrationForm={vaccineRegistrationForm}
+      />
     </Stack>
   );
 };

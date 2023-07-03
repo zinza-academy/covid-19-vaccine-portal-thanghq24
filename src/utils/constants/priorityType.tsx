@@ -1,4 +1,5 @@
 const priorityType = [
+  { value: '', label: 'Không' },
   {
     value: 0,
     label:

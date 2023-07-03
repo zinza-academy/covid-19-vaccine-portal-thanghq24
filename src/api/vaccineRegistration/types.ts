@@ -1,6 +1,5 @@
 import { FullRelationUserData } from '@src/redux/userSlice';
 import dayjs from 'dayjs';
-import { VaccinationPointFindOneResponseType } from '../vaccinationPoint/findOne';
 
 export enum STATUS {
   REQUESTED = 'REQUESTED',
@@ -31,7 +30,7 @@ export interface VaccineType {
 }
 
 export interface VaccineRegistrationFindOneParamsType {
-  id: number;
+  id: number | null;
 }
 
 export interface VaccineRegistrationFindParamsType {
@@ -90,7 +89,7 @@ export interface VaccineRegistrationCreateResponseType
 }
 
 export interface VaccineRegistrationUpdateResponseType
-  extends VaccinationPointFindOneResponseType {}
+  extends VaccineRegistrationFindOneResponseType {}
 
 export interface VaccineRegistrationDecideApprovalResponseType
-  extends VaccinationPointFindOneResponseType {}
+  extends VaccineRegistrationFindOneResponseType {}

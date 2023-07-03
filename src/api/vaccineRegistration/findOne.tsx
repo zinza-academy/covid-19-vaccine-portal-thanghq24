@@ -5,9 +5,11 @@ import {
   VaccineRegistrationFindOneParamsType
 } from './types';
 
-const findVaccineRegistrationApi = async (id: number) => {
+const findVaccineRegistrationApi = async (
+  params: VaccineRegistrationFindOneParamsType
+) => {
   const { data } = await api.get<VaccineRegistrationFindOneResponseType>(
-    `vaccine-registrations/${id}`
+    `vaccine-registrations/${params.id}`
   );
   return data;
 };
@@ -15,11 +17,10 @@ const findVaccineRegistrationApi = async (id: number) => {
 const useFindOneVaccineRegistration = (
   params: VaccineRegistrationFindOneParamsType
 ) => {
-  const { id } = params;
-
   const findOneVaccineRegistrationQuery = useQuery({
-    queryKey: ['vaccine-registrations', { id }],
-    queryFn: () => findVaccineRegistrationApi(id)
+    queryKey: ['vaccine-registrations', params],
+    queryFn: () => findVaccineRegistrationApi(params),
+    enabled: !!params.id
   });
   return findOneVaccineRegistrationQuery;
 };
