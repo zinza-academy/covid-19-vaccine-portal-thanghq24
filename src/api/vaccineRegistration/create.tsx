@@ -9,7 +9,7 @@ const createVaccineRegistrationApi = async (
   vaccinationRegistrationCreateFormData: VaccineRegistrationCreateFormData
 ) => {
   const { data } = await api.post<VaccineRegistrationCreateResponseType>(
-    'vaccination-registrations',
+    'vaccine-registrations',
     vaccinationRegistrationCreateFormData
   );
   return data;

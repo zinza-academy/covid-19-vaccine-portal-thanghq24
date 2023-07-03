@@ -20,15 +20,17 @@ export interface FullRelationUserData {
 }
 
 export interface UserData {
+  id: number | null;
   fullName: string;
+  email: string;
   healthInsuranceNumber: string;
   dob: string | number | Date | dayjs.Dayjs | null | undefined;
   gender: string | null;
   citizenIdentification: string;
-  province: number | string;
-  district: number | string;
-  ward: number | string;
   roles: Role[];
+  ward: number | string;
+  district: number | string;
+  province: number | string;
 }
 
 export interface PersonalInfoFormData {
@@ -48,6 +50,8 @@ interface PasswordFormData {
 }
 
 const userData: UserData = {
+  id: null,
+  email: '',
   citizenIdentification: '',
   healthInsuranceNumber: '',
   fullName: '',

@@ -1,12 +1,16 @@
 'use client';
 
-import { Button, Stack, Step, StepLabel, Stepper } from '@mui/material';
+import { Stack, Step, StepLabel, Stepper } from '@mui/material';
 import ConfirmStep from '@src/components/portal/vaccine-registration/ConfirmStep';
 import PageTitle from '@src/components/portal/PageTitle';
 import PersonalInfoStep from '@src/components/portal/vaccine-registration/PersonalInfoStep';
 import ResultStep from '@src/components/portal/vaccine-registration/ResultStep';
-import { useRouter } from 'next/navigation';
 import React, { Dispatch, FC, SetStateAction, useState } from 'react';
+import { UseFormReturn, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import dayjs from 'dayjs';
+import { VaccineRegistrationCreateResponseType } from '@src/api/vaccineRegistration/types';
 
 const STEPS = [
   {
@@ -25,12 +29,48 @@ const STEPS = [
 
 export type AvailableSteps = 0 | 1 | 2;
 
-export interface FormStepProps {
+interface VaccineRegistrationStepProps {
   step: AvailableSteps;
   setStep: Dispatch<SetStateAction<AvailableSteps>>;
 }
+export interface VaccineRegistrationFormStepProps
+  extends VaccineRegistrationStepProps {
+  vaccineRegistrationForm: UseFormReturn<VaccineRegistrationFormData, any>;
+}
 
-const FormStepper: FC<FormStepProps> = ({ step, setStep }) => {
+export interface VaccineRegistrationConfirmStepProps
+  extends VaccineRegistrationFormStepProps {
+  setRegisterResponse: React.Dispatch<
+    React.SetStateAction<VaccineRegistrationCreateResponseType | null>
+  >;
+}
+
+export interface VaccineRegistrationResultStepProps {
+  registerResponse: VaccineRegistrationCreateResponseType | null;
+}
+
+export interface VaccineRegistrationFormData {
+  priorityType: number | '';
+  job: string;
+  workplace: string;
+  address: string;
+  appointmentDate: string | number | Date | dayjs.Dayjs | null | undefined;
+  dayPhase: string;
+}
+
+const schema = yup
+  .object()
+  .shape({
+    priorityType: yup.number().required(),
+    job: yup.string(),
+    workplace: yup.string(),
+    address: yup.string().trim(),
+    appointmentDate: yup.date().min(dayjs().add(1, 'day').toDate()).required(),
+    dayPhase: yup.string().required()
+  })
+  .required();
+
+const FormStepper: FC<VaccineRegistrationStepProps> = ({ step }) => {
   return (
     <Stepper activeStep={step} alternativeLabel sx={{ pb: 4 }}>
       {STEPS.map((step, index) => (
@@ -43,19 +83,46 @@ const FormStepper: FC<FormStepProps> = ({ step, setStep }) => {
 };
 
 const VaccineRegistration: FC = () => {
-  const router = useRouter();
   const [step, setStep] = useState<AvailableSteps>(0);
+  const [registerResponse, setRegisterResponse] =
+    useState<VaccineRegistrationCreateResponseType | null>(null);
+
+  const vaccineRegistrationForm = useForm<VaccineRegistrationFormData>({
+    mode: 'onChange',
+    defaultValues: {
+      priorityType: '',
+      job: '',
+      workplace: '',
+      address: '',
+      appointmentDate: null,
+      dayPhase: ''
+    },
+    resolver: yupResolver(schema)
+  });
 
   const renderStepForm = () => {
     switch (step) {
       case 0: {
-        return <PersonalInfoStep setStep={setStep} step={step} />;
+        return (
+          <PersonalInfoStep
+            setStep={setStep}
+            step={step}
+            vaccineRegistrationForm={vaccineRegistrationForm}
+          />
+        );
       }
       case 1: {
-        return <ConfirmStep setStep={setStep} step={step} />;
+        return (
+          <ConfirmStep
+            setStep={setStep}
+            step={step}
+            vaccineRegistrationForm={vaccineRegistrationForm}
+            setRegisterResponse={setRegisterResponse}
+          />
+        );
       }
       case 2: {
-        return <ResultStep />;
+        return <ResultStep registerResponse={registerResponse} />;
       }
       default: {
         break;
