@@ -75,6 +75,10 @@ export const userSlice = createSlice({
       state.user = userData;
       return state;
     }
+    // updateUserData: (state, action: PayloadAction<PersonalInfoFormData>) => {
+    //   state.user = { ...state.user, ...action.payload };
+    //   return state;
+    // }
   }
 });
 
