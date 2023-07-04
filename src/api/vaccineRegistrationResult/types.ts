@@ -27,7 +27,7 @@ export interface VaccineType {
 }
 
 export interface VaccineRegistrationResultFindOneParamsType {
-  id: number;
+  id: number | null;
 }
 
 export interface VaccineRegistrationResultFindParamsType {
