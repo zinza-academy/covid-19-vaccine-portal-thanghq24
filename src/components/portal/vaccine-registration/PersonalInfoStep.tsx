@@ -1,14 +1,6 @@
-import React, { FC } from 'react';
-import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHook';
-import {
-  FormData,
-  selectVaccineRegistrationFormData,
-  submitFormData
-} from '@src/redux/vaccineRegistrationSlice';
-import { Button, Grid, Stack, Typography } from '@mui/material';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import React, { FC, useState } from 'react';
+import { useAppSelector } from '@src/hooks/reduxHook';
+import { Button, Grid, Stack, TextField, Typography } from '@mui/material';
 import SelectInput from '@src/components/sharedComponents/SelectInput';
 import priorityType from '@src/utils/constants/priorityType';
 import jobs from '@src/utils/constants/jobs';
@@ -17,73 +9,43 @@ import TextInput from '@src/components/sharedComponents/TextInput';
 import { red } from '@mui/material/colors';
 import {
   AvailableSteps,
-  FormStepProps
+  VaccineRegistrationFormData,
+  VaccineRegistrationFormStepProps
 } from '@src/app/(mainPage)/portal/vaccine-registration/page';
-import { useRouter } from 'next/navigation';
 import DateInput from '@src/components/sharedComponents/DateInput';
 import dayPhases from '@src/utils/constants/dayPhases';
-import dayjs from 'dayjs';
+import { selectUserData } from '@src/redux/userSlice';
+import { toast } from 'react-toastify';
+import Link from 'next/link';
 
-const schema = yup
-  .object()
-  .shape({
-    priorityType: yup.number().required(),
-    // healthInsuranceNumber must be a string with 15 characters and first 2 chars are letters, the rest is number
-    healthInsuranceNumber: yup
-      .string()
-      .trim()
-      .length(15)
-      .uppercase()
-      .test('health-insurance-number-check', (value) => {
-        let checkFirstTwoChars = yup
-          .string()
-          .matches(/^[A-Z]+$/) //?
-          .isValid(value?.slice(0, 2));
-        let checkLastThirteenNums = yup
-          .string()
-          .length(13)
-          .matches(/[^0-9]/);
-        if (!checkFirstTwoChars) return false;
-        if (!checkLastThirteenNums) return false;
-        return true;
-      })
-      .required(),
-    job: yup.string(),
-    workplace: yup.string(),
-    address: yup.string().trim(),
-    appointmentDate: yup.date().min(dayjs().add(1, 'day').toDate()).required(),
-    dayPhase: yup.string().required()
-  })
-  .required();
+const PersonalInfoStep: FC<VaccineRegistrationFormStepProps> = ({
+  setStep,
+  vaccineRegistrationForm
+}) => {
+  const userData = useAppSelector(selectUserData);
 
-const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
-  const router = useRouter();
-  const currentFormData = useAppSelector(selectVaccineRegistrationFormData);
-  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
 
   const {
     control,
     handleSubmit,
-    formState: { isDirty, isValid }
-  } = useForm<FormData>({
-    mode: 'onChange',
-    defaultValues: {
-      ...currentFormData,
-      appointmentDate: dayjs(currentFormData.appointmentDate)
-    },
-    resolver: yupResolver(schema)
-  });
+    formState: { isValid }
+  } = vaccineRegistrationForm;
 
-  const canSubmit = !isDirty || !isValid;
+  const isDisabled = loading || !isValid;
 
-  const onSubmit = (data: FormData) => {
-    dispatch(submitFormData(data));
-    stepForward();
+  const onSubmit = (data: VaccineRegistrationFormData) => {
+    try {
+      setLoading(true);
+      toast.success('Thông tin đăng ký đã được lưu!');
+      stepForward();
+    } catch (error) {
+      toast.error('Có lỗi xảy ra!');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const goToHomepage = () => {
-    router.push('/');
-  };
   const stepForward = () => {
     setStep((prev) => (prev + 1) as AvailableSteps);
   };
@@ -106,13 +68,11 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
           />
         </Grid>
         <Grid item xs={4}>
-          <TextInput
-            name="healthInsuranceNumber"
-            control={control}
-            label="Số thẻ BHYT"
-            placeholder="Số thẻ BHYT"
-            errorMessage="Nhóm ưu tiên không được bỏ trống và được nhập đúng đinh dạng"
-            required
+          <Typography mb={1}>Số thẻ BHYT</Typography>
+          <TextField
+            fullWidth
+            defaultValue={userData.healthInsuranceNumber}
+            disabled
           />
         </Grid>
         <Grid item xs={4}></Grid>
@@ -180,10 +140,10 @@ const PersonalInfoStep: FC<FormStepProps> = ({ setStep }) => {
         </Stack>
       </Stack>
       <Stack direction="row" justifyContent="center" spacing={2}>
-        <Button variant="outlined" onClick={goToHomepage}>
-          Hủy bỏ
-        </Button>
-        <Button type="submit" variant="contained" disabled={canSubmit}>
+        <Link href="/">
+          <Button variant="outlined">Hủy bỏ</Button>
+        </Link>
+        <Button type="submit" variant="contained" disabled={isDisabled}>
           Tiếp tục
         </Button>
       </Stack>

@@ -22,6 +22,14 @@ export interface Ward {
   districtId: number | string;
 }
 
+export interface DistrictResponse extends District {
+  province: Province;
+}
+
+export interface WardResponse extends Ward {
+  district: DistrictResponse;
+}
+
 const useProvinces = (province: string | number, district: string | number) => {
   const apiPrefix = process.env.NEXT_PUBLIC_API_URL;
 

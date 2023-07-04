@@ -8,32 +8,97 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import { VaccinationRegistration } from './VaccinationRegistrationTable';
-import dayjs from 'dayjs';
 import dayPhases from '@src/utils/constants/dayPhases';
+import useFindOneVaccineRegistration from '@src/api/vaccineRegistration/findOne';
+import { getISODate } from '@src/utils/getISODate';
+import useDecideApprovalVaccineRegistration from '@src/api/vaccineRegistration/decideApproval';
+import {
+  VaccineRegistrationStatus,
+  VaccineRegistrationFindParamsType,
+  VaccineRegistrationFindResponseType
+} from '@src/api/vaccineRegistration/types';
+import { toast } from 'react-toastify';
+import { useQueryClient } from '@tanstack/react-query';
+import { UseFormReturn } from 'react-hook-form';
 
 interface ApprovalFormProps {
   approvalModalOpen: boolean;
   handleCloseApprovalModal: () => void;
-  vaccinationRegistration: VaccinationRegistration | null;
+  vaccinationRegistrationId: number | null;
+  vaccineRegistrationForm: UseFormReturn<
+    VaccineRegistrationFindParamsType,
+    any
+  >;
 }
 
 const ApprovalForm: FC<ApprovalFormProps> = ({
   approvalModalOpen,
   handleCloseApprovalModal,
-  vaccinationRegistration
+  vaccinationRegistrationId,
+  vaccineRegistrationForm
 }) => {
-  const handleAccept = () => {
-    alert('try to accept a vaccination registration');
-    handleCloseApprovalModal();
+  const queryClient = useQueryClient();
+
+  const [loading, setLoading] = useState(false);
+
+  const { data } = useFindOneVaccineRegistration({
+    id: vaccinationRegistrationId
+  });
+
+  const { mutateAsync } = useDecideApprovalVaccineRegistration();
+
+  const handleDecide = async (status: VaccineRegistrationStatus) => {
+    try {
+      setLoading(true);
+      if (vaccinationRegistrationId) {
+        const variables = {
+          id: vaccinationRegistrationId,
+          vaccinationRegistrationDecideApprovalFormData: {
+            status: status
+          }
+        };
+        const result = await mutateAsync(variables);
+
+        queryClient.setQueryData<
+          VaccineRegistrationFindResponseType | undefined
+        >(
+          ['vaccine-registrations', vaccineRegistrationForm.getValues()],
+          (vaccinationRegistrations) => {
+            if (!vaccinationRegistrations) return vaccinationRegistrations;
+
+            let updateVaccinationRegistrationIndex =
+              vaccinationRegistrations.data.findIndex(
+                (vaccinationRegistration) =>
+                  vaccinationRegistration.id === result.id
+              );
+
+            vaccinationRegistrations.data[updateVaccinationRegistrationIndex] =
+              result;
+
+            return vaccinationRegistrations;
+          }
+        );
+
+        toast.success('Phê duyệt thành công');
+        handleCloseApprovalModal();
+      } else {
+        toast.error('Không thể thực hiện hành động này');
+      }
+    } catch (error) {
+      toast.error('Có lỗi xảy ra!');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReject = () => {
-    alert('try to reject a vaccination registration');
-    handleCloseApprovalModal();
-  };
+  if (!data)
+    return (
+      <Modal open={false}>
+        <p>Placeholder modal</p>
+      </Modal>
+    );
 
   return (
     <Modal
@@ -51,11 +116,7 @@ const ApprovalForm: FC<ApprovalFormProps> = ({
           borderRadius: '4px'
         }}>
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
-          <Typography
-            variant="h6"
-            onClick={() => console.log(vaccinationRegistration)}>
-            Phê duyệt đăng ký tiêm chủng
-          </Typography>
+          <Typography variant="h6">Phê duyệt đăng ký tiêm chủng</Typography>
           <IconButton color="default" onClick={handleCloseApprovalModal}>
             <CloseIcon />
           </IconButton>
@@ -66,19 +127,19 @@ const ApprovalForm: FC<ApprovalFormProps> = ({
             <Grid item xs={4}>
               <Typography variant="body1">Họ và tên</Typography>
               <Typography variant="body1" fontWeight={600}>
-                {vaccinationRegistration?.fullName}
+                {data.user.fullName}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography variant="body1">Ngày sinh</Typography>
               <Typography variant="body1" fontWeight={600}>
-                {dayjs(vaccinationRegistration?.dob).format('DD/MM/YYYY')}
+                {getISODate(data.user.dob)}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography variant="body1">Giới tính</Typography>
               <Typography variant="body1" fontWeight={600}>
-                {vaccinationRegistration?.gender}
+                {data.user.gender}
               </Typography>
             </Grid>
             <Grid item xs={4}>
@@ -86,42 +147,44 @@ const ApprovalForm: FC<ApprovalFormProps> = ({
                 Số CMND/CCCD/Mã định danh công dân
               </Typography>
               <Typography variant="body1" fontWeight={600}>
-                {vaccinationRegistration?.citizenIdentification}
+                {data.user.citizenIdentification}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography variant="body1">Số thẻ BHYT</Typography>
-              <Typography variant="body1" fontWeight={600}></Typography>
+              <Typography variant="body1" fontWeight={600}>
+                {data.user.healthInsuranceNumber}
+              </Typography>
             </Grid>
             <Grid item xs={4}></Grid>
             <Grid item xs={4}>
               <Typography variant="body1">Tỉnh/Thành phố</Typography>
               <Typography variant="body1" fontWeight={600}>
-                {vaccinationRegistration?.province}
+                {data.user.ward.district.province.name}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography variant="body1">Quận/Huyện</Typography>
               <Typography variant="body1" fontWeight={600}>
-                {vaccinationRegistration?.district}
+                {data.user.ward.district.name}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography variant="body1">Xã/Phường</Typography>
               <Typography variant="body1" fontWeight={600}>
-                {vaccinationRegistration?.ward}
+                {data.user.ward.name}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography variant="body1">Nhóm ưu tiên</Typography>
               <Typography variant="body1" fontWeight={600}>
-                {vaccinationRegistration?.priorityType}
+                {data.priorityType}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography variant="body1">Nghề nghiệp</Typography>
               <Typography variant="body1" fontWeight={600}>
-                {vaccinationRegistration?.job}
+                {data.job}
               </Typography>
             </Grid>
             <Grid item xs={4}></Grid>
@@ -130,32 +193,35 @@ const ApprovalForm: FC<ApprovalFormProps> = ({
                 Ngày muốn được tiêm (dự kiến)
               </Typography>
               <Typography variant="body1" fontWeight={600}>
-                {dayjs(vaccinationRegistration?.appointmentDate).format(
-                  'DD/MM/YYYY'
-                )}
+                {getISODate(data.appointmentDate)}
               </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography variant="body1">Buổi tiêm mong muốn</Typography>
               <Typography variant="body1" fontWeight={600}>
-                {vaccinationRegistration?.dayPhase
-                  ? dayPhases[
-                      dayPhases.findIndex(
-                        (phase) =>
-                          phase.value === vaccinationRegistration.dayPhase
-                      )
-                    ].label
-                  : ''}
+                {
+                  dayPhases[
+                    dayPhases.findIndex(
+                      (phase) => phase.value === data.dayPhase
+                    )
+                  ].label
+                }
               </Typography>
             </Grid>
             <Grid item xs={4}></Grid>
           </Grid>
         </Stack>
         <Stack direction="row" justifyContent="end" spacing={2} p={2}>
-          <Button variant="outlined" onClick={handleReject}>
+          <Button
+            variant="outlined"
+            disabled={loading}
+            onClick={() => handleDecide(VaccineRegistrationStatus.Rejected)}>
             Từ chối
           </Button>
-          <Button variant="contained" onClick={handleAccept}>
+          <Button
+            variant="contained"
+            disabled={loading}
+            onClick={() => handleDecide(VaccineRegistrationStatus.Accepted)}>
             Chấp nhận
           </Button>
         </Stack>

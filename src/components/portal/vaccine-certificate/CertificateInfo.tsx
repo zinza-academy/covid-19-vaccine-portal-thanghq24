@@ -2,15 +2,24 @@
 
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import React, { FC } from 'react';
-import VaccinationRecordTable from './VaccinationRecordTable';
 import Link from 'next/link';
-import { InjectionRecord } from '@src/app/(mainPage)/portal/(accountPage)/vaccine-certificate/page';
+import { useAppSelector } from '@src/hooks/reduxHook';
+import { selectUserData } from '@src/redux/userSlice';
+import useFindVaccineRegistrationResult from '@src/api/vaccineRegistrationResult/find';
+import { getISODate } from '@src/utils/getISODate';
+import VaccinationRecordTable from './VaccinationRecordTable';
 
-interface CertificateInfoProps {
-  injectionRecords: InjectionRecord[];
-}
+const CertificateInfo: FC = () => {
+  const userData = useAppSelector(selectUserData);
 
-const CertificateInfo: FC<CertificateInfoProps> = ({ injectionRecords }) => {
+  const { data } = useFindVaccineRegistrationResult({
+    userId: userData.id,
+    page: 0,
+    pageSize: 100
+  });
+
+  if (!data) return <Typography>Loading</Typography>;
+
   return (
     <Stack spacing={2}>
       <Stack alignItems="center">
@@ -32,13 +41,13 @@ const CertificateInfo: FC<CertificateInfoProps> = ({ injectionRecords }) => {
         <Grid item xs={3}>
           <Typography variant="body1">Họ và tên</Typography>
           <Typography variant="body1" fontWeight={600}>
-            Nguyễn Văn A
+            {userData.fullName}
           </Typography>
         </Grid>
         <Grid item xs={3}>
           <Typography variant="body1">Ngày sinh</Typography>
           <Typography variant="body1" fontWeight={600}>
-            16/10/1994
+            {getISODate(userData.dob)}
           </Typography>
         </Grid>
         <Grid item xs={3}>
@@ -46,29 +55,34 @@ const CertificateInfo: FC<CertificateInfoProps> = ({ injectionRecords }) => {
             Số CMND/CCCD/Mã định danh công dân
           </Typography>
           <Typography variant="body1" fontWeight={600}>
-            030012345678
+            {userData.citizenIdentification}
           </Typography>
         </Grid>
         <Grid item xs={3}>
           <Typography variant="body1">Số thẻ BHYT</Typography>
           <Typography variant="body1" fontWeight={600}>
-            030094005102
+            {userData.healthInsuranceNumber}
           </Typography>
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body1">Địa chỉ</Typography>
           <Typography variant="body1" fontWeight={600}>
-            Phường Giang Biên - Quận Long Biên - Thành phố Hà Nội
+            {userData.ward
+              ? `${userData?.ward?.name} - ${userData.ward.district.name} -
+            ${userData.ward.district.province.name}`
+              : ' '}
           </Typography>
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body1">Kết luận</Typography>
           <Typography variant="body1" fontWeight={600}>
-            Đã được tiêm phòng vắc xin phòng bệnh Covid-19
+            {data.data.length > 0
+              ? 'Đã được tiêm phòng vắc xin phòng bệnh Covid-19'
+              : 'Chưa được tiêm phòng vắc xin phòng bệnh Covid-19'}
           </Typography>
         </Grid>
       </Grid>
-      <VaccinationRecordTable injectionRecords={injectionRecords} />
+      <VaccinationRecordTable vaccinationRegistration={data.data} />
       <Stack alignItems="center">
         <Link href="/portal/vaccine-registration">
           <Button variant="contained">Đăng ký mũi tiêm tiếp theo</Button>

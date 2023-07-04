@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 
 export interface FormData {
   priorityType: number | '';
-  healthInsuranceNumber: string;
   job: string;
   workplace: string;
   address: string;
@@ -14,7 +13,6 @@ export interface FormData {
 
 const formState: FormData = {
   priorityType: '',
-  healthInsuranceNumber: '',
   job: '',
   workplace: '',
   address: '',

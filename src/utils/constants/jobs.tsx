@@ -1,4 +1,5 @@
 const jobGroups = [
+  { value: '', label: 'Không' },
   { value: 0, label: 'Nhóm ngành sản xuất và chế biến' },
   { value: 1, label: 'Nhóm ngành kiến trúc và xây dựng' },
   { value: 2, label: 'Nhóm những ngành kinh doanh' },

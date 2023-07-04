@@ -1,14 +1,6 @@
 import api from '@src/api/axios';
-import { District, Province, Ward } from '@src/hooks/useProvinces';
+import { WardResponse } from '@src/hooks/useProvinces';
 import { useQuery } from '@tanstack/react-query';
-
-export interface DistrictResponse extends District {
-  province: Province;
-}
-
-export interface WardResponse extends Ward {
-  district: DistrictResponse;
-}
 
 export interface VaccinationPointFindParamsType {
   id: number;

@@ -9,13 +9,18 @@ import {
 } from '@mui/material';
 import {
   AvailableSteps,
-  FormStepProps
+  VaccineRegistrationConfirmStepProps
 } from '@src/app/(mainPage)/portal/vaccine-registration/page';
 import React, { FC, useState } from 'react';
 import Shield from '@public/images/shield 1.png';
 import Vaccine from '@public/images/vaccine2 1.png';
 import Hospital from '@public/images/hospital 1.png';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
+import useCreateVaccineRegistration from '@src/api/vaccineRegistration/create';
+import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHook';
+import { logout, selectUserData } from '@src/redux/userSlice';
+import { getISODate } from '@src/utils/getISODate';
 
 const agreements = [
   {
@@ -35,17 +40,55 @@ const agreements = [
   }
 ];
 
-const ConfirmStep: FC<FormStepProps> = ({ setStep }) => {
+const ConfirmStep: FC<VaccineRegistrationConfirmStepProps> = ({
+  setStep,
+  vaccineRegistrationForm,
+  setRegisterResponse
+}) => {
   const [agreement, setAgreement] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useAppDispatch();
+  const userData = useAppSelector(selectUserData);
+
+  const { getValues } = vaccineRegistrationForm;
+
+  const { mutateAsync } = useCreateVaccineRegistration();
 
   const handleChange = () => {
     setAgreement((prev) => !prev);
   };
+
   const stepBack = () => {
     setStep((prev) => (prev - 1) as AvailableSteps);
   };
-  const stepForward = () => {
-    setStep((prev) => (prev + 1) as AvailableSteps);
+
+  const confirmRegister = async () => {
+    try {
+      setLoading(true);
+      const registerData = getValues();
+      registerData.appointmentDate = registerData.appointmentDate
+        ? getISODate(registerData.appointmentDate)
+        : null;
+
+      if (!userData.id) {
+        toast.error('Vui lòng đăng nhập lại');
+        dispatch(logout);
+      } else {
+        const registerResponse = await mutateAsync({
+          ...registerData,
+          user: userData.id
+        });
+        setRegisterResponse(registerResponse);
+
+        toast.success('Đăng ký thành công');
+        setStep((prev) => (prev + 1) as AvailableSteps);
+      }
+    } catch (error) {
+      toast.error('Có lỗi xảy ra!');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,9 +126,11 @@ const ConfirmStep: FC<FormStepProps> = ({ setStep }) => {
         <Button variant="outlined" onClick={stepBack}>
           Quay lại
         </Button>
-        {/* We should call the registration api call to server and clear the current form after */}
-        <Button variant="contained" disabled={!agreement} onClick={stepForward}>
-          Tiếp tục
+        <Button
+          variant="contained"
+          disabled={!agreement || loading}
+          onClick={confirmRegister}>
+          Đăng ký
         </Button>
       </Stack>
     </Stack>

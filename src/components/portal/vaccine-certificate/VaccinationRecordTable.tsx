@@ -1,53 +1,26 @@
+'use client';
+
 import {
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  styled
+  Typography
 } from '@mui/material';
-import { InjectionRecord } from '@src/app/(mainPage)/portal/(accountPage)/vaccine-certificate/page';
+import { VaccineRegistrationFindOneResponseType } from '@src/api/vaccineRegistration/types';
+import TableBodyCell from '@src/components/sharedComponents/table/TableBodyCell';
+import TableHeadCell from '@src/components/sharedComponents/table/TableHeadCell';
+import StyledTableRow from '@src/components/sharedComponents/table/TableRow';
+import dayjs from 'dayjs';
 import React, { FC } from 'react';
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(even)': {
-    backgroundColor: theme.palette.action.hover
-  },
-  '&:last-child td, &:last-child th': {
-    border: 0
-  }
-}));
-
-const TableHeadCell: FC<{ label: string }> = ({ label }) => {
-  return (
-    <TableCell
-      align="center"
-      sx={{
-        backgroundColor: (theme) => theme.palette.action.hover
-      }}>
-      <Typography variant="body1" fontWeight={500}>
-        {label}
-      </Typography>
-    </TableCell>
-  );
-};
-
-const TableBodyCell: FC<{ label: string | number }> = ({ label }) => {
-  return (
-    <TableCell align="center">
-      <Typography variant="body2">{label}</Typography>
-    </TableCell>
-  );
-};
-
-interface VaccinationRecordTableProps {
-  injectionRecords: InjectionRecord[];
+interface VaccinationRecordTablePropsType {
+  vaccinationRegistration: VaccineRegistrationFindOneResponseType[];
 }
 
-const VaccinationRecordTable: FC<VaccinationRecordTableProps> = ({
-  injectionRecords
+const VaccinationRecordTable: FC<VaccinationRecordTablePropsType> = ({
+  vaccinationRegistration
 }) => {
   return (
     <TableContainer>
@@ -63,18 +36,38 @@ const VaccinationRecordTable: FC<VaccinationRecordTableProps> = ({
         </TableHead>
 
         <TableBody>
-          {injectionRecords.map((vaccinationRecord, index) => (
+          {vaccinationRegistration.map((vaccinationRegistration, index) => (
             <StyledTableRow key={index}>
               <TableBodyCell label={index + 1} />
-              <TableBodyCell label={vaccinationRecord.injectionTime} />
-              <TableBodyCell label={vaccinationRecord.vaccineType} />
-              <TableBodyCell label={vaccinationRecord.batchNumber} />
-              <TableBodyCell label={vaccinationRecord.vaccinationPoint} />
+              <TableBodyCell
+                label={dayjs(
+                  vaccinationRegistration.vaccineRegistrationResult
+                    ?.injectingTime
+                ).format('YYYY-MM-DD HH:mm')}
+              />
+              <TableBodyCell
+                label={
+                  vaccinationRegistration.vaccineRegistrationResult?.vaccineType
+                    .name || 'Không có dữ liệu'
+                }
+              />
+              <TableBodyCell
+                label={
+                  vaccinationRegistration.vaccineRegistrationResult?.vaccineType
+                    ?.batchNumber || 'Không có dữ liệu'
+                }
+              />
+              <TableBodyCell
+                label={
+                  vaccinationRegistration.vaccineRegistrationResult?.vaccineType
+                    ?.name || 'Không có dữ liệu'
+                }
+              />
             </StyledTableRow>
           ))}
         </TableBody>
       </Table>
-      {!injectionRecords.length && (
+      {!vaccinationRegistration.length && (
         <Typography variant="h6" textAlign="center">
           Không có bản ghi nào
         </Typography>
