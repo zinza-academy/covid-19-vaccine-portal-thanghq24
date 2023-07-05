@@ -16,6 +16,7 @@ import React, { FC, useState } from 'react';
 import EditModal from '@components/admin/document/EditModal';
 import useFindDocument from '@src/api/document/find';
 import { Document } from '@src/api/document/types';
+import { toast } from 'react-toastify';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -100,10 +101,9 @@ const DocumentTable: FC<DocumentTableProps> = ({ readonly }) => {
                   <TableCell align="center" width={'20%'}>
                     <StyledButton variant="text" size="small">
                       <a
-                        href="/gioi-thieu.pdf"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Download FIle
+                        download
+                        href={`${process.env.NEXT_PUBLIC_API_URL}documents/download/${document.id}`}>
+                        Download File
                       </a>
                     </StyledButton>
                     {readonly ? null : (
