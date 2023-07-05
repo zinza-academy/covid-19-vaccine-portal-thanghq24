@@ -1,18 +1,18 @@
 import { useMutation } from '@tanstack/react-query';
-import api from '../axios';
+import { fileApi } from '../axios';
 import { Document, DocumentCreateFormData } from './types';
 
 const createDocumentApi = async (
   createDocumentFormData: DocumentCreateFormData
 ) => {
-  const { data } = await api.post<Document>(
+  const { data } = await fileApi.post<Document>(
     'documents',
     createDocumentFormData
   );
   return data;
 };
 
-const useCreateDocument = async () => {
+const useCreateDocument = () => {
   const createDocumentMutation = useMutation(
     (createDocumentFormData: DocumentCreateFormData) =>
       createDocumentApi(createDocumentFormData)

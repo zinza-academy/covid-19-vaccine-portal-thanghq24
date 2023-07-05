@@ -7,7 +7,7 @@ const deleteDocumentApi = async (id: number) => {
   return data;
 };
 
-const useDeleteDocument = async () => {
+const useDeleteDocument = () => {
   const deleteDocumentMutation = useMutation((id: number) =>
     deleteDocumentApi(id)
   );

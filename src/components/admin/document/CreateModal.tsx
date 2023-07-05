@@ -10,45 +10,51 @@ import {
   Typography
 } from '@mui/material';
 import TextInput from '@src/components/sharedComponents/TextInput';
-import React, { ChangeEvent, FC } from 'react';
+import React, { ChangeEvent, FC, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import { Document } from '@src/components/admin/document/DocumentTable';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { red } from '@mui/material/colors';
 import RequiredTag from '@components/sharedComponents/RequiredTag';
+import { Document, DocumentCreateFormData } from '@src/api/document/types';
+import useCreateDocument from '@src/api/document/create';
+import { toast } from 'react-toastify';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface CreateModalProps {
   createModalOpen: boolean;
   handleCloseCreateModal: () => void;
 }
 
-const schema = yup
-  .object()
-  .shape({
-    name: yup.string().required(),
-    file: yup
-      .mixed<File>()
-      .test('required', 'File tải lên phải là file PDF', (file) => {
-        if (file && file?.type === 'application/pdf') return true;
-        return false;
-      })
-  })
-  .required();
+const schema = yup.object().shape({
+  name: yup.string().required(),
+  file: yup
+    .mixed<File>()
+    .test('pdf', 'File tải lên phải là file PDF', (file) => {
+      if (!file) {
+        return true;
+      } else if (file.type === 'application/pdf') return true;
+      return false;
+    })
+    .required()
+});
 
 const CreateModal: FC<CreateModalProps> = ({
   createModalOpen,
   handleCloseCreateModal
 }) => {
+  const queryClient = useQueryClient();
+
+  const [loading, setLoading] = useState(false);
+
   const {
     control,
     getValues,
     setValue,
     handleSubmit,
-    trigger,
     formState: { errors, isValid }
-  } = useForm<Document>({
+  } = useForm<DocumentCreateFormData>({
     mode: 'onChange',
     defaultValues: {
       name: '',
@@ -57,15 +63,32 @@ const CreateModal: FC<CreateModalProps> = ({
     resolver: yupResolver(schema)
   });
 
-  const onSubmit = (data: Document) => {
-    console.log(data);
-    alert('try to create document' + JSON.stringify(data));
+  const { mutateAsync } = useCreateDocument();
+
+  const onSubmit = async (data: DocumentCreateFormData) => {
+    try {
+      setLoading(true);
+
+      const newDocument = await mutateAsync(data);
+
+      const documentQuery = queryClient.getQueryData<Document[]>(['documents']);
+
+      if (documentQuery) documentQuery.push(newDocument);
+
+      toast.success('Tạo mới tài liệu thành công!');
+      handleCloseCreateModal();
+    } catch (error) {
+      toast.error('Không thể tạo mới tài liệu!');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChangeFile = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    setValue('file', e.target.files[0]);
-    trigger('file');
+    setValue('file', e.target.files[0], {
+      shouldValidate: true
+    });
   };
 
   return (
@@ -117,7 +140,10 @@ const CreateModal: FC<CreateModalProps> = ({
           <Button variant="outlined" onClick={handleCloseCreateModal}>
             Hủy bỏ
           </Button>
-          <Button type="submit" variant="contained" disabled={!isValid}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={loading || !isValid}>
             Thêm mới
           </Button>
         </Stack>

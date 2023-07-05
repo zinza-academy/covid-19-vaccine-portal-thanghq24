@@ -1,25 +1,17 @@
-export interface File {
+export interface FileData {
   id: number;
-}
-
-export interface FileWithBuffer extends File {
-  fileContent: {
-    type: string;
-    data: Buffer;
-  };
+  path: string;
 }
 
 export interface Document {
   id: number;
   name: string;
-  file: File | FileWithBuffer;
+  file: FileData;
 }
 
 export interface DocumentCreateFormData {
   name: string;
-  file: File;
+  file: File | null;
 }
 
-export interface DocumentUpdateFormData extends DocumentCreateFormData {
-  id: number;
-}
+export interface DocumentUpdateFormData extends DocumentCreateFormData {}

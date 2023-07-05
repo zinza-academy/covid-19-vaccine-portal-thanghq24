@@ -7,7 +7,7 @@ const findDocumentApi = async () => {
   return data;
 };
 
-const useFindDocument = async () => {
+const useFindDocument = () => {
   const findDocumentQuery = useQuery<Document[]>({
     queryKey: ['documents'],
     queryFn: () => findDocumentApi()
