@@ -10,4 +10,14 @@ const api = axios.create({
   }
 });
 
+const fileApi = axios.create({
+  baseURL: baseURL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+});
+
+export { fileApi };
+
 export default api;
