@@ -45,6 +45,9 @@ const SearchSection: FC<SearchSectionPropsType> = ({
         shouldValidate: true
       }
     );
+    vaccineRegistrationForm.setValue('page', 0, {
+      shouldValidate: true
+    });
   };
 
   return (

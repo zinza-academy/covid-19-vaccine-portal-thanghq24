@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Button,
   Stack,
   Table,
   TableBody,
@@ -18,12 +19,16 @@ import StyledTableRow from '@src/components/sharedComponents/table/TableRow';
 import TableBodyCell from '@src/components/sharedComponents/table/TableBodyCell';
 import useFindVaccineRegistration from '@src/api/vaccineRegistration/find';
 import { UseFormReturn } from 'react-hook-form';
-import { VaccineRegistrationFindParamsType } from '@src/api/vaccineRegistration/types';
+import {
+  VaccineRegistrationFindParamsType,
+  VaccineRegistrationStatus
+} from '@src/api/vaccineRegistration/types';
 import { getISODate } from '@src/utils/getISODate';
 import usePagination from '@src/hooks/usePagination';
 import TablePagination from '@src/components/sharedComponents/table/TablePagination';
 import DEFAULT_PAGINATION_VALUES from '@src/utils/constants/defaultPaginationValues';
 import StatusBadge from './StatusBadge';
+import EditForm from './EditForm';
 
 interface VaccinationRegistrationTablePropsType {
   vaccineRegistrationForm: UseFormReturn<
@@ -38,6 +43,11 @@ const VaccinationRegistrationTable: FC<
   const [selectRegistration, setSelectRegistration] = useState<number | null>(
     null
   );
+  const [selectRegistrationResult, setSelectRegistrationResult] = useState<
+    number | null
+  >(null);
+  const [openApproval, setOpenApproval] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
   const { setValue, watch } = vaccineRegistrationForm;
 
@@ -65,12 +75,29 @@ const VaccinationRegistrationTable: FC<
     });
   };
 
-  const handleOpenEditModal = (id: number) => {
+  const handleOpenApprovalModal = (id: number) => {
     setSelectRegistration(id);
+    setOpenApproval(true);
   };
 
   const handleCloseApprovalModal = () => {
     setSelectRegistration(null);
+    setOpenApproval(false);
+  };
+
+  const handleOpenEditModal = (
+    registerId: number,
+    registerResultId: number
+  ) => {
+    setSelectRegistration(registerId);
+    setSelectRegistrationResult(registerResultId);
+    setOpenEdit(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setSelectRegistration(null);
+    setSelectRegistrationResult(null);
+    setOpenEdit(false);
   };
 
   if (!data) return <Typography>Loading</Typography>;
@@ -87,14 +114,12 @@ const VaccinationRegistrationTable: FC<
               <TableHeadCell label="Ngày muốn được tiêm (dự kiến)" />
               <TableHeadCell label="Buổi tiêm mong muốn" />
               <TableHeadCell label="Trạng thái" />
+              <TableHeadCell label="Thao tác" />
             </TableRow>
           </TableHead>
           <TableBody>
             {data.data.map((vaccinationRegistration, index) => (
-              <StyledTableRow
-                key={index}
-                sx={{ cursor: 'pointer', height: '54px' }}
-                onClick={() => handleOpenEditModal(vaccinationRegistration.id)}>
+              <StyledTableRow key={index} sx={{ height: '54px' }}>
                 <TableBodyCell
                   label={vaccinationRegistration.priorityType + 1}
                 />
@@ -120,6 +145,37 @@ const VaccinationRegistrationTable: FC<
                 <TableCell align="center">
                   <StatusBadge status={vaccinationRegistration.status} />
                 </TableCell>
+                <TableCell align="center">
+                  <Button
+                    sx={{ textTransform: 'none' }}
+                    disabled={
+                      vaccinationRegistration.status ===
+                      VaccineRegistrationStatus.Completed
+                    }
+                    onClick={() =>
+                      handleOpenApprovalModal(vaccinationRegistration.id)
+                    }>
+                    Phê duyệt
+                  </Button>
+                  <Button
+                    sx={{ textTransform: 'none' }}
+                    disabled={
+                      !vaccinationRegistration.vaccineRegistrationResult ||
+                      vaccinationRegistration.status ===
+                        VaccineRegistrationStatus.Requested ||
+                      vaccinationRegistration.status ===
+                        VaccineRegistrationStatus.Rejected
+                    }
+                    onClick={() => {
+                      if (vaccinationRegistration.vaccineRegistrationResult)
+                        handleOpenEditModal(
+                          vaccinationRegistration.id,
+                          vaccinationRegistration.vaccineRegistrationResult.id
+                        );
+                    }}>
+                    Chỉnh sửa
+                  </Button>
+                </TableCell>
               </StyledTableRow>
             ))}
           </TableBody>
@@ -136,9 +192,16 @@ const VaccinationRegistrationTable: FC<
         setPageSize={setPageSize}
       />
       <ApprovalForm
-        approvalModalOpen={!!selectRegistration}
+        approvalModalOpen={openApproval}
         handleCloseApprovalModal={handleCloseApprovalModal}
         vaccinationRegistrationId={selectRegistration}
+        vaccineRegistrationForm={vaccineRegistrationForm}
+      />
+      <EditForm
+        editModalOpen={openEdit}
+        handleCloseEditModal={handleCloseEditModal}
+        vaccinationRegistrationId={selectRegistration}
+        vaccinationRegistrationResultId={selectRegistrationResult}
         vaccineRegistrationForm={vaccineRegistrationForm}
       />
     </Stack>
