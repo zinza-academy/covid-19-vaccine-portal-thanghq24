@@ -10,7 +10,7 @@ import {
   Typography
 } from '@mui/material';
 import TextInput from '@src/components/sharedComponents/TextInput';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { ChangeEvent, FC, useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -21,6 +21,7 @@ import { Document, DocumentCreateFormData } from '@src/api/document/types';
 import useCreateDocument from '@src/api/document/create';
 import { toast } from 'react-toastify';
 import { useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 
 interface CreateModalProps {
   createModalOpen: boolean;
@@ -40,6 +41,11 @@ const schema = yup.object().shape({
     .required()
 });
 
+const defaultValues = {
+  name: '',
+  file: null
+};
+
 const CreateModal: FC<CreateModalProps> = ({
   createModalOpen,
   handleCloseCreateModal
@@ -52,18 +58,20 @@ const CreateModal: FC<CreateModalProps> = ({
     control,
     getValues,
     setValue,
+    reset,
     handleSubmit,
     formState: { errors, isValid }
   } = useForm<DocumentCreateFormData>({
     mode: 'onChange',
-    defaultValues: {
-      name: '',
-      file: null
-    },
+    defaultValues: defaultValues,
     resolver: yupResolver(schema)
   });
 
   const { mutateAsync } = useCreateDocument();
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [createModalOpen, reset]);
 
   const onSubmit = async (data: DocumentCreateFormData) => {
     try {
@@ -78,7 +86,14 @@ const CreateModal: FC<CreateModalProps> = ({
       toast.success('Tạo mới tài liệu thành công!');
       handleCloseCreateModal();
     } catch (error) {
-      toast.error('Không thể tạo mới tài liệu!');
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
+        else if (error?.response?.status === 409)
+          toast.error('Tên tài liệu đã được sử dụng!');
+        else toast.error('Không thể tạo mới tài liệu!');
+      } else {
+        toast.error('Có lỗi xảy ra!');
+      }
     } finally {
       setLoading(false);
     }
