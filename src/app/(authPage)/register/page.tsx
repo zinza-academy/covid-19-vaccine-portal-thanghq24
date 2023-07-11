@@ -94,12 +94,18 @@ const Register: FC = () => {
   const watchDistrict = watch('district');
 
   useEffect(() => {
-    setValue('district', '');
-    setValue('ward', '');
-  }, [watchProvince]);
+    setValue('district', '', {
+      shouldValidate: true
+    });
+    setValue('ward', '', {
+      shouldValidate: true
+    });
+  }, [watchProvince, setValue]);
   useEffect(() => {
-    setValue('ward', '');
-  }, [watchDistrict]);
+    setValue('ward', '', {
+      shouldValidate: true
+    });
+  }, [watchDistrict, setValue]);
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
