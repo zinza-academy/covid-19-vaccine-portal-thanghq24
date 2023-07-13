@@ -26,7 +26,7 @@ function usePagination<T>({
   useEffect(() => {
     if (items === undefined || count === undefined) return;
 
-    const maxPage = Math.floor(count / pageSize);
+    const maxPage = Math.ceil(count / pageSize) - 1;
 
     const getMaxPage = () => {
       setMaxPage(maxPage);
