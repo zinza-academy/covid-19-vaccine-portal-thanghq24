@@ -8,6 +8,7 @@ import { FC } from 'react';
 const Home: FC = () => {
   return (
     <Stack spacing={4} py={4}>
+      <div>this has been add because github action trigger docker compose</div>
       <StatisticalData />
       <DailyStatistics />
       <VaccinationPoint />
