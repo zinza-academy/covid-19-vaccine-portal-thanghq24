@@ -8,7 +8,7 @@ const ToastProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <>
       {children}
-      <ToastContainer />
+      <ToastContainer position="bottom-right" newestOnTop />
     </>
   );
 };

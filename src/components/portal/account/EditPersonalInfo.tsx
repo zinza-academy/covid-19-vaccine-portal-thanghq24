@@ -2,7 +2,7 @@
 
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import TextInput from '@src/components/sharedComponents/TextInput';
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -11,8 +11,24 @@ import dayjs from 'dayjs';
 import DateInput from '@src/components/sharedComponents/DateInput';
 import SelectInput from '@src/components/sharedComponents/SelectInput';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHook';
-import { PersonalInfoFormData, updateUserData } from '@src/redux/userSlice';
+import { editAccount } from '@src/redux/userSlice';
 import { selectUserData } from '@src/redux/userSlice';
+import useEditAccount from '@src/api/account/edit';
+import { getISODate } from '@src/utils/getISODate';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+
+export interface PersonalInfoFormData {
+  citizenIdentification: string;
+  healthInsuranceNumber: string;
+  fullName: string;
+  email: string;
+  dob: string | number | Date | dayjs.Dayjs | null | undefined;
+  gender: string;
+  province: number | string;
+  district: number | string;
+  ward: number | string;
+}
 
 const schema = yup
   .object()
@@ -38,38 +54,118 @@ const EditPersonalInfo: FC = () => {
   const userData = useAppSelector(selectUserData);
   const dispatch = useAppDispatch();
 
+  const [loading, setLoading] = useState(false);
+  const [prevProvince, setPrevProvince] = useState<string | number | undefined>(
+    userData.ward?.district.provinceId
+  );
+  const [prevDistrict, setPrevDistrict] = useState<string | number | undefined>(
+    userData.ward?.districtId
+  );
+
   const {
     control,
     handleSubmit,
     getValues,
+    setValue,
     watch,
     reset,
-    formState: { isDirty, isValid }
+    formState: { isDirty, isValid, errors }
   } = useForm<PersonalInfoFormData>({
     mode: 'onChange',
     defaultValues: {
       citizenIdentification: userData.citizenIdentification,
       fullName: userData.fullName,
+      email: userData.email,
+      healthInsuranceNumber: userData.healthInsuranceNumber,
       dob: dayjs(userData.dob),
-      gender: userData.gender,
-      province: userData.province,
-      district: userData.district,
-      ward: userData.ward
+      gender: userData.gender ? userData.gender : '',
+      province: userData.ward?.district.provinceId,
+      district: userData.ward?.districtId,
+      ward: userData.ward?.id
     },
     resolver: yupResolver(schema)
   });
+
+  useEffect(() => {
+    reset({
+      citizenIdentification: userData.citizenIdentification,
+      fullName: userData.fullName,
+      email: userData.email,
+      healthInsuranceNumber: userData.healthInsuranceNumber,
+      dob: dayjs(userData.dob),
+      gender: userData.gender ? userData.gender : '',
+      province: userData.ward?.district.provinceId,
+      district: userData.ward?.districtId,
+      ward: userData.ward?.id
+    });
+  }, [userData, reset]);
+
   const { provinceSelections, districtSelections, wardSelections } =
     useProvinces(getValues('province'), getValues('district'));
 
-  //watch updates of province and district to trigger api call to provinceAPI
-  watch('province');
-  watch('district');
+  const watchProvince = watch('province');
+  const watchDistrict = watch('district');
 
-  const onSubmitPersonalInfo = (data: PersonalInfoFormData) => {
-    dispatch(updateUserData(data));
+  useEffect(() => {
+    if (watchProvince !== prevProvince) {
+      setValue('district', '', {
+        shouldValidate: true
+      });
+      setValue('ward', '', {
+        shouldValidate: true
+      });
+      setPrevProvince(watchProvince);
+    }
+  }, [watchProvince, setValue, prevProvince, setPrevProvince]);
+
+  useEffect(() => {
+    if (watchDistrict !== prevDistrict) {
+      setValue('ward', '', {
+        shouldValidate: true
+      });
+      setPrevDistrict(watchDistrict);
+    }
+  }, [watchDistrict, setValue, prevDistrict, setPrevDistrict]);
+
+  const editAccountMutation = useEditAccount();
+
+  const onSubmitPersonalInfo = async (formData: PersonalInfoFormData) => {
+    if (!userData.id) return;
+
+    try {
+      setLoading(true);
+
+      const newUserData = await editAccountMutation.mutateAsync({
+        userId: userData.id,
+        formData: {
+          citizenIdentification: Number(formData.citizenIdentification),
+          fullName: formData.fullName,
+          email: formData.email,
+          healthInsuranceNumber: formData.healthInsuranceNumber,
+          dob: getISODate(formData.dob),
+          gender: formData.gender,
+          ward: Number(formData.ward)
+        }
+      });
+
+      dispatch(editAccount(newUserData));
+
+      toast.success('Chỉnh sửa thông tin tài khoản thành công!');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
+        else if (error?.response?.status === 409)
+          toast.error('Email đã được sử dụng!');
+        else toast.error('Chỉnh sửa thông tin tài khoản thất bại!');
+      } else {
+        toast.error('Có lỗi xảy ra!');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const canSubmit = !isDirty || !isValid;
+  const isDisabled = !isDirty || !isValid || loading;
 
   return (
     <Stack
@@ -90,7 +186,27 @@ const EditPersonalInfo: FC = () => {
             required
           />
         </Grid>
-        <Grid item xs={9}></Grid>
+        <Grid item xs={3}>
+          <TextInput
+            name="healthInsuranceNumber"
+            control={control}
+            label="Số thẻ BHYT"
+            placeholder="Số thẻ BHYT"
+            errorMessage="Nhóm ưu tiên không được bỏ trống và được nhập đúng đinh dạng"
+            required
+          />
+        </Grid>
+        <Grid item xs={6}></Grid>
+        <Grid item xs={3}>
+          <TextInput
+            control={control}
+            name="email"
+            label="Email"
+            placeholder="Email"
+            errorMessage="Email không được bỏ trống và phải đúng định dạng"
+            required
+          />
+        </Grid>
         <Grid item xs={3}>
           <TextInput
             control={control}
@@ -127,7 +243,6 @@ const EditPersonalInfo: FC = () => {
             required
           />
         </Grid>
-        <Grid item xs={3}></Grid>
         <Grid item xs={3}>
           <SelectInput
             control={control}
@@ -169,7 +284,7 @@ const EditPersonalInfo: FC = () => {
         <Button variant="outlined" disabled={!isDirty} onClick={() => reset()}>
           Hủy bỏ
         </Button>
-        <Button type="submit" variant="contained" disabled={canSubmit}>
+        <Button type="submit" variant="contained" disabled={isDisabled}>
           Lưu
         </Button>
       </Stack>

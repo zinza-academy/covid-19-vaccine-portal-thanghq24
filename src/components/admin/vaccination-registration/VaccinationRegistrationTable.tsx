@@ -63,6 +63,16 @@ const VaccinationRegistrationTable: FC<
     pageSize: pageSize
   });
 
+  console.log({
+    items: data?.data,
+    count: data?.count,
+    page: page,
+    pageSize: pageSize,
+    pageOptions,
+    emptyRows,
+    maxPage
+  });
+
   const setPage = (page: number) => {
     setValue('page', page, {
       shouldValidate: true
@@ -181,6 +191,9 @@ const VaccinationRegistrationTable: FC<
           </TableBody>
         </Table>
       </TableContainer>
+      {(!data?.data || data?.data.length === 0) && (
+        <Typography textAlign="center">Không có dữ liệu</Typography>
+      )}
       <TablePagination
         page={page}
         pageSize={pageSize}

@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Divider,
+  Grid,
   IconButton,
   Modal,
   Stack,
@@ -64,10 +65,16 @@ const CreateModal: FC<CreateModalProps> = ({
   const queryClient = useQueryClient();
 
   const [loading, setLoading] = useState(false);
-
+  const [prevProvince, setPrevProvince] = useState<string | number | undefined>(
+    ''
+  );
+  const [prevDistrict, setPrevDistrict] = useState<string | number | undefined>(
+    ''
+  );
   const createVaccinationPointMutation = useCreateVaccinationPoint();
 
   const provinceDistrictForm = useForm<ProvinceDistrictFormData>({
+    mode: 'onChange',
     defaultValues: {
       province: '',
       district: ''
@@ -81,8 +88,9 @@ const CreateModal: FC<CreateModalProps> = ({
     watch,
     handleSubmit,
     reset,
-    formState: { isDirty }
+    formState: { isDirty, isValid }
   } = useForm<VaccinationPointCreateFormData>({
+    mode: 'onChange',
     defaultValues: {
       name: '',
       address: '',
@@ -105,19 +113,30 @@ const CreateModal: FC<CreateModalProps> = ({
   watch('address');
 
   useEffect(() => {
-    provinceDistrictForm.setValue('district', '', {
-      shouldValidate: true
-    });
-    setValue('ward', '', {
-      shouldValidate: true
-    });
-  }, [provinceDistrictForm, watchProvince, setValue]);
+    reset();
+    provinceDistrictForm.reset();
+  }, [createModalOpen, reset, provinceDistrictForm]);
 
   useEffect(() => {
-    setValue('ward', '', {
-      shouldValidate: true
-    });
-  }, [watchDistrict, setValue]);
+    if (watchProvince !== prevProvince) {
+      setPrevProvince(watchProvince);
+      provinceDistrictForm.setValue('district', '', {
+        shouldValidate: true
+      });
+      setValue('ward', '', {
+        shouldValidate: true
+      });
+    }
+  }, [provinceDistrictForm, watchProvince, setValue, prevProvince]);
+
+  useEffect(() => {
+    if (watchDistrict !== prevDistrict) {
+      setPrevDistrict(watchDistrict);
+      setValue('ward', '', {
+        shouldValidate: true
+      });
+    }
+  }, [watchDistrict, setValue, prevDistrict]);
 
   const onSubmit = async (data: VaccinationPointCreateFormData) => {
     try {
@@ -177,7 +196,7 @@ const CreateModal: FC<CreateModalProps> = ({
           bgcolor: 'background.paper',
           boxShadow: 24,
           borderRadius: '4px',
-          width: '500px'
+          width: '900px'
         }}>
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
           <Typography variant="h6">Tạo mới điểm tiêm</Typography>
@@ -186,66 +205,85 @@ const CreateModal: FC<CreateModalProps> = ({
           </IconButton>
         </Stack>
         <Divider />
-        <Stack spacing={2} p={2}>
-          <TextInput
-            control={control}
-            name="name"
-            label="Tên điểm tiêm"
-            placeholder="Tên điểm tiêm"
-            errorMessage="Tên điểm tiêm không được bỏ trống"
-            required
-          />
-          <TextInput
-            control={control}
-            name="address"
-            label="Số nhà, tên đường"
-            placeholder="Số nhà, tên đường"
-            errorMessage="Số nhà, tên đường không được bỏ trống"
-            required
-          />
-          <SelectInput
-            control={provinceDistrictForm.control}
-            errorMessage="Tỉnh/Thành phố không được bỏ trống"
-            name="province"
-            selections={provinceSelections()}
-            defaultValue=""
-            placeholder="Tỉnh/Thành phố"
-            required
-          />
-          <SelectInput
-            control={provinceDistrictForm.control}
-            errorMessage="Quận/Huyện không được bỏ trống"
-            name="district"
-            selections={districtSelections()}
-            defaultValue=""
-            placeholder="Quận/Huyện"
-            required
-          />
-          <SelectInput
-            control={control}
-            errorMessage="Xã/Phường không được bỏ trống"
-            name="ward"
-            selections={wardSelections()}
-            defaultValue=""
-            placeholder="Xã/Phường"
-          />
-          <TextInput
-            control={control}
-            name="manager"
-            label="Người đứng đầu cơ sở tiêm chủng"
-            placeholder="Người đứng đầu cơ sở tiêm chủng"
-            errorMessage="Người đứng đầu cơ sở tiêm chủng không được bỏ trống"
-            required
-          />
-          <TextInput
-            control={control}
-            name="tableNumber"
-            label="Số bàn tiêm"
-            placeholder="Số bàn tiêm"
-            errorMessage="Số bàn tiêm là số và không được bỏ trống"
-            required
-          />
-        </Stack>
+        <Box p={2}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextInput
+                control={control}
+                name="name"
+                label="Tên điểm tiêm"
+                placeholder="Tên điểm tiêm"
+                errorMessage="Tên điểm tiêm không được bỏ trống"
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextInput
+                control={control}
+                name="address"
+                label="Số nhà, tên đường"
+                placeholder="Số nhà, tên đường"
+                errorMessage="Số nhà, tên đường không được bỏ trống"
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectInput
+                control={provinceDistrictForm.control}
+                label="Tỉnh/Thành phố"
+                errorMessage="Tỉnh/Thành phố không được bỏ trống"
+                name="province"
+                selections={provinceSelections()}
+                defaultValue=""
+                placeholder="Tỉnh/Thành phố"
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectInput
+                control={provinceDistrictForm.control}
+                label="Quận/Huyện"
+                errorMessage="Quận/Huyện không được bỏ trống"
+                name="district"
+                selections={districtSelections()}
+                defaultValue=""
+                placeholder="Quận/Huyện"
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectInput
+                control={control}
+                label="Xã/Phường"
+                errorMessage="Xã/Phường không được bỏ trống"
+                name="ward"
+                selections={wardSelections()}
+                defaultValue=""
+                placeholder="Xã/Phường"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextInput
+                control={control}
+                name="manager"
+                label="Người đứng đầu cơ sở tiêm chủng"
+                placeholder="Người đứng đầu cơ sở tiêm chủng"
+                errorMessage="Người đứng đầu cơ sở tiêm chủng không được bỏ trống"
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextInput
+                control={control}
+                name="tableNumber"
+                label="Số bàn tiêm"
+                placeholder="Số bàn tiêm"
+                errorMessage="Số bàn tiêm là số và không được bỏ trống"
+                required
+              />
+            </Grid>
+          </Grid>
+        </Box>
         <Stack direction="row" justifyContent="end" spacing={2} p={2}>
           <Button variant="outlined" onClick={handleClose}>
             Hủy bỏ
@@ -253,7 +291,7 @@ const CreateModal: FC<CreateModalProps> = ({
           <Button
             type="submit"
             variant="contained"
-            disabled={loading || !isDirty}>
+            disabled={loading || !isDirty || !isValid}>
             Tạo mới
           </Button>
         </Stack>
