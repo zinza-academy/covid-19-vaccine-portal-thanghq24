@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main
+      - fix_user_account
   workflow_dispatch:
   
 jobs:
