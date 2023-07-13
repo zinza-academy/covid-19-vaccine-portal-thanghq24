@@ -120,6 +120,9 @@ const DocumentTable: FC<DocumentTableProps> = ({ readonly }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      {(!data || data.length === 0) && (
+        <Typography textAlign="center">Không có dữ liệu</Typography>
+      )}
       {readonly ? null : (
         <EditModal
           editModalOpen={editModalOpen}
