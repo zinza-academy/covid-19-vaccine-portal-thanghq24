@@ -2,10 +2,15 @@
 
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import TextInput from '@src/components/sharedComponents/TextInput';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import useChangePassword from '@src/api/account/changePassword';
+import { useAppSelector } from '@src/hooks/reduxHook';
+import { selectUserData } from '@src/redux/userSlice';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 interface EditPasswordFormData {
   password: string;
@@ -29,6 +34,10 @@ const schema = yup
   .required();
 
 const EditPassword: FC = () => {
+  const [loading, setLoading] = useState(false);
+
+  const userData = useAppSelector(selectUserData);
+
   const {
     control,
     handleSubmit,
@@ -43,11 +52,34 @@ const EditPassword: FC = () => {
     resolver: yupResolver(schema)
   });
 
-  const onSubmitPersonalInfo = (data: EditPasswordFormData) => {
-    alert('try to change password with: ' + JSON.stringify(data));
+  const changePasswordMutation = useChangePassword();
+
+  const onSubmitPersonalInfo = async (data: EditPasswordFormData) => {
+    try {
+      setLoading(true);
+
+      if (!userData.id) return;
+
+      await changePasswordMutation.mutateAsync({
+        userId: userData.id,
+        password: data.password
+      });
+
+      reset();
+      toast.success('Đổi mật khẩu thành công!');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') toast.error('Lỗi mạng!');
+        else toast.error('Đổi mật khẩu thất bại!');
+      } else {
+        toast.error('Có lỗi xảy ra!');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const canSubmit = !isDirty || !isValid;
+  const isDisabled = !isDirty || !isValid || loading;
 
   return (
     <Stack
@@ -85,7 +117,7 @@ const EditPassword: FC = () => {
         <Button variant="outlined" disabled={!isDirty} onClick={() => reset()}>
           Hủy bỏ
         </Button>
-        <Button type="submit" variant="contained" disabled={canSubmit}>
+        <Button type="submit" variant="contained" disabled={isDisabled}>
           Lưu
         </Button>
       </Stack>
