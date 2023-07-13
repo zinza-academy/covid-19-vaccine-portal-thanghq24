@@ -31,22 +31,6 @@ export interface UserData {
   ward: WardResponse | null;
 }
 
-export interface PersonalInfoFormData {
-  citizenIdentification: string;
-  healthInsuranceNumber: string;
-  fullName: string;
-  dob: string | number | Date | dayjs.Dayjs | null | undefined;
-  gender: string | null;
-  province: number | string;
-  district: number | string;
-  ward: number | string;
-}
-
-interface PasswordFormData {
-  password: string;
-  confirmPassword: string;
-}
-
 const userData: UserData = {
   id: null,
   email: '',
@@ -74,11 +58,15 @@ export const userSlice = createSlice({
       state.isAuthenticated = false;
       state.user = userData;
       return state;
+    },
+    editAccount: (state, action: PayloadAction<UserData>) => {
+      state.user = action.payload;
+      return state;
     }
   }
 });
 
-export const { login, logout } = userSlice.actions;
+export const { login, logout, editAccount } = userSlice.actions;
 
 export const selectUserData = (state: RootState) => state.user.user;
 export const selectAuthState = (state: RootState) => state.user.isAuthenticated;
