@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Divider,
+  Grid,
   IconButton,
   Modal,
   Stack,
@@ -45,6 +46,14 @@ interface ProvinceDistrictFormData {
   district: string | number;
 }
 
+const provinceDistrictSchema = yup
+  .object()
+  .shape({
+    province: yup.string().required(),
+    district: yup.string().required()
+  })
+  .required();
+
 const schema = yup
   .object()
   .shape({
@@ -75,10 +84,12 @@ const EditModal: FC<EditModalProps> = ({
   const editVaccinationPointMutation = useEditVaccinationPoint();
 
   const provinceDistrictForm = useForm<ProvinceDistrictFormData>({
+    mode: 'onChange',
     defaultValues: {
       province: vaccinationPoint?.ward.district.province.id || '',
       district: vaccinationPoint?.ward.district.id || ''
-    }
+    },
+    resolver: yupResolver(provinceDistrictSchema)
   });
 
   const {
@@ -87,8 +98,9 @@ const EditModal: FC<EditModalProps> = ({
     watch,
     handleSubmit,
     reset,
-    formState: { isDirty }
+    formState: { isDirty, isValid }
   } = useForm<VaccinationSiteFormData>({
+    mode: 'onChange',
     defaultValues: {
       name: vaccinationPoint?.name,
       address: vaccinationPoint?.address,
@@ -208,7 +220,7 @@ const EditModal: FC<EditModalProps> = ({
           bgcolor: 'background.paper',
           boxShadow: 24,
           borderRadius: '4px',
-          width: '500px'
+          width: '900px'
         }}>
         <Stack direction="row" justifyContent="space-between" spacing={2} p={2}>
           <Typography variant="h6">Cập nhật điểm tiêm</Typography>
@@ -217,66 +229,86 @@ const EditModal: FC<EditModalProps> = ({
           </IconButton>
         </Stack>
         <Divider />
-        <Stack spacing={2} p={2}>
-          <TextInput
-            control={control}
-            name="name"
-            label="Tên điểm tiêm"
-            placeholder="Tên điểm tiêm"
-            errorMessage="Tên điểm tiêm không được bỏ trống"
-            required
-          />
-          <TextInput
-            control={control}
-            name="address"
-            label="Số nhà, tên đường"
-            placeholder="Số nhà, tên đường"
-            errorMessage="Số nhà, tên đường không được bỏ trống"
-            required
-          />
-          <SelectInput
-            control={provinceDistrictForm.control}
-            errorMessage="Tỉnh/Thành phố không được bỏ trống"
-            name="province"
-            selections={provinceSelections()}
-            defaultValue=""
-            placeholder="Tỉnh/Thành phố"
-            required
-          />
-          <SelectInput
-            control={provinceDistrictForm.control}
-            errorMessage="Quận/Huyện không được bỏ trống"
-            name="district"
-            selections={districtSelections()}
-            defaultValue=""
-            placeholder="Quận/Huyện"
-            required
-          />
-          <SelectInput
-            control={control}
-            errorMessage="Xã/Phường không được bỏ trống"
-            name="ward"
-            selections={wardSelections()}
-            defaultValue=""
-            placeholder="Xã/Phường"
-          />
-          <TextInput
-            control={control}
-            name="manager"
-            label="Người đứng đầu cơ sở tiêm chủng"
-            placeholder="Người đứng đầu cơ sở tiêm chủng"
-            errorMessage="Người đứng đầu cơ sở tiêm chủng không được bỏ trống"
-            required
-          />
-          <TextInput
-            control={control}
-            name="tableNumber"
-            label="Số bàn tiêm"
-            placeholder="Số bàn tiêm"
-            errorMessage="Số bàn tiêm là số và không được bỏ trống"
-            required
-          />
-        </Stack>
+        <Box p={2}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextInput
+                control={control}
+                name="name"
+                label="Tên điểm tiêm"
+                placeholder="Tên điểm tiêm"
+                errorMessage="Tên điểm tiêm không được bỏ trống"
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextInput
+                control={control}
+                name="address"
+                label="Số nhà, tên đường"
+                placeholder="Số nhà, tên đường"
+                errorMessage="Số nhà, tên đường không được bỏ trống"
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectInput
+                control={provinceDistrictForm.control}
+                label="Tỉnh/Thành phố"
+                errorMessage="Tỉnh/Thành phố không được bỏ trống"
+                name="province"
+                selections={provinceSelections()}
+                defaultValue=""
+                placeholder="Tỉnh/Thành phố"
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectInput
+                control={provinceDistrictForm.control}
+                label="Quận/Huyện"
+                errorMessage="Quận/Huyện không được bỏ trống"
+                name="district"
+                selections={districtSelections()}
+                defaultValue=""
+                placeholder="Quận/Huyện"
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectInput
+                control={control}
+                label="Xã/Phường"
+                errorMessage="Xã/Phường không được bỏ trống"
+                name="ward"
+                selections={wardSelections()}
+                defaultValue=""
+                placeholder="Xã/Phường"
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextInput
+                control={control}
+                name="manager"
+                label="Người đứng đầu cơ sở tiêm chủng"
+                placeholder="Người đứng đầu cơ sở tiêm chủng"
+                errorMessage="Người đứng đầu cơ sở tiêm chủng không được bỏ trống"
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextInput
+                control={control}
+                name="tableNumber"
+                label="Số bàn tiêm"
+                placeholder="Số bàn tiêm"
+                errorMessage="Số bàn tiêm là số và không được bỏ trống"
+                required
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
         <Stack direction="row" justifyContent="end" spacing={2} p={2}>
           <Button variant="outlined" onClick={handleCloseEditModal}>
             Hủy bỏ
@@ -284,7 +316,7 @@ const EditModal: FC<EditModalProps> = ({
           <Button
             type="submit"
             variant="contained"
-            disabled={loading || !isDirty}>
+            disabled={loading || !isDirty || !isValid}>
             Xác nhận
           </Button>
         </Stack>

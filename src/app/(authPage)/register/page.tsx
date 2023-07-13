@@ -72,6 +72,12 @@ const Register: FC = () => {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [prevProvince, setPrevProvince] = useState<string | number | undefined>(
+    ''
+  );
+  const [prevDistrict, setPrevDistrict] = useState<string | number | undefined>(
+    ''
+  );
 
   const {
     control,
@@ -94,18 +100,25 @@ const Register: FC = () => {
   const watchDistrict = watch('district');
 
   useEffect(() => {
-    setValue('district', '', {
-      shouldValidate: true
-    });
-    setValue('ward', '', {
-      shouldValidate: true
-    });
-  }, [watchProvince, setValue]);
+    if (watchProvince !== prevProvince) {
+      setValue('district', '', {
+        shouldValidate: true
+      });
+      setValue('ward', '', {
+        shouldValidate: true
+      });
+      setPrevProvince(watchProvince);
+    }
+  }, [watchProvince, setValue, prevProvince, setPrevProvince]);
+
   useEffect(() => {
-    setValue('ward', '', {
-      shouldValidate: true
-    });
-  }, [watchDistrict, setValue]);
+    if (watchDistrict !== prevDistrict) {
+      setValue('ward', '', {
+        shouldValidate: true
+      });
+      setPrevDistrict(watchDistrict);
+    }
+  }, [watchDistrict, setValue, prevDistrict, setPrevDistrict]);
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
