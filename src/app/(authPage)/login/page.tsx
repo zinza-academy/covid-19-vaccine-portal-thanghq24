@@ -8,10 +8,10 @@ import Link from 'next/link';
 import { indigo } from '@mui/material/colors';
 import TextInput from '@components/sharedComponents/TextInput';
 import { useRouter } from 'next/navigation';
-import useLogin, { LoginResponseUserType } from '@src/api/authApi/login';
+import useLogin from '@src/api/authApi/login';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { login } from '@src/redux/userSlice';
+import { FullRelationUserData, login } from '@src/redux/userSlice';
 import { useAppDispatch } from '@src/hooks/reduxHook';
 
 interface LoginFormData {
@@ -47,7 +47,7 @@ const Login: FC = () => {
     resolver: yupResolver(schema)
   });
 
-  const onLoggedIn = (user: LoginResponseUserType) => {
+  const onLoggedIn = (user: FullRelationUserData) => {
     dispatch(login(user));
     router.push('/');
   };
